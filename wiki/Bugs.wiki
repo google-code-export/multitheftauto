@@ -1,0 +1,3 @@
+#summary Redirect
+
+Our bug tracker can be found at http://bugs.mtasa.com/.
