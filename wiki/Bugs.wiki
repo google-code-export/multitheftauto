@@ -1,2 +1,1 @@
-
-Our bug tracker can be found at http://bugs.mtasa.com/.
+Our bug tracker can be found at http://bugs.mtasa.com/ and contains everything from bugs to change logs and road maps.
