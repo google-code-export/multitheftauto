@@ -4,7 +4,7 @@ In order to successfully build Multi Theft Auto from source, it is necessary to 
 
 == Checking out the repository ==
 
-Start by checking out the code repository. Head over to the *Source* tab for more information about this.
+Start by checking out the code repository. Head over to the *Source* tab for more information about this. If you haven't already done so, install a client such as [http://tortoisesvn.net/ TortoiseSVN] to check out the source.
 
 == Extracting the dependencies ==
 
