@@ -1,0 +1,27 @@
+#summary Instructions how to get your build running
+
+In order to successfully build Multi Theft Auto from source, it is necessary to perform a number of steps, which we will explain below.
+
+== Checking out the repository ==
+
+Start by checking out the code repository. Head over to the *Source* tab for more information about this.
+
+== Extracting the dependencies ==
+
+Our project depends on a few third party libraries. These are packed in a separate SFX (self extracting) archive that can be downloaded through the *Downloads* tab.
+
+Make sure you download the latest revision of the _multitheftauto_deps-rXXX.exe_ file and extract it into your repository root so the directories match up.
+
+== Extracting the datafiles ==
+
+If you want to run Multi Theft Auto, you will need to extract the data files that the project uses when it is launched. These are also packed in a separate SFX archive that can be downloaded through the *Downloads* tab.
+
+Make sure you download the latest revision of the _multitheftauto_data-rXXX.exe_ file and extract it into your _Grand Theft Auto: San Andreas_ directory.
+
+== Building the source ==
+
+In order to build the source, you will need Microsoft Visual Studio 2003 (higher versions have not been tested). Open the project file in *Shared/Core.sln* and build at one of the project configurations _Debug_, _Release_ or _Nightly_. Note that everything will run significantly slower in _Debug_ mode.
+
+== Getting the network module ==
+
+Since the _net.dll_ network modules for client and server are covered in a different license, you will have to get these from the *Downloads* page. Make sure you get the latest revision, and it should work fine.
