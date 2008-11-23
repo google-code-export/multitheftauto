@@ -2,6 +2,13 @@
 
 In order to successfully build Multi Theft Auto from source, it is necessary to perform a number of steps, which we will explain below.
 
+== Prerequisites ==
+
+Before you can build Multi Theft Auto, make sure you have the following software and SDKs installed:
+* Microsoft Visual Studio 2003
+* [http://msdn.microsoft.com/en-us/directx/aa937788.aspx Microsoft DirectX SDK]
+* [http://msdn2.microsoft.com/en-us/windowsserver/bb980924.aspx Microsoft Windows SDK] or Platform SDK
+
 == Checking out the repository ==
 
 Start by checking out the code repository. Head over to the *Source* tab for more information about this. If you haven't already done so, install a client such as [http://tortoisesvn.net/ TortoiseSVN] to check out the source.
