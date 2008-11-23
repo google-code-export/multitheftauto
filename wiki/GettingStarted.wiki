@@ -28,4 +28,4 @@ Since the _net.dll_ network modules for client and server are covered in a diffe
 
 == More information ==
 
-If you need more information, try our [http://bugs.mtasa.com/ bug tracker] or [http://development.mtasa.com/ wiki].
+If you need more information, try our [http://bugs.mtasa.com/ bug tracker], [http://development.mtasa.com/ wiki] or IRC channel (see *Project Home*).
