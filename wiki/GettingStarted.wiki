@@ -12,6 +12,8 @@ Our project depends on a few third party libraries. These are packed in a separa
 
 Make sure you download the latest revision of the _multitheftauto_deps-rXXX.exe_ file and extract it into your repository root so the directories match up.
 
+You will also need to extract the CEGUI libraries. Go to the _MTA10/dependencies/cegui_ directory and extract the _cegui-0.4.0-custom-lib.exe_ file in the same directory. The sources for these libraries are available as a separate download, but not required in order to build.
+
 == Extracting the datafiles ==
 
 If you want to run Multi Theft Auto, you will need to extract the data files that the project uses when it is launched. These are also packed in a separate SFX archive that can be downloaded through the *Downloads* tab.
