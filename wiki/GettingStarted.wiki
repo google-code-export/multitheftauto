@@ -26,7 +26,9 @@ In order to build the source, you will need Microsoft Visual Studio 2003 (higher
 
 == Getting the network module ==
 
-Since the _net.dll_ network modules for client and server are covered in a different license, you will have to get these from the *Downloads* page. Make sure you get the latest revision, and it should work fine.
+Since the _net.dll_ network modules for client and server are covered in a different license, you will have to get these from the *Downloads* tab.
+
+Make sure you download the latest revision of the _multitheftauto_net-rXXX.exe_ file and extract it into your _Grand Theft Auto: San Andreas_ directory. Bear in mind that these files are covered in a different license.
 
 == More information ==
 
