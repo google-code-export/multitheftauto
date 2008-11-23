@@ -25,3 +25,7 @@ In order to build the source, you will need Microsoft Visual Studio 2003 (higher
 == Getting the network module ==
 
 Since the _net.dll_ network modules for client and server are covered in a different license, you will have to get these from the *Downloads* page. Make sure you get the latest revision, and it should work fine.
+
+== More information ==
+
+If you need more information, try our [http://bugs.mtasa.com/ bug tracker] or [http://development.mtasa.com/ wiki].
