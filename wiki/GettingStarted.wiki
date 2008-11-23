@@ -5,7 +5,7 @@ In order to successfully build Multi Theft Auto from source, it is necessary to 
 == Prerequisites ==
 
 Before you can build Multi Theft Auto, make sure you have the following software and SDKs installed:
-  * Microsoft Visual Studio 2003
+  * Microsoft Visual Studio 2003 (newer versions may work but are untested)
   * [http://msdn.microsoft.com/en-us/directx/aa937788.aspx Microsoft DirectX SDK]
   * [http://msdn2.microsoft.com/en-us/windowsserver/bb980924.aspx Microsoft Windows SDK] or Platform SDK
 
