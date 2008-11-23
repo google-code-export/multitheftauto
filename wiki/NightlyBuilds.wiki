@@ -1,10 +1,7 @@
 #summary Instructions on how to get a nightly developer build
 
-== Nightly builds ==
 Nightly builds are meant as developer builds and are built daily by our automated server.
 
 They do not work straight out-of-the-box, as they exclude a few files that rarely change but are necessary to work. This is because of size and bandwidth issues, and the fact that they are meant as incremental updates for those that already have the necessary files installed.
-
-== Getting a nightly build ==
 
 Our latest builds are archived on http://nightly.mtasa.com/
