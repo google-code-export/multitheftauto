@@ -1,0 +1,3 @@
+#summary How to get more information about scripting, development and more
+
+More information about our project can be found at our own wiki: [http://development.mtasa.com]
