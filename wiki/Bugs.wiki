@@ -1,3 +1,5 @@
+#summary Instructions about our bug tracker
+
 Our bug tracker can be found at http://bugs.mtasa.com/ and contains everything from bugs to change logs and road maps.
 
 In order to log in, you will be required to have an account at http://community.mtasa.com/. This account also allows access to other relevant developer areas.
