@@ -41,7 +41,7 @@ Make sure you download the latest revision of the _multitheftauto_data-rXXX.exe_
 
 If you want to run the Multi Theft Auto dedicated server, you will have to install the required resources. These are required because they implement the most basic functionality  (e.g. spawning players) in order to play.
 
-Head over to the *Downloads* tab, get the latest revision of the _multitheftauto_resources-rXXX.zip_ file, unpack and install (see the README for any additional information).
+Head over to the *Downloads* tab, get the latest revision of the _multitheftauto_resources-rXXX.zip_ file, unpack and install (see the README for any additional information). Make sure that you are not using any of our resources from any previous versions of Multi Theft Auto, as this _will_ cause issues.
 
 == More information ==
 
