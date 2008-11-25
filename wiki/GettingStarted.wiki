@@ -21,21 +21,27 @@ Make sure you download the latest revision of the _multitheftauto_deps-rXXX.exe_
 
 You will also need to extract the CEGUI libraries. Go to the _MTA10/dependencies/cegui_ directory and extract the _cegui-0.4.0-custom-lib.exe_ file in the same directory. The sources for these libraries are available as a separate download, but not required in order to build.
 
-== Extracting the datafiles ==
-
-If you want to run Multi Theft Auto, you will need to extract the data files that the project uses when it is launched. These are also packed in a separate SFX archive that can be downloaded through the *Downloads* tab.
-
-Make sure you download the latest revision of the _multitheftauto_data-rXXX.exe_ file and extract it into your _Grand Theft Auto: San Andreas_ directory.
-
 == Building the source ==
 
-In order to build the source, you will need Microsoft Visual Studio 2003 (higher versions have not been tested). Open the project file in *Shared/Core.sln* and build at one of the project configurations _Debug_, _Release_ or _Nightly_. Note that everything will run significantly slower in _Debug_ mode.
+In order to build the source, you will need Microsoft Visual Studio. Open the project file in *Shared/Core.sln* and build using one of the project configurations _Debug_, _Release_ or _Nightly_. Note that everything will run significantly slower in _Debug_ mode.
 
 == Getting the network module ==
 
 Since the _net.dll_ network modules for client and server are covered in a different license, you will have to get these from the *Downloads* tab.
 
-Make sure you download the latest revision of the _multitheftauto_net-rXXX.exe_ file and extract it into your _Grand Theft Auto: San Andreas_ directory. Bear in mind that these files are covered in a different license.
+Make sure you download the latest revision of the _multitheftauto_net-rXXX.zip_ file and extract it into your _Grand Theft Auto: San Andreas_ directory. Bear in mind that these files are covered in a different license.
+
+== Running the client ==
+
+If you want to run the Multi Theft Auto game client, you will need to extract the data files that the project uses when it is launched. These are also packed in a separate SFX archive that can be downloaded through the *Downloads* tab.
+
+Make sure you download the latest revision of the _multitheftauto_data-rXXX.exe_ file and extract it into your _Grand Theft Auto: San Andreas_ directory.
+
+== Running the server ==
+
+If you want to run the Multi Theft Auto dedicated server, you will have to install the required resources. These are required because they implement the most basic functionality  (e.g. spawning players) in order to play.
+
+Head over to the *Downloads* tab, get the latest revision of the _multitheftauto_resources-rXXX.zip_ file, unpack and install (see the README for any additional information).
 
 == More information ==
 
