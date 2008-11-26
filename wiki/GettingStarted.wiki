@@ -41,7 +41,7 @@ Make sure you download the latest revision of the _multitheftauto_data-rXXX.exe_
 
 If you want to run the Multi Theft Auto dedicated server, you will have to install the required resources. These are required because they implement the most basic functionality  (e.g. spawning players) in order to play.
 
-Our official resources repository is also hosted on Google Code: [http://multitheftauto-resources.googlecode.com/]. It's recommended that you check out the latest resources from here or download a zipped revision from the *Downloads* tab if available. Make sure that you are not using any of our resources from any previous versions of Multi Theft Auto, as this _will_ cause issues.
+Our official resources repository is also hosted on Google Code: [http://multitheftauto-resources.googlecode.com/ multitheftauto-resources]. It's recommended that you check out the latest resources from here or download a zipped revision from the *Downloads* tab if available. Make sure that you are not using any of our resources from any previous versions of Multi Theft Auto, as this _will_ cause issues.
 
 == More information ==
 
