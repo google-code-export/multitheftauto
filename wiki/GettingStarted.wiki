@@ -49,7 +49,7 @@ You are almost ready to run your build of the Multi Theft Auto software.
 
 === Running the game client ===
 
-If you want to run the Multi Theft Auto game client, you will need to extract the data files that the project uses when it is launched. These are also packed in a separate SFX archive that can be downloaded through the *Downloads* tab.
+If you want to run the Multi Theft Auto game client, you will need to extract the data files that the project uses when it is launched. These are also packed in a separate SFX archive that can be downloaded through the [http://code.google.com/p/multitheftauto/downloads/list Downloads] tab.
 
 Make sure you download the latest revision of the _multitheftauto_data-rXXX.exe_ file and extract it into your _Grand Theft Auto: San Andreas_ directory.
 
