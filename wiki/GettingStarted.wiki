@@ -13,21 +13,21 @@ If you haven't already done so, install a client such as [http://tortoisesvn.net
 
 == 2. Checking out trunk ==
 
-Start by checking out the *trunk* code repository, as this contains the actual source code of the project. Head over to the *Source* tab for more information about this. 
+Start by checking out the [http://code.google.com/p/multitheftauto/source/browse/#svn/trunk trunk] code repository, as this contains the actual source code of the project. Head over to the [http://code.google.com/p/multitheftauto/source/checkout Source] tab for more information about this. 
 
 *Example*: Check _http://multitheftauto.googlecode.com/svn/trunk/_ out to _c:\source\trunk_
 
 == 3. Checking out vendor ==
 
-As our code relies on a number of third-party libraries, it is also necessary to check out the *vendor* directory from our code repository. This directory contains up-to-date versions of the third-party libraries we use.
+As our code relies on a number of third-party libraries, it is also necessary to check out the [http://code.google.com/p/multitheftauto/source/browse/#svn/vendor vendor] directory from our code repository. This directory contains up-to-date versions of the third-party libraries we use.
 
-As the include paths in our Microsoft Visual Studio project files are already set, you will have to check into the _vendor_ directory in the trunk's root directory. In other words, next to the directories _MTA10_ and _MTA10_Server_ you should have a _vendor_ directory that contains all the third-party libraries.
+As the include paths in our Microsoft Visual Studio project files are already set, you will have to check the vendor directory out in the trunk's root directory. In other words, next to the directories _MTA10_ and _MTA10_Server_ you should have a _vendor_ directory that contains all the third-party libraries.
 
 *Example*: Check _http://multitheftauto.googlecode.com/svn/vendor/_ out to _c:\source\trunk\vendor_
 
 == 3. Extracting the dependencies ==
 
-Not all third-party libraries are covered by *vendor* yet. The remaining libraries (for the client) are packed in a separate self extracting archive that can be downloaded through the *Downloads* tab.
+Not all third-party libraries are covered by vendor yet. The remaining libraries (for the client) are packed in a separate self extracting archive that can be downloaded through the [http://code.google.com/p/multitheftauto/downloads/list Downloads] tab.
 
 Make sure you download the latest revision of the _multitheftauto_deps-rXXX.exe_ file and extract it into your repository root so the directories match up.
 
@@ -39,7 +39,7 @@ In order to build the source, you will need Microsoft Visual Studio. Open the pr
 
 == 5. Getting the network module ==
 
-Since the _net.dll_ network modules for client and server are covered in a different license, you will have to get these from the *Downloads* tab.
+Since the _net.dll_ network modules for client and server are covered in a different license, you will have to get these from the [http://code.google.com/p/multitheftauto/downloads/list Downloads] tab.
 
 Make sure you download the latest revision of the _multitheftauto_net-rXXX.zip_ file and extract it into your _Grand Theft Auto: San Andreas_ directory. Bear in mind that these files are covered in a different license.
 
