@@ -2,42 +2,58 @@
 
 In order to successfully build Multi Theft Auto from source, it is necessary to perform a number of steps, which we will explain below.
 
-== Prerequisites ==
+== 1. Prerequisites ==
 
 Before you can build Multi Theft Auto, make sure you have the following software and SDKs installed:
   * Microsoft Visual Studio 2003 or 2005 (newer versions may work but are untested)
   * [http://msdn.microsoft.com/en-us/directx/aa937788.aspx Microsoft DirectX SDK] (only the Direct3D related components are required)
   * [http://msdn2.microsoft.com/en-us/windowsserver/bb980924.aspx Microsoft Windows SDK] or Platform SDK (only the DirectShow components are required)
 
-== Checking out the repository ==
+If you haven't already done so, install a client such as [http://tortoisesvn.net/ TortoiseSVN] to check out the source.
 
-Start by checking out the code repository. Head over to the *Source* tab for more information about this. If you haven't already done so, install a client such as [http://tortoisesvn.net/ TortoiseSVN] to check out the source.
+== 2. Checking out trunk ==
 
-== Extracting the dependencies ==
+Start by checking out the *trunk* code repository, as this contains the actual source code of the project. Head over to the *Source* tab for more information about this. 
 
-Our project depends on a few third party libraries. These are packed in a separate SFX (self extracting) archive that can be downloaded through the *Downloads* tab.
+*Example*: Check _http://multitheftauto.googlecode.com/svn/trunk/_ out to _c:\source\trunk_
+
+== 3. Checking out vendor ==
+
+As our code relies on a number of third-party libraries, it is also necessary to check out the *vendor* directory from our code repository. This directory contains up-to-date versions of the third-party libraries we use.
+
+As the include paths in our Microsoft Visual Studio project files are already set, you will have to check into the _vendor_ directory in the trunk's root directory. In other words, next to the directories _MTA10_ and _MTA10_Server_ you should have a _vendor_ directory that contains all the third-party libraries.
+
+*Example*: Check _http://multitheftauto.googlecode.com/svn/vendor/_ out to _c:\source\trunk\vendor_
+
+== 3. Extracting the dependencies ==
+
+Not all third-party libraries are covered by *vendor* yet. The remaining libraries (for the client) are packed in a separate self extracting archive that can be downloaded through the *Downloads* tab.
 
 Make sure you download the latest revision of the _multitheftauto_deps-rXXX.exe_ file and extract it into your repository root so the directories match up.
 
 You will also need to extract the CEGUI libraries. Go to the _MTA10/dependencies/cegui_ directory and extract the _cegui-0.4.0-custom-lib.exe_ file in the same directory. The sources for these libraries are available as a separate download, but not required in order to build.
 
-== Building the source ==
+== 4. Building the source ==
 
 In order to build the source, you will need Microsoft Visual Studio. Open the project file in *Shared/Core.sln* and build using one of the project configurations _Debug_, _Release_ or _Nightly_. Note that everything will run significantly slower in _Debug_ mode.
 
-== Getting the network module ==
+== 5. Getting the network module ==
 
 Since the _net.dll_ network modules for client and server are covered in a different license, you will have to get these from the *Downloads* tab.
 
 Make sure you download the latest revision of the _multitheftauto_net-rXXX.zip_ file and extract it into your _Grand Theft Auto: San Andreas_ directory. Bear in mind that these files are covered in a different license.
 
-== Running the client ==
+== 6. Running the software ==
+
+You are almost ready to run your build of the Multi Theft Auto software.
+
+=== Running the game client ===
 
 If you want to run the Multi Theft Auto game client, you will need to extract the data files that the project uses when it is launched. These are also packed in a separate SFX archive that can be downloaded through the *Downloads* tab.
 
 Make sure you download the latest revision of the _multitheftauto_data-rXXX.exe_ file and extract it into your _Grand Theft Auto: San Andreas_ directory.
 
-== Running the server ==
+=== Running the dedicated server ===
 
 If you want to run the Multi Theft Auto dedicated server, you will have to install the required resources. These are required because they implement the most basic functionality  (e.g. spawning players) in order to play.
 
