@@ -14244,15 +14244,24 @@ int CLuaFunctionDefinitions::PlaySound ( lua_State* luaVM )
         CLuaMain * luaMain = m_pLuaManager->GetVirtualMachine ( luaVM );
         if ( luaMain )
         {
-		    char szFilename [ MAX_STRING_LENGTH ];
-            snprintf ( szFilename, MAX_STRING_LENGTH, "%s\\%s", luaMain->GetResource()->GetResourceDirectoryPath(), szSound );
-		    if ( IsValidFilePath ( lua_tostring ( luaVM, 1 ) ) )
+            CResource* pResource = luaMain->GetResource();
+            if ( pResource )
             {
-                CClientSound* pSound = CStaticFunctionDefinitions::PlaySound ( szFilename );
-                if ( pSound )
+		        char szFilename [ MAX_STRING_LENGTH ];
+                snprintf ( szFilename, MAX_STRING_LENGTH, "%s\\%s", luaMain->GetResource()->GetResourceDirectoryPath(), szSound );
+		        if ( IsValidFilePath ( lua_tostring ( luaVM, 1 ) ) )
                 {
-                    lua_pushelement ( luaVM, pSound );
-                    return 1;
+                    bool bLoop = false;
+                    if ( lua_istype ( luaVM, 2, LUA_TBOOLEAN ) )
+                    {
+                        bLoop = ( lua_toboolean ( luaVM, 2 ) ) ? true : false;
+                    }
+                    CClientSound* pSound = CStaticFunctionDefinitions::PlaySound ( pResource, szFilename, bLoop );
+                    if ( pSound )
+                    {
+                        lua_pushelement ( luaVM, pSound );
+                        return 1;
+                    }
                 }
             }
         }
@@ -14281,15 +14290,24 @@ int CLuaFunctionDefinitions::PlaySound3D ( lua_State* luaVM )
         CLuaMain * luaMain = m_pLuaManager->GetVirtualMachine ( luaVM );
         if ( luaMain )
         {
-		    char szFilename [ MAX_STRING_LENGTH ];
-            snprintf ( szFilename, MAX_STRING_LENGTH, "%s\\%s", luaMain->GetResource()->GetResourceDirectoryPath(), szSound );
-		    if ( IsValidFilePath ( lua_tostring ( luaVM, 1 ) ) )
+            CResource* pResource = luaMain->GetResource();
+            if ( pResource )
             {
-                CClientSound* pSound = CStaticFunctionDefinitions::PlaySound3D ( szFilename, vecPosition );
-                if ( pSound )
+		        char szFilename [ MAX_STRING_LENGTH ];
+                snprintf ( szFilename, MAX_STRING_LENGTH, "%s\\%s", luaMain->GetResource()->GetResourceDirectoryPath(), szSound );
+		        if ( IsValidFilePath ( lua_tostring ( luaVM, 1 ) ) )
                 {
-                    lua_pushelement ( luaVM, pSound );
-                    return 1;
+                    bool bLoop = false;
+                    if ( lua_istype ( luaVM, 5, LUA_TBOOLEAN ) )
+                    {
+                        bLoop = ( lua_toboolean ( luaVM, 5 ) ) ? true : false;
+                    }
+                    CClientSound* pSound = CStaticFunctionDefinitions::PlaySound3D ( pResource, szFilename, vecPosition, bLoop );
+                    if ( pSound )
+                    {
+                        lua_pushelement ( luaVM, pSound );
+                        return 1;
+                    }
                 }
             }
         }
@@ -14350,6 +14368,26 @@ int CLuaFunctionDefinitions::GetSoundPosition ( lua_State* luaVM )
             if ( CStaticFunctionDefinitions::GetSoundPosition ( *pSound, uiPosition ) )
             {
                 lua_pushnumber ( luaVM, uiPosition );
+                return 1;
+            }
+        }
+    }
+    lua_pushboolean ( luaVM, false );
+    return 1;
+}
+
+
+int CLuaFunctionDefinitions::GetSoundLength ( lua_State* luaVM )
+{
+    if ( lua_istype ( luaVM, 1, LUA_TLIGHTUSERDATA ) )
+    {
+        CClientSound* pSound = lua_tosound ( luaVM, 1 );
+        if ( pSound )
+        {
+            unsigned int uiLength = 0;
+            if ( CStaticFunctionDefinitions::GetSoundLength ( *pSound, uiLength ) )
+            {
+                lua_pushnumber ( luaVM, uiLength );
                 return 1;
             }
         }
@@ -14432,6 +14470,88 @@ int CLuaFunctionDefinitions::GetSoundVolume ( lua_State* luaVM )
             if ( CStaticFunctionDefinitions::GetSoundVolume ( *pSound, fVolume ) )
             {
                 lua_pushnumber ( luaVM, fVolume );
+                return 1;
+            }
+        }
+    }
+    lua_pushboolean ( luaVM, false );
+    return 1;
+}
+
+
+int CLuaFunctionDefinitions::SetSoundMinDistance ( lua_State* luaVM )
+{
+    if ( lua_istype ( luaVM, 1, LUA_TLIGHTUSERDATA ) &&
+         lua_istype ( luaVM, 1, LUA_TNUMBER ) )
+    {
+        CClientSound* pSound = lua_tosound ( luaVM, 1 );
+        if ( pSound )
+        {
+            float fDistance = ( float ) lua_tonumber ( luaVM, 1 );
+            if ( CStaticFunctionDefinitions::SetSoundMinDistance ( *pSound, fDistance ) )
+            {
+                lua_pushboolean ( luaVM, true );
+                return 1;
+            }
+        }
+    }
+    lua_pushboolean ( luaVM, false );
+    return 1;
+}
+
+
+int CLuaFunctionDefinitions::GetSoundMinDistance ( lua_State* luaVM )
+{
+    if ( lua_istype ( luaVM, 1, LUA_TLIGHTUSERDATA ) )
+    {
+        CClientSound* pSound = lua_tosound ( luaVM, 1 );
+        if ( pSound )
+        {
+            float fDistance = 0.0f;
+            if ( CStaticFunctionDefinitions::GetSoundMinDistance ( *pSound, fDistance ) )
+            {
+                lua_pushnumber ( luaVM, fDistance );
+                return 1;
+            }
+        }
+    }
+    lua_pushboolean ( luaVM, false );
+    return 1;
+}
+
+
+int CLuaFunctionDefinitions::SetSoundMaxDistance ( lua_State* luaVM )
+{
+    if ( lua_istype ( luaVM, 1, LUA_TLIGHTUSERDATA ) &&
+         lua_istype ( luaVM, 1, LUA_TNUMBER ) )
+    {
+        CClientSound* pSound = lua_tosound ( luaVM, 1 );
+        if ( pSound )
+        {
+            float fDistance = ( float ) lua_tonumber ( luaVM, 1 );
+            if ( CStaticFunctionDefinitions::SetSoundMaxDistance ( *pSound, fDistance ) )
+            {
+                lua_pushboolean ( luaVM, true );
+                return 1;
+            }
+        }
+    }
+    lua_pushboolean ( luaVM, false );
+    return 1;
+}
+
+
+int CLuaFunctionDefinitions::GetSoundMaxDistance ( lua_State* luaVM )
+{
+    if ( lua_istype ( luaVM, 1, LUA_TLIGHTUSERDATA ) )
+    {
+        CClientSound* pSound = lua_tosound ( luaVM, 1 );
+        if ( pSound )
+        {
+            float fDistance = 0.0f;
+            if ( CStaticFunctionDefinitions::GetSoundMaxDistance ( *pSound, fDistance ) )
+            {
+                lua_pushnumber ( luaVM, fDistance );
                 return 1;
             }
         }

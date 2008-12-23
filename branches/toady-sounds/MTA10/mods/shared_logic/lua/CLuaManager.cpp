@@ -324,10 +324,15 @@ void CLuaManager::LoadCFunctions ( void )
     CLuaCFunctions::AddFunction ( "stopSound", CLuaFunctionDefinitions::StopSound );
     CLuaCFunctions::AddFunction ( "setSoundPosition", CLuaFunctionDefinitions::SetSoundPosition );
     CLuaCFunctions::AddFunction ( "getSoundPosition", CLuaFunctionDefinitions::GetSoundPosition );
+    CLuaCFunctions::AddFunction ( "getSoundLength", CLuaFunctionDefinitions::GetSoundPosition );
     CLuaCFunctions::AddFunction ( "setSoundPaused", CLuaFunctionDefinitions::SetSoundPaused );
     CLuaCFunctions::AddFunction ( "isSoundPaused", CLuaFunctionDefinitions::IsSoundPaused );
     CLuaCFunctions::AddFunction ( "setSoundVolume", CLuaFunctionDefinitions::SetSoundVolume );
     CLuaCFunctions::AddFunction ( "getSoundVolume", CLuaFunctionDefinitions::GetSoundVolume );
+    CLuaCFunctions::AddFunction ( "setSoundMinDistance", CLuaFunctionDefinitions::SetSoundMinDistance );
+    CLuaCFunctions::AddFunction ( "getSoundMinDistance", CLuaFunctionDefinitions::GetSoundMinDistance );
+    CLuaCFunctions::AddFunction ( "setSoundMaxDistance", CLuaFunctionDefinitions::SetSoundMaxDistance );
+    CLuaCFunctions::AddFunction ( "getSoundMaxDistance", CLuaFunctionDefinitions::GetSoundMaxDistance );
 
     // Player get funcs
     CLuaCFunctions::AddFunction ( "getLocalPlayer", CLuaFunctionDefinitions::GetLocalPlayer );

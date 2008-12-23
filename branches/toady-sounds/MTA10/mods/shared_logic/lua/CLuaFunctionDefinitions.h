@@ -63,10 +63,15 @@ public:
     LUA_DECLARE ( StopSound );
     LUA_DECLARE ( SetSoundPosition );
     LUA_DECLARE ( GetSoundPosition );
+    LUA_DECLARE ( GetSoundLength );
     LUA_DECLARE ( SetSoundPaused );
     LUA_DECLARE ( IsSoundPaused );
     LUA_DECLARE ( SetSoundVolume );
     LUA_DECLARE ( GetSoundVolume );
+    LUA_DECLARE ( SetSoundMinDistance );
+    LUA_DECLARE ( GetSoundMinDistance );
+    LUA_DECLARE ( SetSoundMaxDistance );
+    LUA_DECLARE ( GetSoundMaxDistance );
 
     // Output functions
     LUA_DECLARE ( OutputConsole );

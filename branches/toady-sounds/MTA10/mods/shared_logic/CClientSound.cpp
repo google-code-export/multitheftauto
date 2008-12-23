@@ -12,36 +12,49 @@
 #include <StdInc.h>
 
 extern CClientGame* g_pClientGame;
-extern CCoreInterface* g_pCore;
+
 CClientSound::CClientSound ( CClientManager* pManager, ElementID ID ) : CClientEntity ( ID )
 {
-    m_pSoundEngine = pManager->GetSoundManager()->GetEngine();
+    m_pSoundManager = pManager->GetSoundManager();
     m_pSound = NULL;
+
+    SetTypeName ( "sound" );
+
+    m_pSoundManager->AddToList ( this );
 }
 
 CClientSound::~CClientSound ( void )
 {
-    if ( m_pSound )
-        m_pSound->drop ();
-}
-
-void CClientSound::Play ( const char* szPath )
-{
-    m_pSound = m_pSoundEngine->play2D ( szPath, false, false, true );
+    m_pSoundManager->RemoveFromList ( this );
     if ( m_pSound )
     {
-        m_pSound->setSoundStopEventReceiver ( this );
+        m_pSound->setSoundStopEventReceiver ( NULL );
+        m_pSound->stop ();
+        m_pSound->drop ();
     }
 }
 
-void CClientSound::Play3D ( const char* szPath, CVector vecPosition )
+bool CClientSound::Play ( const char* szPath, bool bLoop )
+{
+    m_pSound = m_pSoundManager->GetEngine()->play2D ( szPath, bLoop, false, true );
+    if ( m_pSound )
+    {
+        m_pSound->setSoundStopEventReceiver ( m_pSoundManager );
+        return true;
+    }
+    return false;
+}
+
+bool CClientSound::Play3D ( const char* szPath, CVector vecPosition, bool bLoop )
 {
     vec3df pos ( vecPosition.fX, vecPosition.fY, vecPosition.fZ );
-	m_pSound = m_pSoundEngine->play3D ( szPath, pos, false, false, true );
+	m_pSound = m_pSoundManager->GetEngine()->play3D ( szPath, pos, bLoop, false, true );
     if ( m_pSound )
     {
-        m_pSound->setSoundStopEventReceiver ( this );
+        m_pSound->setSoundStopEventReceiver ( m_pSoundManager );
+        return true;
     }
+    return false;
 }
 
 void CClientSound::Stop ( void )
@@ -102,6 +115,7 @@ unsigned int CClientSound::GetLength ( void )
     {
         return m_pSound->getPlayLength ();
     }
+    return 0;
 }
 
 void CClientSound::SetVolume ( float fVolume )
@@ -140,7 +154,36 @@ void CClientSound::GetPosition ( CVector& vecPosition ) const
     }
 }
 
-void CClientSound::OnSoundStopped ( ISound* sound, E_STOP_EVENT_CAUSE reason, void* pObj )
+void CClientSound::SetMinDistance ( float fDistance )
 {
-    g_pClientGame->GetElementDeleter()->Delete ( this );
+    if ( m_pSound )
+    {
+        m_pSound->setMinDistance ( fDistance );
+    }
+}
+
+float CClientSound::GetMinDistance ( void )
+{
+    if ( m_pSound )
+    {
+        return m_pSound->getMinDistance ();
+    }
+    return 0.0f;
+}
+
+void CClientSound::SetMaxDistance ( float fDistance )
+{
+    if ( m_pSound )
+    {
+        m_pSound->setMaxDistance ( fDistance );
+    }
+}
+
+float CClientSound::GetMaxDistance ( void )
+{
+    if ( m_pSound )
+    {
+        return m_pSound->getMaxDistance ();
+    }
+    return 0.0f;
 }

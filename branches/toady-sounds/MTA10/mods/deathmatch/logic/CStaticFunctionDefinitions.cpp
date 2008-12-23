@@ -4893,15 +4893,19 @@ bool CStaticFunctionDefinitions::FxAddFootSplash ( CVector & vecPosition )
 }
 
 
-CClientSound* CStaticFunctionDefinitions::PlaySound ( const char* szSound )
+CClientSound* CStaticFunctionDefinitions::PlaySound ( CResource* pResource, const char* szSound, bool bLoop )
 {
-    return m_pSoundManager->PlaySound2D ( szSound );
+    CClientSound* pSound = m_pSoundManager->PlaySound2D ( szSound, bLoop );
+    pSound->SetParent ( pResource->GetResourceDynamicEntity() );
+    return pSound;
 }
 
 
-CClientSound* CStaticFunctionDefinitions::PlaySound3D ( const char* szSound, CVector vecPosition )
+CClientSound* CStaticFunctionDefinitions::PlaySound3D ( CResource* pResource, const char* szSound, CVector vecPosition, bool bLoop )
 {
-    return m_pSoundManager->PlaySound3D ( szSound, vecPosition );
+    CClientSound* pSound = m_pSoundManager->PlaySound3D ( szSound, vecPosition, bLoop );
+    pSound->SetParent ( pResource->GetResourceDynamicEntity() );
+    return pSound;
 }
 
 
@@ -4922,6 +4926,13 @@ bool CStaticFunctionDefinitions::SetSoundPosition ( CClientSound& Sound, unsigne
 bool CStaticFunctionDefinitions::GetSoundPosition ( CClientSound& Sound, unsigned int& uiPosition )
 {
     uiPosition = Sound.GetPlayPosition ();
+    return true;
+}
+
+
+bool CStaticFunctionDefinitions::GetSoundLength ( CClientSound& Sound, unsigned int& uiLength )
+{
+    uiLength = Sound.GetLength ();
     return true;
 }
 
@@ -4949,11 +4960,37 @@ bool CStaticFunctionDefinitions::SetSoundVolume ( CClientSound& Sound, float fVo
 
 bool CStaticFunctionDefinitions::GetSoundVolume ( CClientSound& Sound, float& fVolume )
 {
-    fVolume = Sound.IsPaused ();
+    fVolume = Sound.GetVolume ();
     return true;
 }
 
 
+bool CStaticFunctionDefinitions::SetSoundMinDistance ( CClientSound& Sound, float fDistance )
+{
+    Sound.SetMinDistance ( fDistance );
+    return true;
+}
+
+
+bool CStaticFunctionDefinitions::GetSoundMinDistance ( CClientSound& Sound, float& fDistance )
+{
+    fDistance = Sound.GetMinDistance ();
+    return true;
+}
+
+
+bool CStaticFunctionDefinitions::SetSoundMaxDistance ( CClientSound& Sound, float fDistance )
+{
+    Sound.SetMaxDistance ( fDistance );
+    return true;
+}
+
+
+bool CStaticFunctionDefinitions::GetSoundMaxDistance ( CClientSound& Sound, float& fDistance )
+{
+    fDistance = Sound.GetMaxDistance ();
+    return true;
+}
 
 
 #ifdef MTA_VOICE

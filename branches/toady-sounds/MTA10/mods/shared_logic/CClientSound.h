@@ -19,15 +19,19 @@ class CClientSound;
 
 using namespace irrklang;
 
-class CClientSound : public CClientEntity, ISoundStopEventReceiver
+class CClientSound : public CClientEntity
 {
+    friend CClientSoundManager;
+
 public:
 
                             CClientSound            ( CClientManager* pManager, ElementID ID );
                             ~CClientSound           ( void );
 
-    void                    Play                    ( const char* szPath );
-    void                    Play3D                  ( const char* szPath, CVector vecPosition );
+    eClientEntityType       GetType                 ( void ) const                      { return CCLIENTSOUND; }
+
+    bool                    Play                    ( const char* szPath, bool bLoop );
+    bool                    Play3D                  ( const char* szPath, CVector vecPosition, bool bLoop );
     void                    Stop                    ( void );
 
     void                    SetPaused               ( bool bPaused );
@@ -43,17 +47,23 @@ public:
     void                    SetVolume               ( float fVolume );
     float                   GetVolume               ( void );
 
-    eClientEntityType       GetType                 ( void ) const                      { return CCLIENTSOUND; }
+    void                    SetMinDistance          ( float fDistance );
+    float                   GetMinDistance          ( void );
+
+    void                    SetMaxDistance          ( float fDistance );
+    float                   GetMaxDistance          ( void );
 
     void                    Unlink                  ( void ) {};
     void                    GetPosition             ( CVector& vecPosition ) const;
     void                    SetPosition             ( const CVector& vecPosition );
 
-    virtual void            OnSoundStopped          ( ISound* sound, E_STOP_EVENT_CAUSE reason, void* pObj );
+protected:
+
+    ISound*                 GetSound                ( void )                            { return m_pSound; };
 
 private:
 
-    ISoundEngine*           m_pSoundEngine;
+    CClientSoundManager*    m_pSoundManager;
     ISound*                 m_pSound;
 };
 

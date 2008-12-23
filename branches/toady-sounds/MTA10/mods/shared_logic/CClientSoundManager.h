@@ -19,8 +19,9 @@ class CClientSoundManager;
 #include "CClientSound.h"
 
 using namespace irrklang;
+using namespace std;
 
-class CClientSoundManager
+class CClientSoundManager : public ISoundStopEventReceiver
 {
 public:
 
@@ -31,13 +32,22 @@ public:
 
     void                DoPulse                     ( void );
 
-    CClientSound*       PlaySound2D                 ( const char* szFile );
-    CClientSound*       PlaySound3D                 ( const char* szFile, CVector vecPosition );
+    CClientSound*       PlaySound2D                 ( const char* szFile, bool bLoop );
+    CClientSound*       PlaySound3D                 ( const char* szFile, CVector vecPosition, bool bLoop );
+
+    void                AddToList                   ( CClientSound* pSound )    { m_Sounds.push_back ( pSound ); }
+    void                RemoveFromList              ( CClientSound* pSound )    { m_Sounds.remove ( pSound ); }
+    bool                Exists                      ( CClientSound* pSound );
+    CClientSound*       Get                         ( ISound* pSound );
+
+    virtual void        OnSoundStopped              ( ISound* sound, E_STOP_EVENT_CAUSE reason, void* pObj );
 
 private:
 
     CClientManager*     m_pClientManager;
     ISoundEngine*       m_pSoundEngine;
+
+    list < CClientSound* >  m_Sounds;
 };
 
 #endif

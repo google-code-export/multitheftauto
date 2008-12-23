@@ -11,15 +11,28 @@
 
 #include <StdInc.h>
 
+extern CCoreInterface* g_pCore;
+
 CClientSoundManager::CClientSoundManager ( CClientManager* pClientManager )
 {
     m_pClientManager = pClientManager;
 
     m_pSoundEngine = createIrrKlangDevice();
+
+    // Load plugins (mp3 in our case)
+    char szPath[256];
+    snprintf ( szPath, 255, "%s\\MTA\\", g_pCore->GetGTAInstallRoot() );
+    m_pSoundEngine->loadPlugins ( szPath );
 }
 
 CClientSoundManager::~CClientSoundManager ( void )
 {
+    list < CClientSound* > ::iterator iter = m_Sounds.begin ();
+    for ( ; iter != m_Sounds.end () ; iter++ )
+    {
+        (*iter)->GetSound()->setSoundStopEventReceiver ( NULL );
+    }
+    m_Sounds.clear();
     m_pSoundEngine->drop ();
 }
 
@@ -35,16 +48,60 @@ void CClientSoundManager::DoPulse ( void )
                                           vec3df ( vecLookAt.fX, vecLookAt.fY, vecLookAt.fZ ) );
 }
 
-CClientSound* CClientSoundManager::PlaySound2D ( const char* szFile )
+CClientSound* CClientSoundManager::PlaySound2D ( const char* szFile, bool bLoop )
 {
     CClientSound* pSound = new CClientSound ( m_pClientManager, INVALID_ELEMENT_ID );
-    pSound->Play ( szFile );
-    return pSound;
+    if ( pSound->Play ( szFile, bLoop ) )
+    {
+        return pSound;
+    }
+    delete pSound;
+    return NULL;
 }
 
-CClientSound* CClientSoundManager::PlaySound3D ( const char* szFile, CVector vecPosition )
+CClientSound* CClientSoundManager::PlaySound3D ( const char* szFile, CVector vecPosition, bool bLoop )
 {
     CClientSound* pSound = new CClientSound ( m_pClientManager, INVALID_ELEMENT_ID );
-    pSound->Play3D ( szFile, vecPosition );
-    return pSound;
+    if ( pSound->Play3D ( szFile, vecPosition, bLoop ) )
+    {
+        return pSound;
+    }
+    delete pSound;
+    return NULL;
+}
+
+bool CClientSoundManager::Exists ( CClientSound* pSound )
+{
+    list < CClientSound* > ::iterator iter = m_Sounds.begin ();
+    for ( ; iter != m_Sounds.end () ; iter++ )
+    {
+        if ( *iter == pSound )
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+CClientSound* CClientSoundManager::Get ( ISound* pSound )
+{
+    list < CClientSound* > ::iterator iter = m_Sounds.begin ();
+    for ( ; iter != m_Sounds.end () ; iter++ )
+    {
+        if ( (*iter)->GetSound() == pSound )
+        {
+            return *iter;
+        }
+    }
+    return NULL;
+}
+
+void CClientSoundManager::OnSoundStopped ( ISound* sound, E_STOP_EVENT_CAUSE reason, void* pObj )
+{
+    CClientSound* pSound = Get ( sound );
+    if ( pSound )
+    {
+        g_pClientGame->GetElementDeleter()->Delete ( pSound );
+        RemoveFromList ( pSound );
+    }
 }
