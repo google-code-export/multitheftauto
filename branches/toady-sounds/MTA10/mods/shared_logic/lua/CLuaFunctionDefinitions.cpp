@@ -14339,12 +14339,12 @@ int CLuaFunctionDefinitions::StopSound ( lua_State* luaVM )
 int CLuaFunctionDefinitions::SetSoundPosition ( lua_State* luaVM )
 {
     if ( lua_istype ( luaVM, 1, LUA_TLIGHTUSERDATA ) &&
-         lua_istype ( luaVM, 1, LUA_TNUMBER ) )
+         lua_istype ( luaVM, 2, LUA_TNUMBER ) )
     {
         CClientSound* pSound = lua_tosound ( luaVM, 1 );
         if ( pSound )
         {
-            unsigned int uiPosition = ( unsigned int ) lua_tonumber ( luaVM, 1 );
+            unsigned int uiPosition = ( unsigned int ) lua_tonumber ( luaVM, 2 );
             if ( CStaticFunctionDefinitions::SetSoundPosition ( *pSound, uiPosition ) )
             {
                 lua_pushboolean ( luaVM, true );
@@ -14400,12 +14400,12 @@ int CLuaFunctionDefinitions::GetSoundLength ( lua_State* luaVM )
 int CLuaFunctionDefinitions::SetSoundPaused ( lua_State* luaVM )
 {
     if ( lua_istype ( luaVM, 1, LUA_TLIGHTUSERDATA ) &&
-         lua_istype ( luaVM, 1, LUA_TBOOLEAN ) )
+         lua_istype ( luaVM, 2, LUA_TBOOLEAN ) )
     {
         CClientSound* pSound = lua_tosound ( luaVM, 1 );
         if ( pSound )
         {
-            bool bPaused = ( lua_toboolean ( luaVM, 1 ) ) ? true : false;
+            bool bPaused = ( lua_toboolean ( luaVM, 2 ) ) ? true : false;
             if ( CStaticFunctionDefinitions::SetSoundPaused ( *pSound, bPaused ) )
             {
                 lua_pushboolean ( luaVM, true );
@@ -14441,12 +14441,12 @@ int CLuaFunctionDefinitions::IsSoundPaused ( lua_State* luaVM )
 int CLuaFunctionDefinitions::SetSoundVolume ( lua_State* luaVM )
 {
     if ( lua_istype ( luaVM, 1, LUA_TLIGHTUSERDATA ) &&
-         lua_istype ( luaVM, 1, LUA_TNUMBER ) )
+         lua_istype ( luaVM, 2, LUA_TNUMBER ) )
     {
         CClientSound* pSound = lua_tosound ( luaVM, 1 );
         if ( pSound )
         {
-            float fVolume = ( float ) lua_tonumber ( luaVM, 1 );
+            float fVolume = ( float ) lua_tonumber ( luaVM, 2 );
             if ( CStaticFunctionDefinitions::SetSoundVolume ( *pSound, fVolume ) )
             {
                 lua_pushboolean ( luaVM, true );
@@ -14482,12 +14482,12 @@ int CLuaFunctionDefinitions::GetSoundVolume ( lua_State* luaVM )
 int CLuaFunctionDefinitions::SetSoundMinDistance ( lua_State* luaVM )
 {
     if ( lua_istype ( luaVM, 1, LUA_TLIGHTUSERDATA ) &&
-         lua_istype ( luaVM, 1, LUA_TNUMBER ) )
+         lua_istype ( luaVM, 2, LUA_TNUMBER ) )
     {
         CClientSound* pSound = lua_tosound ( luaVM, 1 );
         if ( pSound )
         {
-            float fDistance = ( float ) lua_tonumber ( luaVM, 1 );
+            float fDistance = ( float ) lua_tonumber ( luaVM, 2 );
             if ( CStaticFunctionDefinitions::SetSoundMinDistance ( *pSound, fDistance ) )
             {
                 lua_pushboolean ( luaVM, true );
@@ -14523,12 +14523,12 @@ int CLuaFunctionDefinitions::GetSoundMinDistance ( lua_State* luaVM )
 int CLuaFunctionDefinitions::SetSoundMaxDistance ( lua_State* luaVM )
 {
     if ( lua_istype ( luaVM, 1, LUA_TLIGHTUSERDATA ) &&
-         lua_istype ( luaVM, 1, LUA_TNUMBER ) )
+         lua_istype ( luaVM, 2, LUA_TNUMBER ) )
     {
         CClientSound* pSound = lua_tosound ( luaVM, 1 );
         if ( pSound )
         {
-            float fDistance = ( float ) lua_tonumber ( luaVM, 1 );
+            float fDistance = ( float ) lua_tonumber ( luaVM, 2 );
             if ( CStaticFunctionDefinitions::SetSoundMaxDistance ( *pSound, fDistance ) )
             {
                 lua_pushboolean ( luaVM, true );
