@@ -17,7 +17,9 @@ CClientSoundManager::CClientSoundManager ( CClientManager* pClientManager )
 {
     m_pClientManager = pClientManager;
 
-    m_pSoundEngine = createIrrKlangDevice();
+    // ESEO_USE_3D_BUFFERS in the default options set fucks up gta sounds
+    // on some PCs, so we set the options ourselves
+    m_pSoundEngine = createIrrKlangDevice ( ESOD_AUTO_DETECT, ESEO_MULTI_THREADED | ESEO_MUTE_IF_NOT_FOCUSED );
 
     // Load plugins (mp3 in our case)
     char szPath[256];
@@ -45,7 +47,9 @@ void CClientSoundManager::DoPulse ( void )
     pCamera->GetTarget ( vecLookAt );
 
     m_pSoundEngine->setListenerPosition ( vec3df ( vecPosition.fX, vecPosition.fY, vecPosition.fZ ),
-                                          vec3df ( vecLookAt.fX, vecLookAt.fY, vecLookAt.fZ ) );
+                                          vec3df ( vecLookAt.fX, vecLookAt.fY, vecLookAt.fZ ),
+                                          vec3df ( 0, 0, 0 ),
+                                          vec3df ( 0, 0, 1 ) );
 }
 
 CClientSound* CClientSoundManager::PlaySound2D ( const char* szFile, bool bLoop )

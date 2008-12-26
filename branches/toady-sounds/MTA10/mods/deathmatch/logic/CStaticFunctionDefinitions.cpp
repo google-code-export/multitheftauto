@@ -4896,7 +4896,7 @@ bool CStaticFunctionDefinitions::FxAddFootSplash ( CVector & vecPosition )
 CClientSound* CStaticFunctionDefinitions::PlaySound ( CResource* pResource, const char* szSound, bool bLoop )
 {
     CClientSound* pSound = m_pSoundManager->PlaySound2D ( szSound, bLoop );
-    pSound->SetParent ( pResource->GetResourceDynamicEntity() );
+    if ( pSound ) pSound->SetParent ( pResource->GetResourceDynamicEntity() );
     return pSound;
 }
 
@@ -4904,7 +4904,7 @@ CClientSound* CStaticFunctionDefinitions::PlaySound ( CResource* pResource, cons
 CClientSound* CStaticFunctionDefinitions::PlaySound3D ( CResource* pResource, const char* szSound, CVector vecPosition, bool bLoop )
 {
     CClientSound* pSound = m_pSoundManager->PlaySound3D ( szSound, vecPosition, bLoop );
-    pSound->SetParent ( pResource->GetResourceDynamicEntity() );
+    if ( pSound ) pSound->SetParent ( pResource->GetResourceDynamicEntity() );
     return pSound;
 }
 
