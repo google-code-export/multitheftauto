@@ -52,6 +52,16 @@ void CClientSoundManager::DoPulse ( void )
                                           vec3df ( 0, 0, 1 ) );
 }
 
+void CClientSoundManager::SetDimension ( unsigned short usDimension )
+{
+    m_usDimension = usDimension;
+    list < CClientSound* > ::iterator iter = m_Sounds.begin ();
+    for ( ; iter != m_Sounds.end () ; iter++ )
+    {
+        (*iter)->RelateDimension ( usDimension );
+    }
+}
+
 CClientSound* CClientSoundManager::PlaySound2D ( const char* szFile, bool bLoop )
 {
     CClientSound* pSound = new CClientSound ( m_pClientManager, INVALID_ELEMENT_ID );

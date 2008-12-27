@@ -57,11 +57,17 @@ public:
     void                    GetPosition             ( CVector& vecPosition ) const;
     void                    SetPosition             ( const CVector& vecPosition );
 
+    void                    SetDimension            ( unsigned short usDimension );
+    void                    RelateDimension         ( unsigned short usDimension );
+
+
 protected:
 
     ISound*                 GetSound                ( void )                            { return m_pSound; };
 
 private:
+
+    float                   m_fVolume;
 
     CClientSoundManager*    m_pSoundManager;
     ISound*                 m_pSound;

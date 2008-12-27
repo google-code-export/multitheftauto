@@ -25,27 +25,32 @@ class CClientSoundManager : public ISoundStopEventReceiver
 {
 public:
 
-                        CClientSoundManager         ( CClientManager* pClientManager );
-                        ~CClientSoundManager        ( void );
+                            CClientSoundManager         ( CClientManager* pClientManager );
+                            ~CClientSoundManager        ( void );
 
-    ISoundEngine*       GetEngine                   ( void )                    { return m_pSoundEngine; };
+    ISoundEngine*           GetEngine                   ( void )                    { return m_pSoundEngine; };
 
-    void                DoPulse                     ( void );
+    void                    DoPulse                     ( void );
 
-    CClientSound*       PlaySound2D                 ( const char* szFile, bool bLoop );
-    CClientSound*       PlaySound3D                 ( const char* szFile, CVector vecPosition, bool bLoop );
+    inline unsigned short   GetDimension                ( void )                    { return m_usDimension; }
+    void                    SetDimension                ( unsigned short usDimension );
 
-    void                AddToList                   ( CClientSound* pSound )    { m_Sounds.push_back ( pSound ); }
-    void                RemoveFromList              ( CClientSound* pSound )    { m_Sounds.remove ( pSound ); }
-    bool                Exists                      ( CClientSound* pSound );
-    CClientSound*       Get                         ( ISound* pSound );
+    CClientSound*           PlaySound2D                 ( const char* szFile, bool bLoop );
+    CClientSound*           PlaySound3D                 ( const char* szFile, CVector vecPosition, bool bLoop );
 
-    virtual void        OnSoundStopped              ( ISound* sound, E_STOP_EVENT_CAUSE reason, void* pObj );
+    void                    AddToList                   ( CClientSound* pSound )    { m_Sounds.push_back ( pSound ); }
+    void                    RemoveFromList              ( CClientSound* pSound )    { m_Sounds.remove ( pSound ); }
+    bool                    Exists                      ( CClientSound* pSound );
+    CClientSound*           Get                         ( ISound* pSound );
+
+    virtual void            OnSoundStopped              ( ISound* sound, E_STOP_EVENT_CAUSE reason, void* pObj );
 
 private:
 
-    CClientManager*     m_pClientManager;
-    ISoundEngine*       m_pSoundEngine;
+    CClientManager*         m_pClientManager;
+    ISoundEngine*           m_pSoundEngine;
+
+    unsigned short          m_usDimension;
 
     list < CClientSound* >  m_Sounds;
 };

@@ -15,12 +15,15 @@ extern CClientGame* g_pClientGame;
 
 CClientSound::CClientSound ( CClientManager* pManager, ElementID ID ) : CClientEntity ( ID )
 {
+    m_pManager = pManager;
     m_pSoundManager = pManager->GetSoundManager();
     m_pSound = NULL;
 
     SetTypeName ( "sound" );
 
     m_pSoundManager->AddToList ( this );
+
+    RelateDimension ( pManager->GetSoundManager ()->GetDimension () );
 }
 
 CClientSound::~CClientSound ( void )
@@ -120,7 +123,8 @@ unsigned int CClientSound::GetLength ( void )
 
 void CClientSound::SetVolume ( float fVolume )
 {
-    if ( m_pSound )
+    m_fVolume = fVolume;
+    if ( m_pSound && m_usDimension == m_pManager->GetSoundManager ()->GetDimension () )
     {
         m_pSound->setVolume ( fVolume );
     }
@@ -151,6 +155,25 @@ void CClientSound::GetPosition ( CVector& vecPosition ) const
         vecPosition.fX = pos.X;
         vecPosition.fY = pos.Y;
         vecPosition.fZ = pos.Z;
+    }
+}
+
+void CClientSound::SetDimension ( unsigned short usDimension )
+{
+    m_usDimension = usDimension;
+    RelateDimension ( m_pManager->GetSoundManager ()->GetDimension () );
+}
+
+void CClientSound::RelateDimension ( unsigned short usDimension )
+{
+    if ( usDimension == m_usDimension )
+    {
+        SetVolume ( m_fVolume );
+    }
+    else
+    {
+        m_fVolume = GetVolume ();
+        SetVolume ( 0.0f );
     }
 }
 
