@@ -24,6 +24,11 @@ CClientSound::CClientSound ( CClientManager* pManager, ElementID ID ) : CClientE
     m_pSoundManager->AddToList ( this );
 
     RelateDimension ( pManager->GetSoundManager ()->GetDimension () );
+
+    m_fVolume = 1.0f;
+    m_fDistance = 1.0f;
+    m_fMinDistance = 1.0f;
+    m_b3D = false;
 }
 
 CClientSound::~CClientSound ( void )
@@ -42,6 +47,7 @@ bool CClientSound::Play ( const char* szPath, bool bLoop )
     m_pSound = m_pSoundManager->GetEngine()->play2D ( szPath, bLoop, false, true );
     if ( m_pSound )
     {
+        m_b3D = false;
         m_pSound->setSoundStopEventReceiver ( m_pSoundManager );
         return true;
     }
@@ -50,10 +56,12 @@ bool CClientSound::Play ( const char* szPath, bool bLoop )
 
 bool CClientSound::Play3D ( const char* szPath, CVector vecPosition, bool bLoop )
 {
+    m_vecPosition = vecPosition;
     vec3df pos ( vecPosition.fX, vecPosition.fY, vecPosition.fZ );
 	m_pSound = m_pSoundManager->GetEngine()->play3D ( szPath, pos, bLoop, false, true );
     if ( m_pSound )
     {
+        m_b3D = true;
         m_pSound->setSoundStopEventReceiver ( m_pSoundManager );
         return true;
     }
@@ -126,21 +134,18 @@ void CClientSound::SetVolume ( float fVolume )
     m_fVolume = fVolume;
     if ( m_pSound && m_usDimension == m_pManager->GetSoundManager ()->GetDimension () )
     {
-        m_pSound->setVolume ( fVolume );
+        m_pSound->setVolume ( fVolume * m_fDistance );
     }
 }
 
 float CClientSound::GetVolume ( void )
 {
-    if ( m_pSound )
-    {
-        return m_pSound->getVolume ();
-    }
-    return 0.0f;
+    return m_fVolume;
 }
 
 void CClientSound::SetPosition ( const CVector& vecPosition )
 {
+    m_vecPosition = vecPosition;
     if ( m_pSound )
     {
         m_pSound->setPosition ( vec3df ( vecPosition.fX, vecPosition.fY, vecPosition.fZ ) );
@@ -149,13 +154,7 @@ void CClientSound::SetPosition ( const CVector& vecPosition )
 
 void CClientSound::GetPosition ( CVector& vecPosition ) const
 {
-    if ( m_pSound )
-    {
-        vec3df pos = m_pSound->getPosition ();
-        vecPosition.fX = pos.X;
-        vecPosition.fY = pos.Y;
-        vecPosition.fZ = pos.Z;
-    }
+    vecPosition = m_vecPosition;
 }
 
 void CClientSound::SetDimension ( unsigned short usDimension )
@@ -179,6 +178,7 @@ void CClientSound::RelateDimension ( unsigned short usDimension )
 
 void CClientSound::SetMinDistance ( float fDistance )
 {
+    m_fMinDistance = fDistance;
     if ( m_pSound )
     {
         m_pSound->setMinDistance ( fDistance );
@@ -187,11 +187,7 @@ void CClientSound::SetMinDistance ( float fDistance )
 
 float CClientSound::GetMinDistance ( void )
 {
-    if ( m_pSound )
-    {
-        return m_pSound->getMinDistance ();
-    }
-    return 0.0f;
+    return m_fMinDistance;
 }
 
 void CClientSound::SetMaxDistance ( float fDistance )
@@ -209,4 +205,42 @@ float CClientSound::GetMaxDistance ( void )
         return m_pSound->getMaxDistance ();
     }
     return 0.0f;
+}
+
+void CClientSound::Process3D ( CVector vecPosition, CVector vecLookAt )
+{
+    if ( !m_b3D )
+        return;
+
+    if ( m_pSound )
+    {
+        // Pan
+        float fLRot = 360.0f - ConvertRadiansToDegrees ( atan2 ( vecLookAt.fY - vecPosition.fY, vecLookAt.fX - vecPosition.fX ) );
+        float fSRot = 360.0f - ConvertRadiansToDegrees ( atan2 ( m_vecPosition.fY - vecPosition.fY, m_vecPosition.fX - vecPosition.fX ) );
+
+        float fDeg = fSRot - fLRot;
+        if ( fDeg > 90.0f ) fDeg = 180.0f - fDeg;
+        else if ( fDeg < -90.0f ) fDeg = -180.0f - fDeg;
+
+        m_pSound->setPan ( -fDeg / 90.0f );
+
+        g_pCore->GetConsole()->Printf ( "%f", -fDeg / 90.0f );
+
+        // Volume
+
+        float fDistance = DistanceBetweenPoints2D ( vecPosition, m_vecPosition );
+        fDistance -= m_fMinDistance;
+        fDistance /= MAX_SOUND_DISTANCE;
+
+        if ( fDistance > 1.0f ) fDistance = 1.0f;
+        else if ( fDistance < 0.0f ) fDistance = 0.0f;
+
+        fDistance = 1.0f - fDistance;
+        g_pCore->GetConsole()->Printf ( "%f", fDistance );
+        if ( m_fDistance != fDistance )
+        {
+            m_fDistance = fDistance;
+            SetVolume ( GetVolume () );
+        }
+    }
 }

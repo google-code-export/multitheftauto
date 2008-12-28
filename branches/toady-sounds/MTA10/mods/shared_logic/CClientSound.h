@@ -17,6 +17,8 @@ class CClientSound;
 #include "CClientSoundManager.h"
 #include "CClientEntity.h"
 
+#define MAX_SOUND_DISTANCE 10
+
 using namespace irrklang;
 
 class CClientSound : public CClientEntity
@@ -64,13 +66,21 @@ public:
 protected:
 
     ISound*                 GetSound                ( void )                            { return m_pSound; };
+    void                    Process3D               ( CVector vecPosition, CVector vecLookAt );
+    void                    Set3D                   ( bool b3D )                        { m_b3D = b3D; };
 
 private:
 
     float                   m_fVolume;
+    float                   m_fDistance;
+    float                   m_fMinDistance;
+
+    CVector                 m_vecPosition;
 
     CClientSoundManager*    m_pSoundManager;
     ISound*                 m_pSound;
+
+    bool                    m_b3D;
 };
 
 #endif

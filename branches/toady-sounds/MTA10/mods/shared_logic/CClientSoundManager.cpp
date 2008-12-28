@@ -17,9 +17,18 @@ CClientSoundManager::CClientSoundManager ( CClientManager* pClientManager )
 {
     m_pClientManager = pClientManager;
 
-    // ESEO_USE_3D_BUFFERS in the default options set fucks up gta sounds
-    // on some PCs, so we set the options ourselves
-    m_pSoundEngine = createIrrKlangDevice ( ESOD_AUTO_DETECT, ESEO_MULTI_THREADED | ESEO_MUTE_IF_NOT_FOCUSED );
+    m_bUse3DBuffers = false;
+
+    if ( m_bUse3DBuffers )
+    {
+        m_pSoundEngine = createIrrKlangDevice ();
+    }
+    else
+    {
+        // ESEO_USE_3D_BUFFERS in the default options set fucks up gta sounds
+        // on some PCs, so we set the options ourselves
+        m_pSoundEngine = createIrrKlangDevice ( ESOD_AUTO_DETECT, ESEO_MULTI_THREADED | ESEO_MUTE_IF_NOT_FOCUSED );
+    }
 
     // Load plugins (mp3 in our case)
     char szPath[256];
@@ -46,10 +55,21 @@ void CClientSoundManager::DoPulse ( void )
     pCamera->GetPosition ( vecPosition );
     pCamera->GetTarget ( vecLookAt );
 
-    m_pSoundEngine->setListenerPosition ( vec3df ( vecPosition.fX, vecPosition.fY, vecPosition.fZ ),
-                                          vec3df ( vecLookAt.fX, vecLookAt.fY, vecLookAt.fZ ),
-                                          vec3df ( 0, 0, 0 ),
-                                          vec3df ( 0, 0, 1 ) );
+    if ( m_bUse3DBuffers )
+    {
+        m_pSoundEngine->setListenerPosition ( vec3df ( vecPosition.fX, vecPosition.fY, vecPosition.fZ ),
+                                              vec3df ( vecLookAt.fX, vecLookAt.fY, vecLookAt.fZ ),
+                                              vec3df ( 0, 0, 0 ),
+                                              vec3df ( 0, 0, 1 ) );
+    }
+    else
+    {
+        list < CClientSound* > ::iterator iter = m_Sounds.begin ();
+        for ( ; iter != m_Sounds.end () ; iter++ )
+        {
+            (*iter)->Process3D ( vecPosition, vecLookAt );
+        }
+    }
 }
 
 void CClientSoundManager::SetDimension ( unsigned short usDimension )
@@ -76,10 +96,23 @@ CClientSound* CClientSoundManager::PlaySound2D ( const char* szFile, bool bLoop 
 CClientSound* CClientSoundManager::PlaySound3D ( const char* szFile, CVector vecPosition, bool bLoop )
 {
     CClientSound* pSound = new CClientSound ( m_pClientManager, INVALID_ELEMENT_ID );
-    if ( pSound->Play3D ( szFile, vecPosition, bLoop ) )
+    if ( m_bUse3DBuffers )
     {
-        return pSound;
+        if ( pSound->Play3D ( szFile, vecPosition, bLoop ) )
+        {
+            return pSound;
+        }
     }
+    else
+    {
+        if ( pSound->Play ( szFile, bLoop ) )
+        {
+            pSound->SetPosition ( vecPosition );
+            pSound->Set3D ( true );
+            return pSound;
+        }
+    }
+
     delete pSound;
     return NULL;
 }

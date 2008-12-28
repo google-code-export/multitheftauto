@@ -47,6 +47,8 @@ public:
 
 private:
 
+    bool                    m_bUse3DBuffers;
+
     CClientManager*         m_pClientManager;
     ISoundEngine*           m_pSoundEngine;
 
