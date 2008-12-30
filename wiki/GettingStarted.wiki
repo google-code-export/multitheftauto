@@ -59,6 +59,8 @@ If you want to run the Multi Theft Auto dedicated server, you will have to insta
 
 Our official resources repository is also hosted on Google Code: [http://multitheftauto-resources.googlecode.com/ multitheftauto-resources]. It's recommended that you check out the latest resources from here or download a zipped revision from the [http://code.google.com/p/multitheftauto/downloads/list Downloads] tab if available. Make sure that you are not using any of our resources from any previous versions of Multi Theft Auto, as this _will_ cause issues.
 
+If you have any problems with missing DLL files (e.g. libcurl.dll), simply copy these over from the client's data archive described above.
+
 == More information ==
 
 If you need more information, try our [http://bugs.mtasa.com/ bug tracker], [http://development.mtasa.com/ wiki] or IRC channel (see *Project Home*).
