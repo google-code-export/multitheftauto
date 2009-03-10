@@ -9,3 +9,5 @@ unstable. For a list of changes for each revision, head over to our
 project page for more information.
 
 Our latest builds are archived on http://nightly.multitheftauto.com/
+
+If you want to know how to install and run the nightly builds, check out the [http://code.google.com/p/multitheftauto/wiki/GettingStarted Getting Started] page which describes how to run the software.
