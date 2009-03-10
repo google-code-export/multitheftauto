@@ -812,7 +812,7 @@ void CClientGame::DoPulsePostFrame ( void )
         for ( ; iter != m_pPlayerManager->IterEnd (); ++iter )
         {
             CClientPlayer* pPlayer = *iter;
-            if ( pPlayer->IsStreamedIn () )
+            if ( pPlayer->IsStreamedIn () && pPlayer->IsShowingWepdata () )
                 DrawWeaponsyncData ( pPlayer );
         }
         #endif
@@ -1084,6 +1084,16 @@ void CClientGame::ShowNetstat ( bool bShow )
     m_bShowNetstat = bShow;
 }
 
+#ifdef MTA_WEPSYNCDBG
+void CClientGame::ShowWepdata ( const char* szNick )
+{
+    CClientPlayer* pPlayer = m_pPlayerManager->Get ( szNick );
+    if ( pPlayer )
+    {
+        pPlayer->SetShowingWepdata ( ! pPlayer->IsShowingWepdata() );
+    }
+}
+#endif
 
 #ifdef MTA_DEBUG
 
