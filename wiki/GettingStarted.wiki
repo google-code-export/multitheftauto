@@ -41,7 +41,7 @@ In order to build the source, you will need Microsoft Visual Studio. Open the pr
 
 Since the _net.dll_ network modules for client and server are covered in a different license, you will have to get these from the [http://code.google.com/p/multitheftauto/downloads/list Downloads] tab.
 
-Make sure you download the latest revision of the _multitheftauto_net-rXXX.zip_ file and extract it into your _Grand Theft Auto: San Andreas_ directory. Bear in mind that these files are covered in a different license.
+Make sure you download the latest revision of the _multitheftauto_net-rXXX.zip_ file and extract it into your _Multi Theft Auto: San Andreas_ program files directory (not your GTA directory!). Bear in mind that these files are covered in a different license.
 
 == 6. Running the software ==
 
@@ -51,7 +51,7 @@ You are almost ready to run your build of the Multi Theft Auto software.
 
 If you want to run the Multi Theft Auto game client, you will need to extract the data files that the project uses when it is launched. These are also packed in a separate SFX archive that can be downloaded through the [http://code.google.com/p/multitheftauto/downloads/list Downloads] tab.
 
-Make sure you download the latest revision of the _multitheftauto_data-rXXX.exe_ file and extract it into your _Grand Theft Auto: San Andreas_ directory.
+Make sure you download the latest revision of the _multitheftauto_data-rXXX.exe_ file and extract it into your _Multi Theft Auto: San Andreas_ program files directory (not your GTA directory!).
 
 === Running the dedicated server ===
 
