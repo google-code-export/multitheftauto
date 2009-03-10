@@ -50,6 +50,14 @@ class CPlayer : public CPed, public CClient
         unsigned long   ulLastSent;
     };
 
+#ifdef MTA_WEPSYNCDBG
+private:
+    CVector             m_vecCrosshairPosition;
+public:
+    inline void         SetCrosshairPosition ( const CVector& vecPosition ) { m_vecCrosshairPosition = vecPosition; }
+    inline CVector      GetCrosshairPosition ( ) const { return m_vecCrosshairPosition; }
+#endif
+
 public:
                                                 CPlayer                     ( class CPlayerManager* pPlayerManager, class CScriptDebugging* pScriptDebugging, const NetServerPlayerID& PlayerSocket );
                                                 ~CPlayer                    ( void );

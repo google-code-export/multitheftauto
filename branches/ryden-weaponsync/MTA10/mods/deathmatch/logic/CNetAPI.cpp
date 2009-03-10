@@ -828,6 +828,14 @@ void CNetAPI::ReadPlayerPuresync ( CClientPlayer* pPlayer, NetBitStreamInterface
         BitStream.Read ( vecTemp.fY );
         BitStream.Read ( vecTemp.fZ );
 
+#ifdef MTA_WEPSYNCDBG
+        CVector vecCrosshair;
+        BitStream.Read ( vecCrosshair.fX );
+        BitStream.Read ( vecCrosshair.fY );
+        BitStream.Read ( vecCrosshair.fZ );
+        pPlayer->SetCrosshairPosition ( vecCrosshair );
+#endif
+
         // Interpolate the aiming
         pPlayer->SetAimInterpolated ( TICK_RATE, fArmX, fArmY, bAimAkimboUp, 0 );
 
@@ -973,7 +981,13 @@ void CNetAPI::WritePlayerPuresync ( CClientPed* pPlayerModel, NetBitStreamInterf
 
             // Grab the shot origin and target.
             CVector vecOrigin, vecTarget;
+
+#ifdef MTA_WEPSYNCDBG
+            CVector vecCrosshair;
+            pPlayerModel->GetShotData ( &vecOrigin, &vecTarget, NULL, NULL, NULL, NULL, &vecCrosshair );
+#else
             pPlayerModel->GetShotData ( &vecOrigin, &vecTarget );
+#endif
 
             // Write the source vector
             BitStream.Write ( vecOrigin.fX );
@@ -984,6 +998,12 @@ void CNetAPI::WritePlayerPuresync ( CClientPed* pPlayerModel, NetBitStreamInterf
             BitStream.Write ( vecTarget.fX );
             BitStream.Write ( vecTarget.fY );
             BitStream.Write ( vecTarget.fZ );
+
+#ifdef MTA_WEPSYNCDGB
+            BitStream.Write ( vecCrosshair.fX );
+            BitStream.Write ( vecCrosshair.fY );
+            BitStream.Write ( vecCrosshair.fZ );
+#endif
         }
     }
     else

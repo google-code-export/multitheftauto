@@ -177,6 +177,13 @@ bool CPlayerPuresyncPacket::Read ( NetServerBitStreamInterface& BitStream )
             BitStream.Read ( vecTemp.fY );
             BitStream.Read ( vecTemp.fZ );
             pSourcePlayer->SetTargettingVector ( vecTemp );
+
+#ifdef MTA_WEPSYNCDBG
+            BitStream.Read ( vecTemp.fX );
+            BitStream.Read ( vecTemp.fY );
+            BitStream.Read ( vecTemp.fZ );
+            pSourcePlayer->SetCrosshairPosition ( vecTemp );
+#endif
         }
 
         // Read out damage info if changed
@@ -314,6 +321,13 @@ bool CPlayerPuresyncPacket::Write ( NetServerBitStreamInterface& BitStream ) con
             BitStream.Write ( vecTargetting.fX );
             BitStream.Write ( vecTargetting.fY );
             BitStream.Write ( vecTargetting.fZ );
+
+#ifdef MTA_WEPSYNCDBG
+            CVector vecCrosshairPosition = pSourcePlayer->GetCrosshairPosition ( );
+            BitStream.Write ( vecCrosshairPosition.fX );
+            BitStream.Write ( vecCrosshairPosition.fY );
+            BitStream.Write ( vecCrosshairPosition.fZ );
+#endif
         }        
 
         // Success

@@ -2,6 +2,7 @@
 
 #define WIN32_LEAN_AND_MEAN
 #define _WIN32_WINNT 0x500
+#define MTA_WEPSYNCDBG
 
 #include <windows.h>
 #include <string.h>

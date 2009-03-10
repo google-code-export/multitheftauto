@@ -3584,7 +3584,11 @@ void CClientPed::PreviousRadioChannel ( void )
 }
 
 
+#ifdef MTA_WEPSYNCDBG
+void CClientPed::GetShotData ( CVector * pvecOrigin, CVector * pvecTarget, CVector * pvecGunMuzzle, CVector * pvecFireOffset, float* fAimX, float* fAimY, CVector* pvecCrosshair )
+#else
 void CClientPed::GetShotData ( CVector * pvecOrigin, CVector * pvecTarget, CVector * pvecGunMuzzle, CVector * pvecFireOffset, float* fAimX, float* fAimY )
+#endif
 {
     CWeapon* pWeapon = GetWeapon ( GetCurrentWeaponSlot () );
     if ( !pWeapon )
@@ -3604,6 +3608,11 @@ void CClientPed::GetShotData ( CVector * pvecOrigin, CVector * pvecTarget, CVect
     CVector vecFireOffset =*pCurrentWeaponInfo->GetFireOffset ();    
     CVector vecGunMuzzle = vecFireOffset;
     GetTransformedBonePosition ( BONE_RIGHTWRIST, vecGunMuzzle );    
+
+#ifdef MTA_WEPSYNCDBG
+    if ( pvecCrosshair )
+        *pvecCrosshair = CVector();
+#endif
 
     CVector vecOrigin, vecTarget;
     if ( m_bIsLocalPlayer )
@@ -3639,7 +3648,11 @@ void CClientPed::GetShotData ( CVector * pvecOrigin, CVector * pvecTarget, CVect
                 bool bCollision;
 
                 g_pGame->GetCamera ()->Find3rdPersonCamTargetVector ( fRange, &vecGunMuzzle, &vecTemp, &vecTarget );
+#ifdef MTA_WEPSYNCDBG
+                if ( pvecCrosshair )
+                    *pvecCrosshair = vecTemp;
 
+#else
                 bCollision = g_pGame->GetWorld ()->ProcessLineOfSight ( &vecTemp, &vecTarget, &pCollision, NULL );
                 if ( pCollision )
                 {
@@ -3651,6 +3664,7 @@ void CClientPed::GetShotData ( CVector * pvecOrigin, CVector * pvecTarget, CVect
                     }
                     pCollision->Destroy();
                 }
+#endif
             }
 			else if ( pVehicle )							// Drive-by/vehicle weapons: camera origin as origin
 			{

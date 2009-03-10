@@ -361,6 +361,11 @@ private:
     void                                DoPaintballs                    ( void );
     #endif
 
+    #ifdef MTA_WEPSYNCDBG
+    void                                DrawWeaponsyncData              ( CClientPlayer* pPlayer );
+    #endif
+
+
 	void								DownloadFiles					( void );
 
     void                                QuitPlayer                      ( CClientPlayer* pPlayer, eQuitReason Reason );

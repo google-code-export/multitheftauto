@@ -1,5 +1,7 @@
 #pragma message("Compiling precompiled header.\n")
 
+#define MTA_WEPSYNCDBG
+
 #include <windows.h>
 #include <string.h>
 #include <stdio.h>

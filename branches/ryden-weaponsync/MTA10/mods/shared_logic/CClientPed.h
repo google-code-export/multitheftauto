@@ -291,7 +291,16 @@ public:
 
     inline CTaskManager*        GetTaskManager              ( void ) { return m_pTaskManager; }
 
+#ifdef MTA_WEPSYNCDBG
+private:
+    CVector                     m_vecCrosshairPosition;
+public:
+    inline void                 SetCrosshairPosition        ( const CVector& vecPosition ) { m_vecCrosshairPosition = vecPosition; }
+    inline CVector              GetCrosshairPosition        ( ) const { return m_vecCrosshairPosition; }
+    void                        GetShotData                 ( CVector * pvecOrigin, CVector * pvecTarget = NULL, CVector * pvecGunMuzzle = NULL, CVector * pvecFireOffset = NULL, float* fAimX = NULL, float* fAimY = NULL, CVector* pvecCrosshair = NULL );
+#else
     void                        GetShotData                 ( CVector * pvecOrigin, CVector * pvecTarget = NULL, CVector * pvecGunMuzzle = NULL, CVector * pvecFireOffset = NULL, float* fAimX = NULL, float* fAimY = NULL );
+#endif
 
     eFightingStyle              GetFightingStyle            ( void );
     void                        SetFightingStyle            ( eFightingStyle style );
