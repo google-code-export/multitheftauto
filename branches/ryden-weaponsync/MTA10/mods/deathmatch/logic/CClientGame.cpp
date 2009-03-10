@@ -2433,7 +2433,6 @@ void CClientGame::DrawWeaponsyncData ( CClientPlayer* pPlayer )
     if ( pPlayer != m_pPlayerManager->GetLocalPlayer () )
     {
         vecCrosshair = pPlayer->GetCrosshairPosition();
-        //g_pCore->ChatPrintf("Crosshair for %s: (%f, %f, %f)", false, pPlayer->GetNickPointer(), vecCrosshair.fX, vecCrosshair.fY, vecCrosshair.fZ);
     }
     g_pCore->GetGraphics ()->DrawLine3D ( vecCrosshair, vecTarget, 0x90DEDE12, 1.5f );
 

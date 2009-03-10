@@ -833,7 +833,6 @@ void CNetAPI::ReadPlayerPuresync ( CClientPlayer* pPlayer, NetBitStreamInterface
         BitStream.Read ( vecCrosshair.fX );
         BitStream.Read ( vecCrosshair.fY );
         BitStream.Read ( vecCrosshair.fZ );
-        //g_pCore->ChatPrintf("Reading crosshair position %f %f %f\n", false, vecCrosshair.fX, vecCrosshair.fY, vecCrosshair.fZ);
         pPlayer->SetCrosshairPosition ( vecCrosshair );
 #endif
 
@@ -1000,7 +999,7 @@ void CNetAPI::WritePlayerPuresync ( CClientPed* pPlayerModel, NetBitStreamInterf
             BitStream.Write ( vecTarget.fY );
             BitStream.Write ( vecTarget.fZ );
 
-#ifdef MTA_WEPSYNCDGB
+#ifdef MTA_WEPSYNCDBG
             BitStream.Write ( vecCrosshair.fX );
             BitStream.Write ( vecCrosshair.fY );
             BitStream.Write ( vecCrosshair.fZ );
