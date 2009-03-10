@@ -2433,6 +2433,7 @@ void CClientGame::DrawWeaponsyncData ( CClientPlayer* pPlayer )
     if ( pPlayer != m_pPlayerManager->GetLocalPlayer () )
     {
         vecCrosshair = pPlayer->GetCrosshairPosition();
+        //g_pCore->ChatPrintf("Crosshair for %s: (%f, %f, %f)", false, pPlayer->GetNickPointer(), vecCrosshair.fX, vecCrosshair.fY, vecCrosshair.fZ);
     }
     g_pCore->GetGraphics ()->DrawLine3D ( vecCrosshair, vecTarget, 0x90DEDE12, 1.5f );
 
@@ -2446,11 +2447,11 @@ void CClientGame::DrawWeaponsyncData ( CClientPlayer* pPlayer )
         CVector vecBullet = *pCollision->GetPosition() - vecSource;
         vecBullet.Normalize();
         vecTarget = vecSource + (vecBullet * 200);
+        // Green line: the processed line
+        g_pCore->GetGraphics ()->DrawLine3D ( vecSource, vecTarget, 0x9012DE12, 2.0f );
       }
       pCollision->Destroy();
     }
-    // Green line: the processed line
-    g_pCore->GetGraphics ()->DrawLine3D ( vecSource, vecTarget, 0x9012DE12, 2.0f );
 }
 
 #endif

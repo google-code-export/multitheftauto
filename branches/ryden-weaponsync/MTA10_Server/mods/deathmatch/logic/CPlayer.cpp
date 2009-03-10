@@ -87,6 +87,10 @@ CPlayer::CPlayer ( CPlayerManager* pPlayerManager, class CScriptDebugging* pScri
 
     // Add us to the manager
     pPlayerManager->AddToList ( this );
+
+#ifdef MTA_WEPSYNCDBG
+    m_vecCrosshairPosition = CVector(0,0,0);
+#endif
 }
 
 

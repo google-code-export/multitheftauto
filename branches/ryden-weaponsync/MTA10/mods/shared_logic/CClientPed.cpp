@@ -177,6 +177,10 @@ void CClientPed::Init ( CClientManager* pManager, unsigned long ulModelID, bool 
 
         SetArmor ( 0.0f );
     }
+
+#ifdef MTA_WEPSYNCDBG
+    m_vecCrosshairPosition = CVector(0,0,0);
+#endif
 }
 
 
