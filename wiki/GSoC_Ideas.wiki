@@ -3,23 +3,32 @@
 
 = Introduction =
 
-Here is a list of ideas for Google Summer of Code.
+Here is a preliminary list of ideas for [http://code.google.com/soc/ Google Summer of Code]. Please note that Multi Theft Auto has only yet been subscribed into GSoC and at this point it is uncertain whether we will be accepted or not. The following page is for informational purposes only.
 
+== Requirements ==
 
-= Ideas =
+In order for us to accept any contributors, we are sticking to few important requirements:
+ * You must be available throughout the summer. We prefer as much dedication as possible.
+ * You must be reasonably experienced with C/C++ and object-oriented programming. (For any low-level ideas, we prefer additional knowledge of x86 assembly.)
+ * You must be available on our IRC server to discuss progress on a regular (to be announced) basis.
+ * You must have a legal copy of Rockstar Games' Grand Theft Auto: San Andreas in order to run and test your project.
 
-- [http://bugs.mtasa.com/view.php?id=3919 0003919]: *General* Add support for Unicode - new.
+== Ideas ==
 
-- [http://bugs.mtasa.com/view.php?id=3314 0003314]: *GUI / Menus / Console* Replace CEGUI with our own or a different GUI engine - confirmed.
+Although we provide a number of ideas below, we especially encourage students to propose their own ideas based on past experiences or knowledge. So if you have a cool but realistic idea of your own that benefits our community in some kind of way, we are welcome to hear it.
 
-- [http://bugs.mtasa.com/view.php?id=1247 0001247]: *General* Requested: Demo recorder - new.
+ * [http://bugs.mtasa.com/view.php?id=3919 0003919]: *General* Add support for Unicode - new.
 
-- [http://bugs.mtasa.com/view.php?id=3085 0003085]: *General* Implement and use server-side physics - acknowledged.
+ * [http://bugs.mtasa.com/view.php?id=3314 0003314]: *GUI / Menus / Console* Replace CEGUI with our own or a different GUI engine - confirmed.
 
-- [http://bugs.mtasa.com/view.php?id=3118 0003118]: *Synchronization* Make the vehicle and player interpolation time dependant - new.
+ * [http://bugs.mtasa.com/view.php?id=1247 0001247]: *General* Requested: Demo recorder - new.
 
- - [http://bugs.mtasa.com/view.php?id=3119 0003119]: *Synchronization* Make ping compensation support the new interpolation method - new.
+ * [http://bugs.mtasa.com/view.php?id=3085 0003085]: *General* Implement and use server-side physics - acknowledged.
 
-- [http://bugs.mtasa.com/view.php?id=1231 0001231]: *General* Allow use of special skins - new.
+ * [http://bugs.mtasa.com/view.php?id=3118 0003118]: *Synchronization* Make the vehicle and player interpolation time dependant - new.
 
-- [http://bugs.mtasa.com/view.php?id=3865 0003865]: *General* Replace C-string functions and members with safer C++ strings - new.
+ * [http://bugs.mtasa.com/view.php?id=3119 0003119]: *Synchronization* Make ping compensation support the new interpolation method - new.
+
+ * [http://bugs.mtasa.com/view.php?id=1231 0001231]: *General* Allow use of special skins - new.
+
+ * [http://bugs.mtasa.com/view.php?id=3865 0003865]: *General* Replace C-string functions and members with safer C++ strings - new.
