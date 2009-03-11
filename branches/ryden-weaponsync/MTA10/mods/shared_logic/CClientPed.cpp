@@ -3655,6 +3655,7 @@ void CClientPed::GetShotData ( CVector * pvecOrigin, CVector * pvecTarget, CVect
 #ifdef MTA_WEPSYNCDBG
                 if ( pvecCrosshair )
                     *pvecCrosshair = vecTemp;
+                vecOrigin = vecTemp;
 
 #else
                 bCollision = g_pGame->GetWorld ()->ProcessLineOfSight ( &vecTemp, &vecTarget, &pCollision, NULL );

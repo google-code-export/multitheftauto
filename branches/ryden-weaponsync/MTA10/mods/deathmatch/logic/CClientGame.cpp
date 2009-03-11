@@ -2445,9 +2445,23 @@ void CClientGame::DrawWeaponsyncData ( CClientPlayer* pPlayer )
       {
         CVector vecBullet = *pCollision->GetPosition() - vecSource;
         vecBullet.Normalize();
-        vecTarget = vecSource + (vecBullet * 200);
+        CVector vecTarget = vecSource + (vecBullet * 200);
         // Green line: the processed line
         g_pCore->GetGraphics ()->DrawLine3D ( vecSource, vecTarget, 0x9012DE12, 2.0f );
+      }
+      pCollision->Destroy();
+    }
+
+    bCollision = g_pGame->GetWorld ()->ProcessLineOfSight ( &vecSource, &vecTarget, &pCollision, NULL );
+    if ( pCollision )
+    {
+      if ( bCollision )
+      {
+        CVector vecBullet = *pCollision->GetPosition() - vecSource;
+        vecBullet.Normalize();
+        vecTarget = vecSource + (vecBullet * 200);
+        // Green line: the processed line
+        g_pCore->GetGraphics ()->DrawLine3D ( vecSource, vecTarget, 0x901212DE, 2.0f );
       }
       pCollision->Destroy();
     }
