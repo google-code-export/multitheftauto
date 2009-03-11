@@ -1,0 +1,25 @@
+#summary Ideas for Google Summer of Code
+#labels gsoc,googlesummerofcode
+
+= Introduction =
+
+Here is a list of ideas for Google Summer of Code.
+
+
+= Ideas =
+
+- [http://bugs.mtasa.com/view.php?id=3919 0003919]: *General* Add support for Unicode - new.
+
+- [http://bugs.mtasa.com/view.php?id=3314 0003314]: *GUI / Menus / Console* Replace CEGUI with our own or a different GUI engine - confirmed.
+
+- [http://bugs.mtasa.com/view.php?id=1247 0001247]: *General* Requested: Demo recorder - new.
+
+- [http://bugs.mtasa.com/view.php?id=3085 0003085]: *General* Implement and use server-side physics - acknowledged.
+
+- [http://bugs.mtasa.com/view.php?id=3118 0003118]: *Synchronization* Make the vehicle and player interpolation time dependant - new.
+
+ - [http://bugs.mtasa.com/view.php?id=3119 0003119]: *Synchronization* Make ping compensation support the new interpolation method - new.
+
+- [http://bugs.mtasa.com/view.php?id=1231 0001231]: *General* Allow use of special skins - new.
+
+- [http://bugs.mtasa.com/view.php?id=3865 0003865]: *General* Replace (const) char* functions and members with safer C++ strings - new.
