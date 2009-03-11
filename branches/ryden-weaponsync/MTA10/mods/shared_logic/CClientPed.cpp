@@ -177,10 +177,6 @@ void CClientPed::Init ( CClientManager* pManager, unsigned long ulModelID, bool 
 
         SetArmor ( 0.0f );
     }
-
-#ifdef MTA_WEPSYNCDBG
-    m_vecCrosshairPosition = CVector(0,0,0);
-#endif
 }
 
 
@@ -3588,11 +3584,7 @@ void CClientPed::PreviousRadioChannel ( void )
 }
 
 
-#ifdef MTA_WEPSYNCDBG
-void CClientPed::GetShotData ( CVector * pvecOrigin, CVector * pvecTarget, CVector * pvecGunMuzzle, CVector * pvecFireOffset, float* fAimX, float* fAimY, CVector* pvecCrosshair )
-#else
 void CClientPed::GetShotData ( CVector * pvecOrigin, CVector * pvecTarget, CVector * pvecGunMuzzle, CVector * pvecFireOffset, float* fAimX, float* fAimY )
-#endif
 {
     CWeapon* pWeapon = GetWeapon ( GetCurrentWeaponSlot () );
     if ( !pWeapon )
@@ -3612,11 +3604,6 @@ void CClientPed::GetShotData ( CVector * pvecOrigin, CVector * pvecTarget, CVect
     CVector vecFireOffset =*pCurrentWeaponInfo->GetFireOffset ();    
     CVector vecGunMuzzle = vecFireOffset;
     GetTransformedBonePosition ( BONE_RIGHTWRIST, vecGunMuzzle );    
-
-#ifdef MTA_WEPSYNCDBG
-    if ( pvecCrosshair )
-        *pvecCrosshair = CVector();
-#endif
 
     CVector vecOrigin, vecTarget;
     if ( m_bIsLocalPlayer )
@@ -3647,29 +3634,7 @@ void CClientPed::GetShotData ( CVector * pvecOrigin, CVector * pvecTarget, CVect
             }
             else if ( Controller.RightShoulder1 == 255 )	// First-person weapons: gun muzzle as origin (assumed)
             {
-                CColPoint* pCollision;
-                CVector vecTemp;
-                bool bCollision;
-
-                g_pGame->GetCamera ()->Find3rdPersonCamTargetVector ( fRange, &vecGunMuzzle, &vecTemp, &vecTarget );
-#ifdef MTA_WEPSYNCDBG
-                if ( pvecCrosshair )
-                    *pvecCrosshair = vecTemp;
-                vecOrigin = vecTemp;
-
-#else
-                bCollision = g_pGame->GetWorld ()->ProcessLineOfSight ( &vecTemp, &vecTarget, &pCollision, NULL );
-                if ( pCollision )
-                {
-                    if ( bCollision )
-                    {
-                        CVector vecBullet = *pCollision->GetPosition() - vecOrigin;
-                        vecBullet.Normalize();
-                        vecTarget = vecOrigin + (vecBullet * fRange);
-                    }
-                    pCollision->Destroy();
-                }
-#endif
+                g_pGame->GetCamera ()->Find3rdPersonCamTargetVector ( fRange, &vecGunMuzzle, &vecOrigin, &vecTarget );
             }
 			else if ( pVehicle )							// Drive-by/vehicle weapons: camera origin as origin
 			{
@@ -3682,10 +3647,7 @@ void CClientPed::GetShotData ( CVector * pvecOrigin, CVector * pvecTarget, CVect
                 CVector vecCameraOrigin = mat.vPos;
                 CVector vecTemp = vecCameraOrigin;
                 g_pGame->GetCamera ()->Find3rdPersonCamTargetVector ( fRange, &vecCameraOrigin, &vecTemp, &vecTarget );
-#ifdef MTA_WEPSYNCDBG
-                if ( pvecCrosshair )
-                    *pvecCrosshair = vecTemp;
-#endif
+
                 bCollision = g_pGame->GetWorld ()->ProcessLineOfSight ( &mat.vPos, &vecTarget, &pCollision, NULL );
                 if ( pCollision )
                 {
