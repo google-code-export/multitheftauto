@@ -22,4 +22,4 @@ Here is a list of ideas for Google Summer of Code.
 
 - [http://bugs.mtasa.com/view.php?id=1231 0001231]: *General* Allow use of special skins - new.
 
-- [http://bugs.mtasa.com/view.php?id=3865 0003865]: *General* Replace (const) char* functions and members with safer C++ strings - new.
+- [http://bugs.mtasa.com/view.php?id=3865 0003865]: *General* Replace C-string functions and members with safer C++ strings - new.
