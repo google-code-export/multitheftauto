@@ -3682,7 +3682,11 @@ void CClientPed::GetShotData ( CVector * pvecOrigin, CVector * pvecTarget, CVect
                 CVector vecCameraOrigin = mat.vPos;
                 CVector vecTemp = vecCameraOrigin;
                 g_pGame->GetCamera ()->Find3rdPersonCamTargetVector ( fRange, &vecCameraOrigin, &vecTemp, &vecTarget );
-
+#ifdef MTA_WEPSYNCDBG
+                if ( pvecCrosshair )
+                    *pvecCrosshair = vecTemp;
+                vecOrigin = vecTemp;
+#else
                 bCollision = g_pGame->GetWorld ()->ProcessLineOfSight ( &mat.vPos, &vecTarget, &pCollision, NULL );
                 if ( pCollision )
                 {
@@ -3694,6 +3698,7 @@ void CClientPed::GetShotData ( CVector * pvecOrigin, CVector * pvecTarget, CVect
                     }
                     pCollision->Destroy();
                 }
+#endif
 			}
             else
             {
