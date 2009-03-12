@@ -2427,7 +2427,7 @@ void CClientGame::DrawWeaponsyncData ( CClientPlayer* pPlayer )
 
         // red line: Draw their synced aim line
         pPlayer->GetShotData ( &vecSource, &vecTarget );
-        g_pCore->GetGraphics ()->DrawLine3D ( vecSource, vecTarget, 0x90DE1212, 0.5f );
+        g_pCore->GetGraphics ()->DrawLine3D ( vecSource, vecTarget, 0x90DE1212, 2.0f );
 
         // green line: Set muzzle as origin and perform a collision test for the target
         CColPoint* pCollision;
@@ -2440,7 +2440,7 @@ void CClientGame::DrawWeaponsyncData ( CClientPlayer* pPlayer )
                 CVector vecBullet = *pCollision->GetPosition() - vecSource;
                 vecBullet.Normalize();
                 CVector vecTarget = vecSource + (vecBullet * 200);
-                g_pCore->GetGraphics ()->DrawLine3D ( vecSource, vecTarget, 0x9012DE12, 2.0f );
+                g_pCore->GetGraphics ()->DrawLine3D ( vecSource, vecTarget, 0x9012DE12, 0.5f );
             }
             pCollision->Destroy();
         }
