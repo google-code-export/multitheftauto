@@ -44,7 +44,7 @@ eWeaponState CWeaponSA::GetState(  )
 void CWeaponSA::SetState ( eWeaponState state )
 {
 	DEBUG_TRACE("void CWeaponSA::SetState ( eWeaponState state )");
-	this->internalInterface->m_eState = state;
+	//this->internalInterface->m_eState = state;
 }
 
 DWORD CWeaponSA::GetAmmoInClip(  )

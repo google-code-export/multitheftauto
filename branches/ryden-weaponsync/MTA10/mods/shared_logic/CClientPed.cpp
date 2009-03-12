@@ -3648,12 +3648,12 @@ void CClientPed::GetShotData ( CVector * pvecOrigin, CVector * pvecTarget, CVect
 			// Always use the gun muzzle as origin
 			vecOrigin = vecGunMuzzle;
 
-            if ( false && HasAkimboPointingUpwards () )				// Upwards pointing akimbo's
+            if ( HasAkimboPointingUpwards () )				// Upwards pointing akimbo's
             {
                 vecTarget = vecOrigin;
                 vecTarget.fZ += fRange;
             }
-            else if ( true && Controller.RightShoulder1 == 255 )	// First-person weapons: gun muzzle as origin (assumed)
+            else if ( Controller.RightShoulder1 == 255 )	// First-person weapons: gun muzzle as origin (assumed)
             {
                 g_pGame->GetCamera ()->Find3rdPersonCamTargetVector ( fRange, &vecGunMuzzle, &vecOrigin, &vecTarget );
             }
