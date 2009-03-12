@@ -805,9 +805,7 @@ void CClientGame::DoPulsePostFrame ( void )
         {
             DrawPlayerDetails ( m_pShowPlayer );
         }
-        #endif
 
-        #ifdef MTA_WEPSYNCDBG
         std::list < CClientPlayer* > ::const_iterator iter = m_pPlayerManager->IterBegin ();
         for ( ; iter != m_pPlayerManager->IterEnd (); ++iter )
         {
@@ -1084,7 +1082,9 @@ void CClientGame::ShowNetstat ( bool bShow )
     m_bShowNetstat = bShow;
 }
 
-#ifdef MTA_WEPSYNCDBG
+
+#ifdef MTA_DEBUG
+
 void CClientGame::ShowWepdata ( const char* szNick )
 {
     CClientPlayer* pPlayer = m_pPlayerManager->Get ( szNick );
@@ -1093,9 +1093,6 @@ void CClientGame::ShowWepdata ( const char* szNick )
         pPlayer->SetShowingWepdata ( ! pPlayer->IsShowingWepdata() );
     }
 }
-#endif
-
-#ifdef MTA_DEBUG
 
 void CClientGame::ShowPlayer ( const char* szNick )
 {
@@ -2418,52 +2415,61 @@ void CClientGame::DrawPlayerDetails ( CClientPlayer* pPlayer )
 }
 
 
-#ifdef MTA_WEPSYNCDBG
+#ifdef MTA_DEBUG
 void CClientGame::DrawWeaponsyncData ( CClientPlayer* pPlayer )
 {
-    CVector vecSource;
-    CVector vecTarget;
-    CVector vecCrosshair;
+    CWeapon* pWeapon = pPlayer->GetWeapon ( pPlayer->GetCurrentWeaponSlot () );
 
-    // red line: unprocessed aim (without collision checks, from gun moozle)
-    pPlayer->GetShotData ( &vecSource, &vecTarget, NULL, NULL, NULL, NULL, &vecCrosshair );
-    g_pCore->GetGraphics ()->DrawLine3D ( vecSource, vecTarget, 0x90DE1212, 0.5f );
-
-    // yellow line: same as before but target is the crosshair (the line that we use to make collision tests)
-    if ( pPlayer != m_pPlayerManager->GetLocalPlayer () )
+    if ( pWeapon )
     {
-        vecCrosshair = pPlayer->GetCrosshairPosition();
-    }
-    g_pCore->GetGraphics ()->DrawLine3D ( vecCrosshair, vecTarget, 0x90DEDE12, 1.5f );
+        CVector vecSource;
+        CVector vecTarget;
 
-    CColPoint* pCollision;
-    CVector vecTemp;
-    bool bCollision = g_pGame->GetWorld ()->ProcessLineOfSight ( &vecCrosshair, &vecTarget, &pCollision, NULL );
-    if ( pCollision )
-    {
-      if ( bCollision )
-      {
-        CVector vecBullet = *pCollision->GetPosition() - vecSource;
-        vecBullet.Normalize();
-        CVector vecTarget = vecSource + (vecBullet * 200);
-        // Green line: the processed line
-        g_pCore->GetGraphics ()->DrawLine3D ( vecSource, vecTarget, 0x9012DE12, 2.0f );
-      }
-      pCollision->Destroy();
-    }
+        // red line: Draw their synced aim line
+        pPlayer->GetShotData ( &vecSource, &vecTarget );
+        g_pCore->GetGraphics ()->DrawLine3D ( vecSource, vecTarget, 0x90DE1212, 0.5f );
 
-    bCollision = g_pGame->GetWorld ()->ProcessLineOfSight ( &vecSource, &vecTarget, &pCollision, NULL );
-    if ( pCollision )
-    {
-      if ( bCollision )
-      {
-        CVector vecBullet = *pCollision->GetPosition() - vecSource;
-        vecBullet.Normalize();
-        vecTarget = vecSource + (vecBullet * 200);
-        // Green line: the processed line
-        g_pCore->GetGraphics ()->DrawLine3D ( vecSource, vecTarget, 0x901212DE, 2.0f );
-      }
-      pCollision->Destroy();
+        // green line: Set muzzle as origin and perform a collision test for the target
+        CColPoint* pCollision;
+        CVector vecTemp;
+        bool bCollision = g_pGame->GetWorld ()->ProcessLineOfSight ( &vecSource, &vecTarget, &pCollision, NULL );
+        if ( pCollision )
+        {
+            if ( bCollision )
+            {
+                CVector vecBullet = *pCollision->GetPosition() - vecSource;
+                vecBullet.Normalize();
+                CVector vecTarget = vecSource + (vecBullet * 200);
+                g_pCore->GetGraphics ()->DrawLine3D ( vecSource, vecTarget, 0x9012DE12, 2.0f );
+            }
+            pCollision->Destroy();
+        }
+
+        if ( m_pLocalPlayer != pPlayer )
+        {
+            // Draw information about their weapon state, total ammo and ammo in clip
+            CVector vecScreenPosition;
+            CVector vecPosition;
+            float fTempX = 0, fTempY = 0;
+
+            pPlayer->GetPosition ( vecPosition );
+
+            vecPosition.fZ += 1.0f;
+            g_pGame->GetHud()->CalcScreenCoors ( &vecPosition, &vecScreenPosition, &fTempX, &fTempY, true, true );
+
+            char str [ 2048 ];
+            int yoffset;
+
+            yoffset = 0;
+            _snprintf ( str, sizeof( str ), "Ammo in clip: %d", pWeapon->GetAmmoInClip () );
+            g_pCore->GetGraphics ()->DrawText ( ( int ) vecScreenPosition.fX + 1, ( int ) vecScreenPosition.fY + 1 + yoffset, ( int ) vecScreenPosition.fX + 1, ( int ) vecScreenPosition.fY + 1 + yoffset, COLOR_ARGB ( 255, 255, 255, 255 ), str, 1.0f, 1.0f, DT_NOCLIP | DT_CENTER );
+			g_pCore->GetGraphics ()->DrawText ( ( int ) vecScreenPosition.fX, ( int ) vecScreenPosition.fY + yoffset, ( int ) vecScreenPosition.fX, ( int ) vecScreenPosition.fY + yoffset, COLOR_ARGB ( 255, 0, 0, 0 ), str, 1.0f, 1.0f, DT_NOCLIP | DT_CENTER );
+
+            yoffset = 15;
+            _snprintf ( str, sizeof( str ), "State: %d", pWeapon->GetState() );
+            g_pCore->GetGraphics ()->DrawText ( ( int ) vecScreenPosition.fX + 1, ( int ) vecScreenPosition.fY + 1 + yoffset, ( int ) vecScreenPosition.fX + 1, ( int ) vecScreenPosition.fY + 1 + yoffset, COLOR_ARGB ( 255, 255, 255, 255 ), str, 1.0f, 1.0f, DT_NOCLIP | DT_CENTER );
+			g_pCore->GetGraphics ()->DrawText ( ( int ) vecScreenPosition.fX, ( int ) vecScreenPosition.fY + yoffset, ( int ) vecScreenPosition.fX, ( int ) vecScreenPosition.fY + yoffset, COLOR_ARGB ( 255, 0, 0, 0 ), str, 1.0f, 1.0f, DT_NOCLIP | DT_CENTER );
+        }
     }
 }
 
