@@ -17,18 +17,16 @@ In order for us to accept any contributors, we are sticking to few important req
 
 Although we provide a number of ideas below, we especially encourage students to propose their own ideas based on past experiences or knowledge. So if you have a cool but realistic idea of your own that benefits our community in some kind of way, we are welcome to hear it.
 
- * [http://bugs.mtasa.com/view.php?id=3919 0003919]: *General* Add support for Unicode - new.
+ * [http://bugs.mtasa.com/view.php?id=3314 0003314]: Replace CEGUI with our own or a different GUI engine.
 
- * [http://bugs.mtasa.com/view.php?id=3314 0003314]: *GUI / Menus / Console* Replace CEGUI with our own or a different GUI engine - confirmed.
+ * [http://bugs.mtasa.com/view.php?id=1247 0001247]: Implement packet/demo recorder.
 
- * [http://bugs.mtasa.com/view.php?id=1247 0001247]: *General* Requested: Demo recorder - new.
+ * [http://bugs.mtasa.com/view.php?id=3085 0003085]: Implement and use server-side physics.
 
- * [http://bugs.mtasa.com/view.php?id=3085 0003085]: *General* Implement and use server-side physics - acknowledged.
+ * [http://bugs.mtasa.com/view.php?id=1231 0001231]: Allow use of special skins.
 
- * [http://bugs.mtasa.com/view.php?id=3118 0003118]: *Synchronization* Make the vehicle and player interpolation time dependant - new.
+ * [http://bugs.mtasa.com/view.php?id=3865 0003865]: Replace C-string functions and members with safer C++ strings.
 
- * [http://bugs.mtasa.com/view.php?id=3119 0003119]: *Synchronization* Make ping compensation support the new interpolation method - new.
+ * [http://bugs.mtasa.com/view.php?id=3118 0003118]: Make the vehicle and player interpolation time dependent.
 
- * [http://bugs.mtasa.com/view.php?id=1231 0001231]: *General* Allow use of special skins - new.
-
- * [http://bugs.mtasa.com/view.php?id=3865 0003865]: *General* Replace C-string functions and members with safer C++ strings - new.
+ * [http://bugs.mtasa.com/view.php?id=3119 0003119]: Make ping compensation support the new interpolation method.
