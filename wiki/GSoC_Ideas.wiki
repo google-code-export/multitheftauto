@@ -27,4 +27,6 @@ Although we provide a number of ideas below, we especially encourage students to
 
  * [http://bugs.mtasa.com/view.php?id=3865 0003865]: Replace C-string functions and members with safer C++ strings.
 
+ * [http://bugs.mtasa.com/view.php?id=3919 0003919]: Implement support for unicode text
+
  * [http://bugs.mtasa.com/view.php?id=3119 0003119]: Improve player/vehicle interpolation and compensation.
