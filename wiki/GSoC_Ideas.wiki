@@ -1,5 +1,5 @@
 #summary Ideas for Google Summer of Code
-#labels gsoc,googlesummerofcode
+#labels gsoc,googlesummerofcode,Featured
 
 = Introduction =
 
