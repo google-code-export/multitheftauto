@@ -2616,7 +2616,9 @@ void CClientPed::UpdateKeysync ( void )
                                 if ( pPlayerWeapon )
                                 {
                                     pPlayerWeapon->SetAmmoTotal ( 9999 );
-                                    pPlayerWeapon->SetAmmoInClip ( pData->usWeaponAmmo );
+                                    unsigned short usCurrentClip = pPlayerWeapon->GetAmmoInClip ();
+                                    if ( pData->usWeaponAmmo > usCurrentClip || pData->usWeaponAmmo < usCurrentClip - 5 )
+                                        pPlayerWeapon->SetAmmoInClip ( pData->usWeaponAmmo );
                                     // pPlayerWeapon->SetState ( static_cast < eWeaponState > ( pData->ucWeaponState ) );
                                 }
                             }
