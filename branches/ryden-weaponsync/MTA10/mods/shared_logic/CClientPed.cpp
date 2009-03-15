@@ -2616,21 +2616,8 @@ void CClientPed::UpdateKeysync ( void )
                                 if ( pPlayerWeapon )
                                 {
                                     pPlayerWeapon->SetAmmoTotal ( 9999 );
-                                    // pPlayerWeapon->SetAmmoInClip ( pData->usWeaponAmmo );
+                                    pPlayerWeapon->SetAmmoInClip ( pData->usWeaponAmmo );
                                     // pPlayerWeapon->SetState ( static_cast < eWeaponState > ( pData->ucWeaponState ) );
-                                    if ( pData->ucWeaponState == WEAPONSTATE_READY || pData->ucWeaponState == WEAPONSTATE_FIRING )
-                                    {
-                                        pPlayerWeapon->SetAmmoInClip ( 500 );
-                                    }
-                                    else if ( pData->ucWeaponState == WEAPONSTATE_RELOADING )
-                                    {
-                                        pPlayerWeapon->SetAmmoInClip ( 0 );
-                                        pPlayerWeapon->SetState ( WEAPONSTATE_RELOADING );
-                                    }
-                                    else
-                                    {
-                                        pPlayerWeapon->SetState ( static_cast < eWeaponState > ( pData->ucWeaponState ) );
-                                    }
                                 }
                             }
                             else
