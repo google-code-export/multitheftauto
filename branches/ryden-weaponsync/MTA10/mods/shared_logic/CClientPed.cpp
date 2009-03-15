@@ -2625,6 +2625,7 @@ void CClientPed::UpdateKeysync ( void )
                                     else if ( pData->ucWeaponState == WEAPONSTATE_RELOADING )
                                     {
                                         pPlayerWeapon->SetAmmoInClip ( 0 );
+                                        pPlayerWeapon->SetState ( WEAPONSTATE_RELOADING );
                                     }
                                     else
                                     {
