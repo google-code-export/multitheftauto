@@ -3652,14 +3652,15 @@ void CClientPed::GetShotData ( CVector * pvecOrigin, CVector * pvecTarget, CVect
 
             if ( false && HasAkimboPointingUpwards () )				// Upwards pointing akimbo's
             {
+                // Disabled temporarily until we actually get working akimbos
                 vecTarget = vecOrigin;
                 vecTarget.fZ += fRange;
             }
-            else if ( Controller.RightShoulder1 == 255 )	// First-person weapons: gun muzzle as origin (assumed)
+            else if ( Controller.RightShoulder1 == 255 )	// First-person weapons, crosshair active: sync the crosshair
             {
                 g_pGame->GetCamera ()->Find3rdPersonCamTargetVector ( fRange, &vecGunMuzzle, &vecOrigin, &vecTarget );
             }
-			else if ( pVehicle )							// Drive-by/vehicle weapons: camera origin as origin
+			else if ( pVehicle )							// Drive-by/vehicle weapons: camera origin as origin, performing collision tests
 			{
                 CColPoint* pCollision;
                 CMatrix mat;
@@ -3685,6 +3686,7 @@ void CClientPed::GetShotData ( CVector * pvecOrigin, CVector * pvecTarget, CVect
 			}
             else
             {
+                // For shooting without the crosshair showing (just holding the fire button)
                 vecOrigin = vecGunMuzzle;
 
                 float fTemp = 6.283152f - fRotation;
