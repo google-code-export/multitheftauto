@@ -3655,7 +3655,7 @@ void CClientPed::GetShotData ( CVector * pvecOrigin, CVector * pvecTarget, CVect
                 vecTarget = vecOrigin;
                 vecTarget.fZ += fRange;
             }
-            else if ( true || Controller.RightShoulder1 == 255 )	// First-person weapons: gun muzzle as origin (assumed)
+            else if ( Controller.RightShoulder1 == 255 )	// First-person weapons: gun muzzle as origin (assumed)
             {
                 g_pGame->GetCamera ()->Find3rdPersonCamTargetVector ( fRange, &vecGunMuzzle, &vecOrigin, &vecTarget );
             }
