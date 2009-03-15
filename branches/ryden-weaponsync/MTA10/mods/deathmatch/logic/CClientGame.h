@@ -251,6 +251,10 @@ public:
     inline void                         ShowSyncingInfo                 ( bool bShow )  { m_bShowSyncingInfo = bShow; };
     #endif
 
+#ifdef MTA_WEPSYNCDBG
+    void                                ShowWepdata                     ( const char* szNick );
+#endif
+
     #ifdef MTA_DEBUG
     void                                ShowWepdata                     ( const char* szNick );
     void								ShowTasks                       ( const char* szNick );
@@ -297,7 +301,7 @@ public:
 
     void                                AddBuiltInEvents                ( void );
 
-	inline const char*					GetModRoot						( void )						{ return m_szModRoot; };
+	inline const char*					GetModRoot						( void )						{ return m_strModRoot; };
 
     void                                SetGameSpeed                    ( float fSpeed );
 	void								SetMinuteDuration				( unsigned long ulDelay );
@@ -362,6 +366,11 @@ private:
     void                                DoPaintballs                    ( void );
     void                                DrawWeaponsyncData              ( CClientPlayer* pPlayer );
     #endif
+
+    #ifdef MTA_WEPSYNCDBG
+    void                                DrawWeaponsyncData              ( CClientPlayer* pPlayer );
+    #endif
+
 
 	void								DownloadFiles					( void );
 
@@ -464,7 +473,7 @@ private:
 
     // Map statuses
     char                                m_szCurrentMapName [MAX_MAPNAME_LENGTH + 1];
-    char                                m_szModRoot [MAX_PATH];
+    SString                             m_strModRoot;
 
     CBlendedWeather*                    m_pBlendedWeather;
     bool                                m_bShowNametags;
@@ -521,7 +530,7 @@ private:
 
     eHTTPDownloadType                   m_ucHTTPDownloadType;
     unsigned short                      m_usHTTPDownloadPort;
-    char                                m_szHTTPDownloadURL [MAX_HTTP_DOWNLOAD_URL + 1];
+    SString                             m_strHTTPDownloadURL;
 
     #if defined (MTA_DEBUG) || defined (MTA_BETA)
     bool                                m_bShowSyncingInfo;

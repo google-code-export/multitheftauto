@@ -2,9 +2,9 @@
 *
 *  PROJECT:     Multi Theft Auto v1.0
 *  LICENSE:     See LICENSE in the top level directory
-*  FILE:        UtilUtil.h
+*  FILE:        ClientSharedUtil.h
 *  PURPOSE:
-*  DEVELOPERS:
+*  DEVELOPERS:  ccw <chris@codewave.co.uk>
 *
 *  Multi Theft Auto is available from http://www.multitheftauto.com/
 *
@@ -23,14 +23,14 @@ class SString : public string
 public:
     // Constructors
     SString ( ) : string () {}
-    SString ( const char* szText ) : string ( szText ) {}
+    SString ( const char* szText ) : string ( szText ? szText : "" ) {}
     SString ( const string& strText ) : string ( strText ) {}
 
     // Assignment  
     operator const char*() const    { return c_str (); }        // Auto assign to const char* without using c_str()
 
     // Static functions
-    static SString Format ( const char *formatstring );
+    static SString Printf ( const char *format, ... );
 };
 
 
@@ -39,5 +39,22 @@ public:
 // into an absolute MTASA path i.e. "C:\Program Files\MTA San Andreas\MTA\file.dat"
 //
 SString CalcMTASAPath ( const SString& strPath );
+
+
+//
+// _vsnprintf with buffer full check
+//
+#define _VSNPRINTF( buffer, count, format, argptr ) \
+    { \
+	    int iResult = _vsnprintf ( buffer, count, format, argptr ); \
+        if( iResult == -1 || iResult == (count) ) \
+	        (buffer)[(count)-1] = 0; \
+    }
+
+
+//
+// Safely read a ushort sized string from a NetBitStreamInterface
+//
+bool BitStreamReadUsString( class NetBitStreamInterface& bitStream, SString& strOut );
 
 

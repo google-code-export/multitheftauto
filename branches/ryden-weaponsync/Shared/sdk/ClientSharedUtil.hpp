@@ -2,9 +2,9 @@
 *
 *  PROJECT:     Multi Theft Auto v1.0
 *  LICENSE:     See LICENSE in the top level directory
-*  FILE:        UtilUtil.hpp
+*  FILE:        ClientSharedUtil.hpp
 *  PURPOSE:
-*  DEVELOPERS:
+*  DEVELOPERS:  ccw <chris@codewave.co.uk>
 *
 *  Multi Theft Auto is available from http://www.multitheftauto.com/
 *
@@ -13,19 +13,15 @@
 //
 // Simpler, safer, slower sprintf
 //
-SString Printf( const char* format, ... )
+SString SString::Printf( const char* format, ... )
 {
     static char buffer[8192];
     int count = sizeof(buffer) / sizeof(buffer[0]);
-    const char* lastarg = format;
 
     va_list argptr;
-    va_start( argptr, lastarg );
+    va_start( argptr, format );
 
-    int Result = _vsnprintf( buffer, count-1, format, argptr );
-
-    if( Result == -1 || Result == count-1 )
-	    buffer[count-1] = 0;
+    _VSNPRINTF ( buffer, count, format, argptr );
 
     va_end( argptr );
 
@@ -73,5 +69,41 @@ SString CalcMTASAPath ( const SString& strPath )
     strNewPath += strPath;
     return strNewPath;
 }
+
+
+//
+// Safely read a ushort sized string from a NetBitStreamInterface
+//
+bool BitStreamReadUsString( class NetBitStreamInterface& bitStream, SString& strOut )
+{
+    bool bResult = false;
+
+    // Read out the string length
+	unsigned short usLength;
+	if ( bitStream.Read ( usLength ) )
+	{
+        // Allocate a buffer and read the string into it
+        char* szValue = new char [ usLength + 1 ];
+        // String with a length of zero is considered a success
+        if ( !usLength || bitStream.Read ( szValue, usLength ) )
+        {
+            // Put it into us
+            szValue [ usLength ] = 0;
+			strOut = szValue;
+            bResult = true;
+        }
+
+        // Delete the buffer
+        delete [] szValue;
+	}
+
+    // Clear output on fail
+    if ( !bResult )
+        strOut = "";
+
+    return bResult;
+}
+
+
 
 
