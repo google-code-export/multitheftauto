@@ -2572,7 +2572,7 @@ void CClientGame::UpdateMimics ( void )
                         pMimic->SetAimInterpolated ( TICK_RATE, fAimX, fAimY, bAkimboUp, cVehicleAimDirection );
                         pMimic->SetTargetTarget ( TICK_RATE, vecOrigin, vecTarget );                                
 
-                        pMimic->AddChangeWeapon ( TICK_RATE, ucWeaponType, (unsigned char) ulWeaponAmmoInClip, ucWeaponState );
+                        pMimic->AddChangeWeapon ( TICK_RATE, ucWeaponType, (unsigned char) ulWeaponAmmoInClip );
                     }
                     else
                     {

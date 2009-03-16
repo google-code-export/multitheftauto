@@ -733,7 +733,7 @@ void CClientPed::AddKeysync ( unsigned long ulDelay, const CControllerState& Con
 }
 
 
-void CClientPed::AddChangeWeapon ( unsigned long ulDelay, unsigned char ucWeaponID, unsigned short usWeaponAmmo, unsigned char ucWeaponState )
+void CClientPed::AddChangeWeapon ( unsigned long ulDelay, unsigned char ucWeaponID, unsigned short usWeaponAmmo )
 {
     if ( !m_bIsLocalPlayer )
     {
@@ -742,7 +742,6 @@ void CClientPed::AddChangeWeapon ( unsigned long ulDelay, unsigned char ucWeapon
         pData->ucType = DELAYEDSYNC_CHANGEWEAPON;
         pData->ucWeaponID = ucWeaponID;
         pData->usWeaponAmmo = usWeaponAmmo;
-        pData->ucWeaponState = ucWeaponState;
 
         m_SyncBuffer.push_back ( pData );
     }
@@ -2616,10 +2615,8 @@ void CClientPed::UpdateKeysync ( void )
                                 if ( pPlayerWeapon )
                                 {
                                     pPlayerWeapon->SetAmmoTotal ( 9999 );
-                                    unsigned short usCurrentClip = pPlayerWeapon->GetAmmoInClip ();
-                                    if ( pData->usWeaponAmmo > usCurrentClip || pData->usWeaponAmmo < usCurrentClip - 5 )
+                                    if ( pData->usWeaponAmmo < pPlayerWeapon->GetAmmoInClip () && pPlayerWeapon->GetState () != WEAPONSTATE_RELOADING )
                                         pPlayerWeapon->SetAmmoInClip ( pData->usWeaponAmmo );
-                                    // pPlayerWeapon->SetState ( static_cast < eWeaponState > ( pData->ucWeaponState ) );
                                 }
                             }
                             else
