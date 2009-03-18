@@ -1,4 +1,4 @@
-#summary Instructions how to get your build running
+#summary Instructions on how to compile MTA yourself.
 
 In order to successfully build Multi Theft Auto from source, it is necessary to perform a number of steps, which we will explain below.
 
@@ -7,7 +7,7 @@ In order to successfully build Multi Theft Auto from source, it is necessary to 
 Before you can build Multi Theft Auto, make sure you have the following software and SDKs installed:
   * Microsoft Visual Studio 2003 or 2005 (newer versions may work but are untested)
   * [http://msdn.microsoft.com/en-us/directx/aa937788.aspx Microsoft DirectX SDK] (only the Direct3D related components are required)
-  * [http://msdn2.microsoft.com/en-us/windowsserver/bb980924.aspx Microsoft Windows SDK] or Platform SDK (only the DirectShow components are required)
+  * [http://www.microsoft.com/downloads/details.aspx?FamilyId=0BAF2B35-C656-4969-ACE8-E4C0C0716ADB&displaylang=en Microsoft Platform SDK] (only the DirectShow components are required)
 
 If you haven't already done so, install a client such as [http://tortoisesvn.net/ TortoiseSVN] to check out the source.
 
@@ -27,7 +27,7 @@ As the include paths in our Microsoft Visual Studio project files are already se
 
 == 3. Extracting the dependencies ==
 
-Not all third-party libraries are covered by vendor yet. The remaining libraries (for the client) are packed in a separate self extracting archive that can be downloaded through the [http://code.google.com/p/multitheftauto/downloads/list Downloads] tab.
+Not all third-party libraries are covered by vendor yet. The remaining libraries (for the client) are packed in a separate self extracting archive that can be downloaded through the [http://code.google.com/p/multitheftauto/downloads/list?can=2&q=label%3ABuildDependencies&colspec=Filename+Summary+Uploaded+Size+DownloadCount Downloads] tab.
 
 Make sure you download the latest revision of the _multitheftauto_deps-rXXX.exe_ file and extract it into your repository root so the directories match up.
 
@@ -35,11 +35,11 @@ You will also need to extract the CEGUI libraries. Go to the _MTA10/dependencies
 
 == 4. Building the source ==
 
-In order to build the source, you will need Microsoft Visual Studio. Open the project file in *Shared/Core.sln* and build using one of the project configurations _Debug_, _Release_ or _Nightly_. Note that everything will run significantly slower in _Debug_ mode.
+In order to build the source, you will need Microsoft Visual Studio. Open the project file in *Shared/Core.sln* (or *Shared/Core 2005.sln* for VS2005) and build using one of the project configurations _Debug_, _Release_ or _Nightly_. Note that everything will run significantly slower in _Debug_ mode.
 
 == 5. Getting the network module ==
 
-Since the _net.dll_ network modules for client and server are covered in a different license, you will have to get these from the [http://code.google.com/p/multitheftauto/downloads/list Downloads] tab.
+Since the _net.dll_ network modules for client and server are covered in a different license, you will have to get these from the [http://code.google.com/p/multitheftauto/downloads/list?can=2&q=label%3ANet&colspec=Filename+Summary+Uploaded+Size+DownloadCount Downloads] tab.
 
 Make sure you download the latest revision of the _multitheftauto_net-rXXX.zip_ file and extract it into your _Multi Theft Auto: San Andreas_ program files directory (not your GTA directory!). Bear in mind that these files are covered in a different license.
 
@@ -49,7 +49,7 @@ You are almost ready to run your build of the Multi Theft Auto software.
 
 === Running the game client ===
 
-If you want to run the Multi Theft Auto game client, you will need to extract the data files that the project uses when it is launched. These are also packed in a separate SFX archive that can be downloaded through the [http://code.google.com/p/multitheftauto/downloads/list Downloads] tab.
+If you want to run the Multi Theft Auto game client, you will need to extract the data files that the project uses when it is launched. These are also packed in a separate SFX archive that can be downloaded through the [http://code.google.com/p/multitheftauto/downloads/list?q=label:Data Downloads] tab.
 
 Make sure you download the latest revision of the _multitheftauto_data-rXXX.exe_ file and extract it into your _Multi Theft Auto: San Andreas_ program files directory (not your GTA directory!).
 
@@ -60,6 +60,8 @@ If you want to run the Multi Theft Auto dedicated server, you will have to insta
 Our official resources repository is also hosted on Google Code: [http://multitheftauto-resources.googlecode.com/ multitheftauto-resources]. It's recommended that you check out the latest resources from here or download a zipped revision from the [http://code.google.com/p/multitheftauto/downloads/list Downloads] tab if available. Make sure that you are not using any of our resources from any previous versions of Multi Theft Auto, as this _will_ cause issues.
 
 If you have any problems with missing DLL files (e.g. libcurl.dll), simply copy these over from the client's data archive described above.
+
+Please note you should also download the latest [http://code.google.com/p/multitheftauto-resources/downloads/list resources] for all components of the server to function properly.
 
 == More information ==
 

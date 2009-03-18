@@ -1,3 +1,9 @@
 #summary How to get more information about Multi Theft Auto
 
-More information about our project can be found at our own wiki: [http://development.mtasa.com]
+More information about our project can be found at our own wiki: [http://development.mtasa.com].  This primarily includes vast documentation about Lua implementation.
+
+You can also visit the following pages for information about Multi Theft Auto:
+* [http://multitheftauto.com]
+* [http://forum.multitheftauto.com]
+
+Much of development also is discussed through IRC.  Please refer to the [http://mtasa.com/irc.html IRC] page for more information.

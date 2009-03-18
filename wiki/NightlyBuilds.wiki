@@ -1,4 +1,4 @@
-#summary Instructions on how to get a nightly developer build
+#summary Instructions on how to run the latest nightly developer build
 #labels Featured
 
 == Introduction ==
