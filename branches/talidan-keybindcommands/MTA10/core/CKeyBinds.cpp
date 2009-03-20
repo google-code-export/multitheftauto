@@ -473,7 +473,7 @@ bool CKeyBinds::Call ( CKeyBind* pKeyBind )
 }
 
 
-bool CKeyBinds::AddCommand ( const char* szKey, const char* szCommand, const char* szArguments, bool bState )
+bool CKeyBinds::AddCommand ( const char* szKey, const char* szCommand, const char* szArguments, bool bState, const char* szResource )
 {
     if ( szKey == NULL || szCommand == NULL ) return false;
 
@@ -489,6 +489,11 @@ bool CKeyBinds::AddCommand ( const char* szKey, const char* szCommand, const cha
         {
             bind->szArguments = new char [ strlen ( szArguments ) + 1 ];
             strcpy ( bind->szArguments, szArguments );
+        }
+        if ( szResource )
+        {
+            bind->szResource = new char [ strlen ( szArguments ) + 1 ];
+            strcpy ( bind->szResource, szResource );
         }
         bind->bHitState = bState;
         bind->bState = false;
@@ -525,7 +530,7 @@ bool CKeyBinds::AddCommand ( const SBindableKey* pKey, const char* szCommand, co
 }
 
 
-bool CKeyBinds::RemoveCommand ( const char* szKey, const char* szCommand, bool bCheckState, bool bState )
+bool CKeyBinds::RemoveCommand ( const char* szKey, const char* szCommand, bool bCheckState, bool bState, const char* szResource )
 {
     if ( szKey == NULL || szCommand == NULL ) return false;
 
@@ -541,16 +546,20 @@ bool CKeyBinds::RemoveCommand ( const char* szKey, const char* szCommand, bool b
                 {
                     if ( !bCheckState || pBind->bHitState == bState )
                     {
-                        if ( m_bProcessingKeyStroke )
+                        if ( !pBind->szResource || 
+                             strcmp ( szResource, pBind->szResource ) == 0 )
                         {
-                            pBind->beingDeleted = true;
+                          if ( m_bProcessingKeyStroke )
+                            {
+                                pBind->beingDeleted = true;
+                            }
+                            else
+                            {
+                                delete pBind;
+                                m_pList->erase ( iter );
+                            }
+                            return true;
                         }
-                        else
-                        {
-                            delete pBind;
-                            m_pList->erase ( iter );
-                        }
-                        return true;
                     }
                 }
             }
@@ -611,7 +620,7 @@ bool CKeyBinds::RemoveAllCommands ( void )
 }
 
 
-bool CKeyBinds::CommandExists ( const char* szKey, const char* szCommand, bool bCheckState, bool bState )
+bool CKeyBinds::CommandExists ( const char* szKey, const char* szCommand, bool bCheckState, bool bState, const char* szArguments )
 {
     list < CKeyBind* > ::const_iterator iter = m_pList->begin ();
     for ( ; iter != m_pList->end (); iter++ )
@@ -619,13 +628,16 @@ bool CKeyBinds::CommandExists ( const char* szKey, const char* szCommand, bool b
         if ( (*iter)->GetType () == KEY_BIND_COMMAND )
         {
             CCommandBind* pBind = static_cast < CCommandBind* > ( *iter );
-            if ( stricmp ( pBind->boundKey->szKey, szKey ) == 0 )
+            if ( !szKey || ( stricmp ( pBind->boundKey->szKey, szKey ) == 0 ) )
             {
                 if ( strcmp ( pBind->szCommand, szCommand ) == 0 )
                 {
                     if ( !bCheckState || pBind->bHitState == bState )
                     {
-                        return true;
+                        if ( !szArguments || ( szArguments && strcmp ( pBind->szArguments, szArguments ) == 0 ) )
+                        {
+                            return true;
+                        }
                     }
                 }
             }
@@ -2217,6 +2229,13 @@ bool CKeyBinds::SaveToXML ( CXMLNode* pMainNode )
                     {
 						pA = pAttributes->Create ( "arguments" );						
 						pA->SetValue ( szArguments );
+                    }
+
+                    char* szResource = pBind->szResource;
+                    if ( szResource )
+                    {
+						pA = pAttributes->Create ( "resource" );						
+						pA->SetValue ( szResource );
                     }
                 }
                 else if ( type == KEY_BIND_FUNCTION )

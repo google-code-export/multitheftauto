@@ -89,11 +89,12 @@ public:
 class CCommandBind: public CKeyBindWithState
 {
 public:
-    inline          CCommandBind    ( void ) { szCommand = NULL; szArguments = NULL; }
-    inline          ~CCommandBind   ( void ) { delete [] szCommand; if ( szArguments ) delete [] szArguments; }
+    inline          CCommandBind    ( void ) { szCommand = NULL; szArguments = NULL; szResource = NULL; }
+    inline          ~CCommandBind   ( void ) { delete [] szCommand; if ( szArguments ) delete [] szArguments; if ( szResource ) delete [] szResource; }
     eKeyBindType    GetType         ( void ) { return KEY_BIND_COMMAND; }
     char*           szCommand;
     char*           szArguments;
+    char*           szResource;
 };
 
 class CKeyFunctionBind: public CKeyBindWithState
@@ -136,12 +137,12 @@ public:
     virtual list < CKeyBind* > ::const_iterator IterEnd         ( void ) = 0;
 
     // Command-bind funcs
-    virtual bool                    AddCommand                  ( const char* szKey, const char* szCommand, const char* szArguments = NULL, bool bState = true ) = 0;
+    virtual bool                    AddCommand                  ( const char* szKey, const char* szCommand, const char* szArguments = NULL, bool bState = true, const char* szResource = NULL ) = 0;
     virtual bool                    AddCommand                  ( const SBindableKey* pKey, const char* szCommand, const char* szArguments = NULL, bool bState = true ) = 0;
-    virtual bool                    RemoveCommand               ( const char* szKey, const char* szCommand, bool bCheckState = false, bool bState = true ) = 0;
+    virtual bool                    RemoveCommand               ( const char* szKey, const char* szCommand, bool bCheckState = false, bool bState = true, const char* szResource = NULL ) = 0;
     virtual bool                    RemoveAllCommands           ( const char* szKey, bool bCheckState = false, bool bState = true ) = 0;
     virtual bool                    RemoveAllCommands           ( void ) = 0;
-    virtual bool                    CommandExists               ( const char* szKey, const char* szCommand, bool bCheckState = false, bool bState = true ) = 0;
+    virtual bool                    CommandExists               ( const char* szKey, const char* szCommand, bool bCheckState = false, bool bState = true, const char* szArguments = NULL ) = 0;
     virtual CCommandBind*           GetBindFromCommand          ( const char* szCommand, const char* szArguments = NULL, bool bMatchCase = true ) = 0;
     virtual bool                    GetBoundCommands            ( const char* szCommand, list < CCommandBind * > & commandsList ) = 0;
 
