@@ -447,7 +447,8 @@ bool CKeyBinds::Call ( CKeyBind* pKeyBind )
             case KEY_BIND_COMMAND:
             {
                 CCommandBind* pBind = static_cast < CCommandBind* > ( pKeyBind );
-                m_pCore->GetCommands ()->Execute ( pBind->szCommand, pBind->szArguments );
+                if ( pBind->bActive )
+                    m_pCore->GetCommands ()->Execute ( pBind->szCommand, pBind->szArguments );
                 break;
             }
             case KEY_BIND_FUNCTION:
@@ -546,8 +547,7 @@ bool CKeyBinds::RemoveCommand ( const char* szKey, const char* szCommand, bool b
                 {
                     if ( !bCheckState || pBind->bHitState == bState )
                     {
-                        if ( !pBind->szResource || 
-                             strcmp ( szResource, pBind->szResource ) == 0 )
+                        if ( !pBind->szResource )
                         {
                           if ( m_bProcessingKeyStroke )
                             {
@@ -559,6 +559,10 @@ bool CKeyBinds::RemoveCommand ( const char* szKey, const char* szCommand, bool b
                                 m_pList->erase ( iter );
                             }
                             return true;
+                        }
+                        else if ( strcmp ( szResource, pBind->szResource ) == 0 )
+                        {
+                            pBind->bActive = false;
                         }
                     }
                 }
@@ -644,6 +648,30 @@ bool CKeyBinds::CommandExists ( const char* szKey, const char* szCommand, bool b
         }
     }
     
+    return false;
+}
+
+bool CKeyBinds::SetCommandActive ( const char* szCommand, bool bState, const char* szArguments, const char* szResource, bool bActive )
+{
+    list < CKeyBind* > ::const_iterator iter = m_pList->begin ();
+    for ( ; iter != m_pList->end (); iter++ )
+    {
+        if ( (*iter)->GetType () == KEY_BIND_COMMAND )
+        {
+            CCommandBind* pBind = static_cast < CCommandBind* > ( *iter );
+            if ( strcmp ( pBind->szCommand, szCommand ) == 0 )
+            {
+                if ( pBind->bHitState == bState )
+                {
+                    if ( !szArguments || ( szArguments && strcmp ( pBind->szArguments, szArguments ) == 0 ) )
+                    {
+                        pBind->bActive = bActive;
+                        return true;
+                    }
+                }
+            }
+        }
+    }  
     return false;
 }
 
@@ -2118,7 +2146,7 @@ bool CKeyBinds::LoadFromXML ( CXMLNode* pMainNode )
                             if ( !strCommand.empty () )
                             {
                                 // HACK
-                                std::string strState, strArguments;
+                                std::string strState, strArguments, strResource ;
                                 pNode = pMainNode->GetSubNode ( i );
 
                                 pAttribute = pNode->GetAttributes ().Find ( "state" );
@@ -2136,7 +2164,14 @@ bool CKeyBinds::LoadFromXML ( CXMLNode* pMainNode )
                                     strArguments = pAttribute->GetValue ();
                                 }
 
-                                if ( !CommandExists ( strKey.c_str (), strCommand.c_str (), true, bState ) )
+                                pAttribute = pNode->GetAttributes ().Find ( "resource" );
+                                if ( pAttribute )
+                                {
+                                    strResource = pAttribute->GetValue ();
+                                    AddCommand ( strKey.c_str (), strCommand.c_str (), strArguments.c_str (), bState, strResource.c_str() );
+                                    SetCommandActive ( strCommand.c_str(), bState, strArguments.c_str(), strResource.c_str(), false );
+                                }
+                                else if ( !CommandExists ( strKey.c_str (), strCommand.c_str (), true, bState ) )
                                     AddCommand ( strKey.c_str (), strCommand.c_str (), strArguments.c_str (), bState );
                             }                                        
                         }

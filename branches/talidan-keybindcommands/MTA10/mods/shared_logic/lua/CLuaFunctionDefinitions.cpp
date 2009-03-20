@@ -13242,12 +13242,13 @@ int CLuaFunctionDefinitions::BindKey ( lua_State* luaVM )
                 else
                     m_pScriptDebugging->LogBadPointer ( luaVM, "bindKey", "function", 3 );
             }
-            else if ( lua_type ( luaVM, 3 ) == LUA_TSTRING &&
-                      lua_type ( luaVM, 4 ) == LUA_TSTRING )
+            else if ( lua_type ( luaVM, 3 ) == LUA_TSTRING )
             {
          		const char* szResource = pLuaMain->GetResource()->GetName();
                 const char* szCommand = lua_tostring ( luaVM, 3 );
-                const char* szArguments = lua_tostring ( luaVM, 4 );
+                const char* szArguments = "";
+                if  ( lua_type ( luaVM, 4 ) == LUA_TSTRING )
+                    szArguments = lua_tostring ( luaVM, 4 );
                 if ( CStaticFunctionDefinitions::BindKey ( szKey, szHitState, szCommand, szArguments, szResource ) )
 			    {
 			        lua_pushboolean ( luaVM, true );

@@ -4714,18 +4714,26 @@ bool CStaticFunctionDefinitions::BindKey ( const char* szKey, const char* szHitS
         bool bHitState = true;
         //Check if its binded already (dont rebind)
         if  ( pKeyBinds->CommandExists ( NULL, szCommandName, true, bHitState, szArguments ) )
+        {
+            pKeyBinds->SetCommandActive ( szCommandName, bHitState, szArguments, szResource, true );
             return true;
+        }
         if ( ( !stricmp ( szHitState, "down" ) || !stricmp ( szHitState, "both" ) ) &&
              pKeyBinds->AddCommand ( szKey, szCommandName, szArguments, bHitState, szResource ) )
         {
+            pKeyBinds->SetCommandActive ( szCommandName, bHitState, szArguments, szResource, true );
             bSuccess = true;
         }
         bHitState = false;
         if  ( pKeyBinds->CommandExists ( NULL, szCommandName, true, bHitState, szArguments ) )
+        {
+            pKeyBinds->SetCommandActive ( szCommandName, bHitState, szArguments, szResource, true );
             return true;
+        }
         if ( ( !stricmp ( szHitState, "up" ) || !stricmp ( szHitState, "both" ) ) &&
              pKeyBinds->AddCommand ( szKey, szCommandName, szArguments, bHitState, szResource ) )
         {
+            pKeyBinds->SetCommandActive ( szCommandName, bHitState, szArguments, szResource, true );
             bSuccess = true;
         }
     }
@@ -4801,13 +4809,13 @@ bool CStaticFunctionDefinitions::UnbindKey ( const char* szKey, const char* szHi
             }
         }
         if ( ( !stricmp ( szHitState, "down" ) || !stricmp ( szHitState, "both" ) ) &&
-             pKeyBinds->RemoveCommand ( szKey, szCommandName, bCheckHitState, bHitState, szResource ) )
+             pKeyBinds->SetCommandActive ( szCommandName, bHitState, NULL, szResource, false ) )
         {
             bSuccess = true;
         }
         bHitState = false;
         if ( ( !stricmp ( szHitState, "up" ) || !stricmp ( szHitState, "both" ) ) &&
-             pKeyBinds->RemoveCommand ( szKey, szCommandName, bCheckHitState, bHitState, szResource ) )
+             pKeyBinds->SetCommandActive ( szCommandName, bHitState, NULL, szResource, false ) )
         {
             bSuccess = true;
         }
