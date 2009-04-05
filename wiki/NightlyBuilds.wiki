@@ -8,9 +8,7 @@ Our automated build server takes care of building (and subsequently uploading) t
 
 == Introduction ==
 
-Nightly builds are meant as developer builds and are built daily by our automated server.
-
-They do not work straight out-of-the-box, as they exclude a few files that rarely change but are necessary to work. This is because of size and bandwidth issues, and the fact that they are meant as incremental updates for those that already have the necessary files installed.
+Nightly builds are experimental builds and thus do not work straight out-of-the-box, as they exclude a few files that rarely change but are necessary to work. This is because of size and bandwidth issues, and the fact that they are meant as incremental updates for those that already have the necessary files installed.
 
 Please bear in mind that these builds are developer builds and will be
 unstable. For a list of changes for each revision, head over to our
