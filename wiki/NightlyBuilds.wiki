@@ -1,6 +1,11 @@
 #summary Instructions on how to run the latest nightly developer build
 #labels Featured
 
+== Current build status ==
+Our automated build server takes care of building (and subsequently uploading) the latest revision. The current status of our automated builds can be seen in the widget below. The integration build starts every hour or so to check for build errors while the nightly build is built at midnight.
+
+<wiki:gadget url="http://www.mtasa.com/gadget/nightly.xml" height="150" width="610" border="0" />
+
 == Introduction ==
 
 Nightly builds are meant as developer builds and are built daily by our automated server.
