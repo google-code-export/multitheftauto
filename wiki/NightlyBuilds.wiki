@@ -2,7 +2,7 @@
 #labels Featured
 
 == Current build status ==
-Our automated build server takes care of building (and subsequently uploading) the latest revision. The current status of our automated builds can be seen in the widget below. The integration build starts every hour or so to check for build errors while the nightly build is built at midnight.
+Our automated build server takes care of building (and subsequently uploading) the latest revision. The current status of our automated builds can be seen in the widget below. The integration build starts every hour or so to check for build errors while the nightly build is built at 23:00 (GMT/DST).
 
 <wiki:gadget url="http://www.mtasa.com/gadget/nightly.xml" height="150" width="610" border="0" />
 
@@ -23,8 +23,6 @@ First off you should download the latest available nightly build.
   * You should pick the nightly with the *highest revision number*.
   * You can find all available nightly builds here: http://nightly.multitheftauto.com/
   * Run the installer
-
-_Nightlies should be updated on a daily basis.  They are built at 2300GMT, depending on changes that are made during that day.  You should always ensure you always have the latest nightly build installed._
 
 === Download the run dependencies ===
 You must also download and install run dependencies.  These are files which are required by MTA to run, but usually do not change and therefore are not included in the nightly build.
