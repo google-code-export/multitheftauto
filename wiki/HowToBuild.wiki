@@ -25,25 +25,31 @@ As the include paths in our Microsoft Visual Studio project files are already se
 
 *Example*: Check _http://multitheftauto.googlecode.com/svn/vendor/_ out to _c:\source\trunk\vendor_
 
-== 3. Extracting the dependencies ==
+If you see build errors relating to _dense_hash_map_ or _sparse_hash_map_, then this step may not have been completed successfully.
+
+== 4. Extracting the dependencies ==
 
 Not all third-party libraries are covered by vendor yet. The remaining libraries (for the client) are packed in a separate self extracting archive that can be downloaded through the [http://code.google.com/p/multitheftauto/downloads/list?can=2&q=label%3ABuildDependencies&colspec=Filename+Summary+Uploaded+Size+DownloadCount Downloads] tab.
 
 Make sure you download the latest revision of the _multitheftauto_deps-rXXX.exe_ file and extract it into your repository root so the directories match up.
 
-You will also need to extract the CEGUI libraries. Go to the _MTA10/dependencies/cegui_ directory and extract the _cegui-0.4.0-custom-lib.exe_ file in the same directory. The sources for these libraries are available as a separate download, but not required in order to build.
+After extraction, you will also need to copy the Lua dlls from the dependencies into the target directories thusly:<br>
+Copy MTA10_Server\dependencies\lua5.1.dll to C:\Program Files\MTA San Andreas\mods\deathmatch\<br>
+Copy MTA10_Server\dependencies\lua5.1d.dll to C:\Program Files\MTA San Andreas\mods\deathmatch\<br>
+Copy MTA10_Server\dependencies\lua5.1d.dll to MTA10_Server\output\mods\deathmatch\
 
-== 4. Building the source ==
+
+== 5. Building the source ==
 
 In order to build the source, you will need Microsoft Visual Studio. Open the project file in *Shared/Core.sln* (or *Shared/Core 2005.sln* for VS2005) and build using one of the project configurations _Debug_, _Release_ or _Nightly_. Note that everything will run significantly slower in _Debug_ mode.
 
-== 5. Getting the network module ==
+== 6. Getting the network module ==
 
 Since the _net.dll_ network modules for client and server are covered in a different license, you will have to get these from the [http://code.google.com/p/multitheftauto/downloads/list?can=2&q=label%3ANet&colspec=Filename+Summary+Uploaded+Size+DownloadCount Downloads] tab.
 
 Make sure you download the latest revision of the _multitheftauto_net-rXXX.zip_ file and extract it into your _Multi Theft Auto: San Andreas_ program files directory (not your GTA directory!). Bear in mind that these files are covered in a different license.
 
-== 6. Running the software ==
+== 7. Running the software ==
 
 You are almost ready to run your build of the Multi Theft Auto software.
 
