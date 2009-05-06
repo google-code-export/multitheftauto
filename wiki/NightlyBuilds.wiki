@@ -39,6 +39,9 @@ The latest resources are also available.   These components are only required if
 
 _Resources should also be updated fairly frequently.  They are built at 2300GMT, depending on changes that are made during that day.  You should always ensure you always have the latest resourecs package._
 
+=== Download DirectX === 
+You need DirectX (March 2009) installed. If you haven't updated DirectX since then, install [http://www.microsoft.com/downloads/details.aspx?FamilyId=2DA43D38-DB71-4C1B-BC6A-9B6652CD92A3&displaylang=en this] - it only takes a minute or so.
+
 === Start the game ===
 You have now installed all the components required to run a nightly build.  You should now be able to run both the client and the server, or join any servers that may be available.
 
