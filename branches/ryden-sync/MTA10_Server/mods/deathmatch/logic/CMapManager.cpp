@@ -458,8 +458,8 @@ void CMapManager::OnPlayerJoin ( CPlayer& Player )
     // Get global game settings
     float fGravity = g_pGame->GetGravity ();
     float fGameSpeed = g_pGame->GetGameSpeed ();
-    float fWaveHeight = g_pGame->GetWaveHeight ();
-
+    float fWaveHeight = g_pGame->GetWaterManager ()->GetGlobalWaveHeight ();
+    float fWaterLevel = g_pGame->GetWaterManager ()->GetGlobalWaterLevel ();
     // Get the sky gradient
     bool bHasSkyGradient = g_pGame->HasSkyGradient ();
     unsigned char ucTopRed, ucTopGreen, ucTopBlue;
@@ -490,6 +490,7 @@ void CMapManager::OnPlayerJoin ( CPlayer& Player )
                                    fGravity,
                                    fGameSpeed,
                                    fWaveHeight,
+                                   fWaterLevel,
                                    bHasSkyGradient,
                                    pbGarageStates,
                                    ucTopRed,

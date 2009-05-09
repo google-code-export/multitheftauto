@@ -212,6 +212,7 @@ public:
     // +180 = Vehicle upgrade position descriptors array (32 bytes each)
     // +720 = Number of possible colors
     // +726 = Word array as referenced in CVehicleModelInfo::GetVehicleUpgrade(int)
+    // +762 = Array of WORD containing something relative to paintjobs
     // +772 = Anim file index
 };
 
@@ -263,6 +264,8 @@ public:
 	bool			                IsValid                 ( void );
 	float			                GetDistanceFromCentreOfMassToBaseOfModel ( void );
     unsigned short                  GetTextureDictionaryID  ( void );
+    float                           GetLODDistance          ( void );
+    void                            SetLODDistance          ( float fDistance );
     void                            RestreamIPL             ( void );
 
 	void			                AddRef                  ( bool bWaitForLoad );

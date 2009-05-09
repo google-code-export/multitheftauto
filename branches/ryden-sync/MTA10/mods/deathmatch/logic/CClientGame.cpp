@@ -225,7 +225,7 @@ CClientGame::CClientGame ( bool bLocalPlay )
 
     m_pLuaManager->SetScriptDebugging ( m_pScriptDebugging );
     CStaticFunctionDefinitions::CStaticFunctionDefinitions ( m_pLuaManager, &m_Events, g_pCore, g_pGame, this, m_pManager );
-    CLuaFunctionDefinitions::CLuaFunctionDefinitions ( m_pLuaManager, m_pScriptDebugging, this );
+    CLuaFunctionDefs::Initialize ( m_pLuaManager, m_pScriptDebugging, this );
     CLuaDefs::Initialize ( this, m_pLuaManager, m_pScriptDebugging );
 
     // Disable the enter/exit vehicle key button (we want to handle this button ourselves)
@@ -2247,7 +2247,6 @@ void CClientGame::AddBuiltInEvents ( void )
 
     // Projectile events
     m_Events.AddEvent ( "onClientProjectileCreation", "creator", NULL, false );
-    m_Events.AddEvent ( "onClientProjectileDestruction", "", NULL, false );
 }
 
 
@@ -3873,7 +3872,7 @@ void CClientGame::ResetMapInfo ( void )
     g_pMultiplayer->ResetWater ();
 
     // Water
-    g_pGame->GetWaterManager ()->UndoChanges ();
+    g_pGame->GetWaterManager ()->Reset ();
 
     // Cheats
     g_pGame->ResetCheats ();

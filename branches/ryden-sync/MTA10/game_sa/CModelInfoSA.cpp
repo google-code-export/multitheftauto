@@ -507,6 +507,20 @@ unsigned short CModelInfoSA::GetTextureDictionaryID ()
     return ((CBaseModelInfoSAInterface**)ARRAY_ModelInfo)[m_dwModelID]->usTextureDictionary;
 }
 
+float CModelInfoSA::GetLODDistance ()
+{
+    if ( m_pInterface )
+        return m_pInterface->fLodDistanceUnscaled;
+
+    return 0.0f;
+}
+
+void CModelInfoSA::SetLODDistance ( float fDistance )
+{
+    if ( m_pInterface )
+        m_pInterface->fLodDistanceUnscaled = fDistance;
+}
+
 void CModelInfoSA::RestreamIPL ()
 {
     // This function restreams all instances of the model *that are from the default SA world (ipl)*.
@@ -757,9 +771,9 @@ void CModelInfoSA::SetColModel ( CColModel* pColModel )
 
 		// Apply some low-level hacks (copies the old col area and sets a flag)
 		DWORD pColModelInterface = (DWORD)pInterface;
-		DWORD pOldColModelInterface = (DWORD) m_pOriginalColModel;
+		//DWORD pOldColModelInterface = (DWORD) m_pOriginalColModel;
 		*((BYTE *)( pPool [m_dwModelID ] + 0x13 )) |= 8;
-		*((BYTE *)( pColModelInterface + 40 )) = *((BYTE *)( pOldColModelInterface + 40 ));
+		*((BYTE *)( pColModelInterface + 40 )) = 0xA9; //*((BYTE *)( pOldColModelInterface + 40 ));
 
 		// Extra flags (3064) -- needs to be tested
 		m_pInterface->bDoWeOwnTheColModel = false;

@@ -529,6 +529,7 @@ bool CEntityAddPacket::Write ( NetServerBitStreamInterface& BitStream ) const
                     unsigned char ucFlags = 0;
                     if ( pPed->HasJetPack () ) ucFlags |= 0x1;
                     if ( pPed->IsSyncable () ) ucFlags |= 0x2;
+                    if ( pPed->IsHeadless () ) ucFlags |= 0x4;
                     BitStream.Write ( ucFlags );
 
                     // alpha
@@ -849,7 +850,7 @@ bool CEntityAddPacket::Write ( NetServerBitStreamInterface& BitStream ) const
                 case CElement::WATER:
                 {
                     CWater* pWater = static_cast < CWater* > ( pElement );
-                    BYTE ucNumVertices = pWater->GetNumVertices ();
+                    BYTE ucNumVertices = (BYTE)pWater->GetNumVertices ();
                     BitStream.Write ( ucNumVertices );
                     CVector vecVertex;
                     for ( int i = 0; i < ucNumVertices; i++ )

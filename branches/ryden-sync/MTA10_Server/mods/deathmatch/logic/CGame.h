@@ -218,9 +218,6 @@ public:
     inline float                GetGameSpeed                ( void )        { return m_fGameSpeed; }
     inline void                 SetGameSpeed                ( float fGameSpeed )  { m_fGameSpeed = fGameSpeed; }
 
-    inline float                GetWaveHeight               ( void )        { return m_fWaveHeight; }
-    inline void                 SetWaveHeight               ( float fWaveHeight )  { m_fWaveHeight = fWaveHeight; }
-
     inline bool                 HasSkyGradient              ( void )        { return m_bHasSkyGradient; }
     inline void                 SetHasSkyGradient           ( bool bHasSkyGradient ) { m_bHasSkyGradient = bHasSkyGradient; }
 
@@ -233,6 +230,7 @@ public:
     void                        Unlock                      ( void );
 
     inline bool                 IsBeingDeleted              ( void )        { return m_bBeingDeleted; }
+    inline void                 ResetMapInfo                ( void );
 private:
     void                        AddBuiltInEvents            ( void );
     void                        SendPings                   ( void );
@@ -325,7 +323,6 @@ private:
 
     float                       m_fGravity;
     float                       m_fGameSpeed;
-    float                       m_fWaveHeight;
 
     unsigned char               m_ucSkyGradientTR, m_ucSkyGradientTG, m_ucSkyGradientTB;
     unsigned char               m_ucSkyGradientBR, m_ucSkyGradientBG, m_ucSkyGradientBB;

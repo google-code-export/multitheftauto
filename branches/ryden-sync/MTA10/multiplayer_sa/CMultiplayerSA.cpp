@@ -44,6 +44,7 @@ unsigned long CMultiplayerSA::HOOKPOS_CVehicle_SetupRender;
 unsigned long CMultiplayerSA::HOOKPOS_CVehicle_ResetAfterRender;
 unsigned long CMultiplayerSA::HOOKPOS_CObject_Render;
 unsigned long CMultiplayerSA::HOOKPOS_EndWorldColors;
+unsigned long CMultiplayerSA::HOOKPOS_CWorld_ProcessVerticalLineSectorList;
 
 unsigned long CMultiplayerSA::FUNC_CStreaming_Update;
 unsigned long CMultiplayerSA::FUNC_CAudioEngine__DisplayRadioStationName;
@@ -144,6 +145,7 @@ VOID HOOK_CVehicle_ResetAfterRender();
 VOID HOOK_CObject_Render ();
 VOID HOOK_EndWorldColors ();
 VOID HOOK_CGame_Process ();
+VOID HOOK_CWorld_ProcessVerticalLineSectorList ();
 
 CEntitySAInterface * dwSavedPlayerPointer = 0;
 CEntitySAInterface * activeEntityForStreaming = 0; // the entity that the streaming system considers active
@@ -239,6 +241,7 @@ void CMultiplayerSA::InitHooks()
     HookInstall(HOOKPOS_CVehicle_ResetAfterRender, (DWORD)HOOK_CVehicle_ResetAfterRender, 5);
     HookInstall(HOOKPOS_CObject_Render, (DWORD)HOOK_CObject_Render, 5);
 	HookInstall(HOOKPOS_EndWorldColors, (DWORD)HOOK_EndWorldColors, 5);
+    HookInstall(HOOKPOS_CWorld_ProcessVerticalLineSectorList, (DWORD)HOOK_CWorld_ProcessVerticalLineSectorList, 8);
 
     HookInstallCall ( CALL_CGame_Process, (DWORD)HOOK_CGame_Process );
     HookInstallCall ( CALL_CBike_ProcessRiderAnims, (DWORD)HOOK_CBike_ProcessRiderAnims );
@@ -766,7 +769,16 @@ void CMultiplayerSA::InitHooks()
     //*(WORD *)0x53DF55 = 0x9090;
 
     // Disallow spraying gang tags
-    memset ( (void *)0x565C5C, 0x90, 10 );
+    // Nop the whole CTagManager::IsTag function and replace it's body with:
+    // xor eax, eax
+    // ret
+    // to make it always return false
+    memset ( (void *)0x49CCE0, 0x90, 74 );
+    *(DWORD *)(0x49CCE0) = 0x90C3C033;
+    // Remove also some hardcoded and inlined checks for if it's a tag
+    memset ( (void *)0x53374A, 0x90, 56 );
+    *(BYTE *)(0x4C4403) = 0xEB;
+
 
     // Allow turning on vehicle lights even if the engine is off
     memset ( (void *)0x6E1DBC, 0x90, 8 );
@@ -779,6 +791,12 @@ void CMultiplayerSA::InitHooks()
     *(BYTE *)0x5E1E73 = 0xB9;
     *(BYTE *)0x5E1E74 = 0x00;
     *(BYTE *)0x5E1E77 = 0x90;
+
+    // Make all created objects to have a control code, so they can be checked for vertical line test HOOK
+    memset ( (void *)0x59FABC, 0x90, 90 );
+
+    // Avoid GTA setting vehicle first color to white after changing the paintjob
+    memset ( (void *)0x6D65C5, 0x90, 11 );
 }
 
 
@@ -2343,6 +2361,39 @@ VOID _declspec(naked) HOOK_EndWorldColors ()
     }
 }
 
+
+// This hook modifies the code in CWorld::ProcessVerticalLineSectorList to
+// force it to also check the world objects, so we can get a reliable ground
+// position on custom object maps. This will make getGroundPosition, jetpacks
+// and molotovs to work.
+static DWORD dwObjectsChecked = 0;
+static DWORD dwProcessVerticalKeepLooping = 0x5632D1;
+static DWORD dwProcessVerticalEndLooping = 0x56335F;
+static DWORD dwGlobalListOfObjects = 0xB9ACCC;
+VOID _declspec(naked) HOOK_CWorld_ProcessVerticalLineSectorList ( )
+{
+    _asm
+    {
+        test    ebp, ebp
+        jz      end_of_entities_list
+        jmp     dwProcessVerticalKeepLooping
+
+end_of_entities_list:
+        mov     eax, dwObjectsChecked
+        test    eax, eax
+        jnz     stop_looping
+        mov     dwObjectsChecked, 1
+        mov     ebp, dwGlobalListOfObjects
+        mov     ebp, [ebp]
+        test    ebp, ebp
+        jz      stop_looping
+        jmp     dwProcessVerticalKeepLooping
+
+stop_looping:
+        mov     dwObjectsChecked, 0
+        jmp     dwProcessVerticalEndLooping
+    }
+}
 
 
 

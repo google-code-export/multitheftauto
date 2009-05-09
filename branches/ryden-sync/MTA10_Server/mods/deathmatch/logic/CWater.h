@@ -31,13 +31,15 @@ public:
 
     const CVector&              GetPosition             ();
     void                        SetPosition             ( const CVector& vecPosition );
+    float                       GetLevel                () const;
+    void                        SetLevel                ( float fLevel );
 
     void                        Unlink                  ();
     bool                        ReadSpecialData         ();
 
-    EWaterType                  GetWaterType            ()  { return m_WaterType; }
-    int                         GetNumVertices          ()  { return m_WaterType == TRIANGLE ? 3 : 4; }
-    bool                        GetVertex               ( int index, CVector& vecPosition );
+    EWaterType                  GetWaterType            () const  { return m_WaterType; }
+    int                         GetNumVertices          () const  { return m_WaterType == TRIANGLE ? 3 : 4; }
+    bool                        GetVertex               ( int index, CVector& vecPosition ) const;
     void                        SetVertex               ( int index, CVector& vecPosition );
 
     bool                        Valid                   ();

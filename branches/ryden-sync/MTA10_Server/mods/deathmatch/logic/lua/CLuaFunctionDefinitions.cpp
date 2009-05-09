@@ -7934,7 +7934,7 @@ int CLuaFunctionDefinitions::SetWaterLevel ( lua_State* luaVM )
                      ( iArgument4 == LUA_TNUMBER || iArgument4 == LUA_TSTRING ) )
                 {
                     // (x, y, z, level)
-                    CVector vecPosition ( static_cast < float > ( lua_tonumber ( luaVM, 1 ) ),
+                    /*CVector vecPosition ( static_cast < float > ( lua_tonumber ( luaVM, 1 ) ),
                                           static_cast < float > ( lua_tonumber ( luaVM, 2 ) ),
                                           static_cast < float > ( lua_tonumber ( luaVM, 3 ) ) );
                     float fLevel = static_cast < float > ( lua_tonumber ( luaVM, 4 ) );
@@ -7942,13 +7942,15 @@ int CLuaFunctionDefinitions::SetWaterLevel ( lua_State* luaVM )
                     {
                         lua_pushboolean ( luaVM, true );
                         return 1;
-                    }
+                    }*/
+                    lua_pushboolean ( luaVM, false );
+                    return 1;
                 }
                 else
                 {
                     // (level)
                     float fLevel = static_cast < float > ( lua_tonumber ( luaVM, 1 ) );
-                    if ( CStaticFunctionDefinitions::SetWaterLevel ( (CVector *)NULL, fLevel, pResource ) )
+                    if ( CStaticFunctionDefinitions::SetWaterLevel ( (CVector *)NULL, fLevel ) )
                     {
                         lua_pushboolean ( luaVM, true );
                         return 1;
@@ -7963,7 +7965,7 @@ int CLuaFunctionDefinitions::SetWaterLevel ( lua_State* luaVM )
                 float fLevel = static_cast < float > ( lua_tonumber ( luaVM, 2 ) );
                 if ( pWater )
                 {
-                    if ( CStaticFunctionDefinitions::SetWaterLevel ( pWater, fLevel, pResource ) )
+                    if ( CStaticFunctionDefinitions::SetWaterLevel ( pWater, fLevel ) )
                     {
                         lua_pushboolean ( luaVM, true );
                         return 1;

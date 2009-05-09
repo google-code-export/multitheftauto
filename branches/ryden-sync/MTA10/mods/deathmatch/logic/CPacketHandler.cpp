@@ -505,6 +505,7 @@ void CPacketHandler::Packet_PlayerList ( NetBitStreamInterface& bitStream )
         bool bHasJetPack = ( ucFlags & 0x08 ) ? true:false;
         bool bNametagShowing = ( ucFlags & 0x10 ) ? true:false;
         bool bHasNametagColorOverridden = ( ucFlags & 0x20 ) ? true:false;
+        bool bIsHeadless = ( ucFlags & 0x40 ) ? true:false;
 
         // Player nametag text
         char szNametagText [MAX_PLAYER_NICK_LENGTH + 1];
@@ -640,10 +641,11 @@ void CPacketHandler::Packet_PlayerList ( NetBitStreamInterface& bitStream )
                         pPlayer->WarpIntoVehicle ( pVehicle, ucVehicleSeat );
                     }
                 }
-
+                pPlayer->SetHeadless ( bIsHeadless );
                 pPlayer->SetDimension ( usDimension );
                 pPlayer->SetFightingStyle ( ( eFightingStyle ) ucFightingStyle );
                 pPlayer->SetAlpha ( ucAlpha );
+
                 pPlayer->SetInterior ( ucInterior );
             }
 
@@ -1845,6 +1847,11 @@ void CPacketHandler::Packet_MapInfo ( NetBitStreamInterface& bitStream )
     bitStream.Read ( fWaveHeight );
     g_pGame->GetWaterManager ()->SetWaveLevel ( fWaveHeight );
 
+    float fWaterLevel = 0.0f;
+    bitStream.Read ( fWaterLevel );
+    if ( fWaterLevel != 0.0f )
+        g_pGame->GetWaterManager ()->SetWaterLevel ( (CVector *)NULL, fWaterLevel ); 
+
 	short sFPSLimit = 36;
 	bitStream.Read ( sFPSLimit );
 
@@ -2707,6 +2714,7 @@ void CPacketHandler::Packet_EntityAdd ( NetBitStreamInterface& bitStream )
                     bitStream.Read ( ucFlags );
                     bool bHasJetPack = ( ucFlags & 0x1 ) > 0;
                     bool bSynced = ( ucFlags & 0x2 ) > 0;
+                    bool bIsHeadless = ( ucFlags & 0x4 ) > 0;
 
                     CClientPed* pPed = new CClientPed ( g_pClientGame->m_pManager, usModel, EntityID );
                     pEntity = pPed;
@@ -2723,6 +2731,7 @@ void CPacketHandler::Packet_EntityAdd ( NetBitStreamInterface& bitStream )
                     }
                     if ( pVehicle ) pPed->WarpIntoVehicle ( pVehicle, ucSeat );
                     pPed->SetHasJetPack ( bHasJetPack );
+                    pPed->SetHeadless ( bIsHeadless );
 
                     // Alpha
                     unsigned char ucAlpha;

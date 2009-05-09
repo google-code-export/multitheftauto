@@ -3,7 +3,7 @@
 *  PROJECT:     Multi Theft Auto v1.0
 *  LICENSE:     See LICENSE in the top level directory
 *  FILE:        mods/deathmatch/logic/CWater.cpp
-*  PURPOSE:     Object entity class
+*  PURPOSE:     Water entity class
 *  DEVELOPERS:  arc_
 *
 *  Multi Theft Auto is available from http://www.multitheftauto.com/
@@ -48,7 +48,7 @@ const CVector& CWater::GetPosition ()
     {
         m_vecPosition += m_Vertices [ i ];
     }
-    m_vecPosition /= static_cast < float >( GetNumVertices () );
+    m_vecPosition /= static_cast < float > ( GetNumVertices () );
     return m_vecPosition;
 }
 
@@ -62,9 +62,27 @@ void CWater::SetPosition ( const CVector& vecPosition )
     RoundVertices ();
 }
 
+float CWater::GetLevel () const
+{
+    float fLevel = 0.0f;
+    for ( int i = 0; i < GetNumVertices (); i++ )
+    {
+        fLevel += m_Vertices [ i ].fZ;
+    }
+    return fLevel / static_cast < float > ( GetNumVertices () );
+}
+
+void CWater::SetLevel ( float fLevel )
+{
+    for ( int i = 0; i < GetNumVertices (); i++ )
+    {
+        m_Vertices [ i ].fZ = fLevel;
+    }
+}
+
 bool CWater::ReadSpecialData ()
 {
-    char szPropName[10];
+    char szPropName [ 10 ];
     m_WaterType = QUAD;
     for ( int i = 0; i < 4; i++ )
     {
@@ -121,7 +139,7 @@ bool CWater::ReadSpecialData ()
     return true;
 }
 
-bool CWater::GetVertex ( int index, CVector& vecPosition )
+bool CWater::GetVertex ( int index, CVector& vecPosition ) const
 {
     if ( index < 0 || index >= GetNumVertices () )
         return false;

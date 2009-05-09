@@ -1552,6 +1552,9 @@ bool CStaticFunctionDefinitions::SetPedCanBeKnockedOffBike ( CClientEntity& Enti
     {
         CClientPed& Ped = static_cast < CClientPed& > ( Entity );
 
+        if ( IS_PLAYER ( &Entity ) && !Ped.IsLocalPlayer() )
+            return false;
+
         Ped.SetCanBeKnockedOffBike ( bCanBeKnockedOffBike );
         return true;
     }
@@ -4535,6 +4538,12 @@ bool CStaticFunctionDefinitions::GetGarageBoundingBox ( unsigned char ucGarageID
 bool CStaticFunctionDefinitions::SetBlurLevel ( unsigned char ucLevel )
 {
     g_pGame->SetBlurLevel ( ucLevel );
+    return true;
+}
+
+bool CStaticFunctionDefinitions::SetJetpackMaxHeight ( float fHeight )
+{
+    g_pGame->GetWorld ()->SetJetpackMaxHeight ( fHeight );
     return true;
 }
 
