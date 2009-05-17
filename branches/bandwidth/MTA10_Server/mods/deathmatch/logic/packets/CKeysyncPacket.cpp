@@ -34,7 +34,7 @@ bool CKeysyncPacket::Read ( NetServerBitStreamInterface& BitStream )
 
         // Flags
         SKeysyncFlags flags;
-        BitStream.Read ( reinterpret_cast < char* > ( &flags ), SKeysyncFlags::BITCOUNT );
+        BitStream.ReadBits ( reinterpret_cast < char* > ( &flags ), SKeysyncFlags::BITCOUNT );
 
         // Set the ducked and choking state
         pSourcePlayer->SetDucked ( flags.bIsDucked );
