@@ -31,6 +31,7 @@
 #include <xml/CXMLAttribute.h>
 #include <net/CNet.h>
 #include <net/packetenums.h>
+#include <net/SyncStructures.h>
 #include <game/CGame.h>
 #include <CVector.h>
 #include <CMatrix4.h>

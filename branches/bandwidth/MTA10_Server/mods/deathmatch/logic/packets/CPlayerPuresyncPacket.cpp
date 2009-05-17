@@ -39,21 +39,22 @@ bool CPlayerPuresyncPacket::Read ( NetServerBitStreamInterface& BitStream )
         ReadFullKeysync ( ControllerState, BitStream );
         pSourcePlayer->GetPad ()->NewControllerState ( ControllerState );
 
-        unsigned short usFlags;
-        BitStream.Read ( (unsigned short &) usFlags );
-        pSourcePlayer->SetInWater ( ( usFlags & 0x01 ) ? true:false );
-        pSourcePlayer->SetOnGround ( ( usFlags & 0x02 ) ? true:false );
-        pSourcePlayer->SetHasJetPack ( ( usFlags & 0x04 ) ? true:false );
-        pSourcePlayer->SetDucked ( ( usFlags & 0x08 ) ? true:false );
-        pSourcePlayer->SetWearingGoggles ( ( usFlags & 0x10 ) ? true:false );
-        bool bInContact = ( usFlags & 0x20 ) ? true:false;
-        pSourcePlayer->SetChoking ( ( usFlags & 0x40 ) ? true:false );
-        pSourcePlayer->SetAkimboArmUp ( ( usFlags & 0x80 ) ? true:false );
-        pSourcePlayer->SetOnFire ( ( usFlags & 0x100 ) ? true:false );
+        // Read the flags
+        SPlayerPuresyncFlags flags;
+        BitStream.ReadBits ( reinterpret_cast < char * > ( &flags ), SPlayerPuresyncFlags::BITCOUNT );
+
+        pSourcePlayer->SetInWater ( flags.bIsInWater );
+        pSourcePlayer->SetOnGround ( flags.bIsOnGround );
+        pSourcePlayer->SetHasJetPack ( flags.bHasJetPack );
+        pSourcePlayer->SetDucked ( flags.bIsDucked );
+        pSourcePlayer->SetWearingGoggles ( flags.bWearsGoogles );
+        pSourcePlayer->SetChoking ( flags.bIsChoking );
+        pSourcePlayer->SetAkimboArmUp ( flags.bAkimboTargetUp );
+        pSourcePlayer->SetOnFire ( flags.bIsOnFire );
 
         // Contact element
         CElement* pContactElement = NULL;
-        if ( bInContact )
+        if ( flags.bHasContact )
         {            
             ElementID Temp;
             BitStream.Read ( Temp );
@@ -239,16 +240,16 @@ bool CPlayerPuresyncPacket::Write ( NetServerBitStreamInterface& BitStream ) con
         CElement* pContactElement = pSourcePlayer->GetContactElement ();
 
         // Flags
-        unsigned short usFlags = 0;
-        if ( pSourcePlayer->IsInWater () ) usFlags |= 0x01;
-        if ( pSourcePlayer->IsOnGround () ) usFlags |= 0x02;
-        if ( pSourcePlayer->HasJetPack () ) usFlags |= 0x04;
-        if ( pSourcePlayer->IsDucked () ) usFlags |= 0x08;
-        if ( pSourcePlayer->IsWearingGoggles () ) usFlags |= 0x10;
-        if ( pContactElement ) usFlags |= 0x20;
-        if ( pSourcePlayer->IsChoking () ) usFlags |= 0x40;
-        if ( pSourcePlayer->IsAkimboArmUp () ) usFlags |= 0x80;
-        if ( pSourcePlayer->IsOnFire () ) usFlags |= 0x100;
+        SPlayerPuresyncFlags flags;
+        flags.bIsInWater = ( pSourcePlayer->IsInWater () == true );
+        flags.bIsOnGround = ( pSourcePlayer->IsOnGround () == true );
+        flags.bHasJetPack = ( pSourcePlayer->HasJetPack () == true );
+        flags.bIsDucked = ( pSourcePlayer->IsDucked () == true );
+        flags.bWearsGoogles = ( pSourcePlayer->IsWearingGoggles () == true );
+        flags.bHasContact = ( pContactElement != NULL );
+        flags.bIsChoking = ( pSourcePlayer->IsChoking () == true );
+        flags.bAkimboTargetUp = ( pSourcePlayer->IsAkimboArmUp () == true );
+        flags.bIsOnFire = ( pSourcePlayer->IsOnFire () == true );
 
         CVector vecPosition = pSourcePlayer->GetPosition ();
         if ( pContactElement )
@@ -268,7 +269,7 @@ bool CPlayerPuresyncPacket::Write ( NetServerBitStreamInterface& BitStream ) con
 
         BitStream.Write ( usLatency );
         WriteFullKeysync ( ControllerState, BitStream );   
-        BitStream.Write ( usFlags );
+        BitStream.WriteBits ( reinterpret_cast < const char* > ( &flags ), SPlayerPuresyncFlags::BITCOUNT );
         
         if ( pContactElement )
             BitStream.Write ( pContactElement->GetID () );            

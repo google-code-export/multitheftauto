@@ -22,7 +22,7 @@ public:
 	virtual void        Reset                           ( void ) = 0;
     virtual void        ResetReadPointer                ( void ) = 0;
 	
-	//virtual void        Write                           ( const bool& input ) = 0;
+	virtual void        Write                           ( const bool& input ) = 0;
 	virtual void        Write                           ( const unsigned char& input ) = 0;
 	virtual void        Write                           ( const char& input ) = 0;
 	virtual void        Write                           ( const unsigned short& input ) = 0;
@@ -45,6 +45,8 @@ public:
 	virtual void        WriteCompressed                 ( const long& input ) = 0;
 	virtual void        WriteCompressed                 ( const float& input ) = 0;
 	virtual void        WriteCompressed                 ( const double& input ) = 0;
+
+    virtual void        WriteBits                       ( const char* input, unsigned int numbits ) = 0;
 
 	// Write a normalized 3D vector, using (at most) 4 bytes + 3 bits instead of 12 bytes.  Will further compress y or z axis aligned vectors. Accurate to 1/32767.5.
 	virtual void WriteNormVector( float x, float y, float z ) = 0;
@@ -84,6 +86,9 @@ public:
 	virtual bool        ReadCompressed                  ( long& output ) = 0;
 	virtual bool        ReadCompressed                  ( float& output ) = 0;
 	virtual bool        ReadCompressed                  ( double& output ) = 0;
+
+    virtual bool        ReadBits                    ( char* output, unsigned int numbits ) = 0;
+    virtual bool        ReadBit                     ( ) = 0;
 
 	virtual bool ReadNormVector( float &x, float &y, float &z ) = 0;
 	virtual bool ReadVector( float &x, float &y, float &z ) = 0;

@@ -730,27 +730,16 @@ void CNetAPI::ReadPlayerPuresync ( CClientPlayer* pPlayer, NetBitStreamInterface
     ReadFullKeysync ( ControllerState, BitStream );
 
     // Read out puresync flags
-    unsigned short usFlags = 0;
-    BitStream.Read ( ( unsigned short )usFlags );
-
-    // Convert them to bools
-    bool bInWater = ( usFlags & 0x01 ) ? true:false;
-    bool bOnGround = ( usFlags & 0x02 ) ? true:false;
-    bool bHasJetPack = ( usFlags & 0x04 ) ? true:false;
-    bool bDucked = ( usFlags & 0x08 ) ? true:false;
-    bool bWearingGoggles = ( usFlags & 0x10 ) ? true:false;
-    bool bInContact = ( usFlags & 0x20 ) ? true:false;
-    bool bIsChoking = ( usFlags & 0x40 ) ? true:false;
-    bool bAimAkimboUp = ( usFlags & 0x80 ) ? true:false;
-    bool bIsOnFire = ( usFlags & 0x100 ) ? true:false;
+    SPlayerPuresyncFlags flags;
+    BitStream.ReadBits ( reinterpret_cast < char* > ( &flags ), SPlayerPuresyncFlags::BITCOUNT );
 
     // Set the jetpack and google states
-    if ( bHasJetPack != pPlayer->HasJetPack () )
-        pPlayer->SetHasJetPack ( bHasJetPack );
-    pPlayer->SetWearingGoggles ( bWearingGoggles );
+    if ( flags.bHasJetPack != pPlayer->HasJetPack () )
+        pPlayer->SetHasJetPack ( flags.bHasJetPack );
+    pPlayer->SetWearingGoggles ( flags.bWearsGoogles );
 
     CClientEntity* pContactEntity = NULL;
-    if ( bInContact )
+    if ( flags.bHasContact )
     {
         ElementID Temp;
         BitStream.Read ( Temp );
@@ -827,7 +816,7 @@ void CNetAPI::ReadPlayerPuresync ( CClientPlayer* pPlayer, NetBitStreamInterface
 		// Make sure that if he doesn't have an akimbo weapon his hands up state is false
 		if ( !IsWeaponIDAkimbo ( ucCurrentWeapon ) )
 		{
-			bAimAkimboUp = false;
+            flags.bAkimboTargetUp = false;
 		}
 
         // Read out the aim directions
@@ -848,7 +837,7 @@ void CNetAPI::ReadPlayerPuresync ( CClientPlayer* pPlayer, NetBitStreamInterface
         BitStream.Read ( vecTemp.fZ );
 
         // Interpolate the aiming
-        pPlayer->SetAimInterpolated ( TICK_RATE, fArmX, fArmY, bAimAkimboUp, 0 );
+        pPlayer->SetAimInterpolated ( TICK_RATE, fArmX, fArmY, flags.bAkimboTargetUp, 0 );
 
         // Interpolate the source/target vectors
         pPlayer->SetTargetTarget ( TICK_RATE, vecSource, vecTemp );
@@ -883,9 +872,9 @@ void CNetAPI::ReadPlayerPuresync ( CClientPlayer* pPlayer, NetBitStreamInterface
     pPlayer->SetMoveSpeed ( vecMoveSpeed );
     pPlayer->SetControllerState ( ControllerState );
     pPlayer->SetCameraRotation ( fCameraRotation );
-    pPlayer->Duck ( bDucked );
-    pPlayer->SetChoking ( bIsChoking );
-    pPlayer->SetOnFire ( bIsOnFire );
+    pPlayer->Duck ( flags.bIsDucked );
+    pPlayer->SetChoking ( flags.bIsChoking );
+    pPlayer->SetOnFire ( flags.bIsOnFire );
 
     // Remember now as the last puresync time
     pPlayer->SetLastPuresyncTime ( CClientTime::GetTime () );
@@ -907,17 +896,18 @@ void CNetAPI::WritePlayerPuresync ( CClientPed* pPlayerModel, NetBitStreamInterf
     CClientEntity* pContactEntity = pPlayerModel->GetContactEntity ();
     bool bInContact = ( pContactEntity && pContactEntity->GetID () != INVALID_ELEMENT_ID && !pContactEntity->IsLocalEntity() );
 
-    unsigned short usFlags = 0;
-    if ( pPlayerModel->IsInWater () ) usFlags |= 0x01;
-    if ( pPlayerModel->IsOnGround () ) usFlags |= 0x02;
-    if ( pPlayerModel->HasJetPack () ) usFlags |= 0x04;
-    if ( pPlayerModel->IsDucked () ) usFlags |= 0x08;
-    if ( pPlayerModel->IsWearingGoggles () ) usFlags |= 0x10;
-    if ( bInContact ) usFlags |= 0x20;
-    if ( pPlayerModel->IsChoking () ) usFlags |= 0x40;
-    if ( g_pMultiplayer->GetAkimboTargetUp () ) usFlags |= 0x80;
-    if ( pPlayerModel->IsOnFire () ) usFlags |= 0x100;
-    BitStream.Write ( (unsigned short) usFlags );
+    // Write the flags
+    SPlayerPuresyncFlags flags;
+    flags.bIsInWater = ( pPlayerModel->IsInWater () == true );
+    flags.bIsOnGround = ( pPlayerModel->IsOnGround () == true );
+    flags.bHasJetPack = ( pPlayerModel->HasJetPack () == true );
+    flags.bIsDucked = ( pPlayerModel->IsDucked () == true );
+    flags.bWearsGoogles = ( pPlayerModel->IsWearingGoggles () == true );
+    flags.bHasContact = bInContact;
+    flags.bIsChoking = ( pPlayerModel->IsChoking () == true );
+    flags.bAkimboTargetUp = ( g_pMultiplayer->GetAkimboTargetUp () == true );
+    flags.bIsOnFire = ( pPlayerModel->IsOnFire () == true );
+    BitStream.WriteBits ( reinterpret_cast < const char* > ( &flags ), SPlayerPuresyncFlags::BITCOUNT );
 
     // Player position
     CVector vecActualPosition;
