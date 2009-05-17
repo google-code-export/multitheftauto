@@ -478,13 +478,8 @@ void CNetAPI::ReadKeysync ( CClientPlayer* pPlayer, NetBitStreamInterface& BitSt
     ReadSmallKeysync ( ControllerState, LastControllerState, BitStream );
 
     // Flags
-    unsigned char ucFlags;
-    BitStream.Read ( ucFlags );
-
-    // Decode the flags
-    bool bDucked = ( ucFlags & 0x01 ) ? true:false;;
-    bool bChoking = ( ucFlags & 0x02 ) ? true:false;;
-    bool bAimAkimboUp = ( ucFlags & 0x04 ) ? true:false;;
+    SKeysyncFlags flags;
+    BitStream.ReadBits ( reinterpret_cast < char* > ( &flags ), SKeysyncFlags::BITCOUNT );
 
     // Grab the occupied vehicle
     CClientVehicle* pVehicle = pPlayer->GetOccupiedVehicle ();
@@ -493,15 +488,19 @@ void CNetAPI::ReadKeysync ( CClientPlayer* pPlayer, NetBitStreamInterface& BitSt
     // If he's shooting
     if ( ControllerState.ButtonCircle )
     {
-        // Read out his current weapon
-        unsigned char ucCurrentWeaponSlot;
-        unsigned char ucCurrentWeaponType;
+        // Read out his current weapon slot
+        SWeaponSlotSync slot;
+        BitStream.ReadBits ( reinterpret_cast < char *> ( &slot ), SWeaponSlotSync::BITCOUNT );
 
-        BitStream.Read ( ucCurrentWeaponSlot );
-        BitStream.Read ( ucCurrentWeaponType );
-
-        if ( ucCurrentWeaponType != 0 )
+        if ( slot.uiSlot != 0 && slot.uiSlot != 1 && slot.uiSlot != 10 && slot.uiSlot != 11 )
         {
+            CWeapon* pWeapon = pPlayer->GetWeapon ( static_cast < eWeaponSlot > ( slot.uiSlot ) );
+            unsigned char ucCurrentWeaponType = 0;
+            if ( pWeapon )
+            {
+                ucCurrentWeaponType = pWeapon->GetType ();
+            }
+
             // Is the current weapon a goggle (44 or 45) or a camera (43), detonator (40), don't apply the fire key
             if ( ucCurrentWeaponType == 44 || ucCurrentWeaponType == 45 || ucCurrentWeaponType == 43 || ucCurrentWeaponType == 40 )
             {
@@ -517,7 +516,7 @@ void CNetAPI::ReadKeysync ( CClientPlayer* pPlayer, NetBitStreamInterface& BitSt
             {
                 if ( pVehicle )
                 {
-
+                    // TODO?
                 }
                 else
                 {
@@ -539,7 +538,7 @@ void CNetAPI::ReadKeysync ( CClientPlayer* pPlayer, NetBitStreamInterface& BitSt
 			// Make sure that if he doesn't have an akimbo weapon his hands up state is false
 			if ( !IsWeaponIDAkimbo ( ucCurrentWeaponType ) )
 			{
-				bAimAkimboUp = false;
+                flags.bAkimboTargetUp = false;
 			}
 
             // Read out the aim directions
@@ -570,12 +569,16 @@ void CNetAPI::ReadKeysync ( CClientPlayer* pPlayer, NetBitStreamInterface& BitSt
             else
             {
                 pPlayer->SetTargetTarget ( TICK_RATE, vecSource, vecTemp );
-                pPlayer->SetAimInterpolated ( TICK_RATE, fArmX, fArmY, bAimAkimboUp, ucDriveByAim );
+                pPlayer->SetAimInterpolated ( TICK_RATE, fArmX, fArmY, flags.bAkimboTargetUp, ucDriveByAim );
             }
+        }
+        else if ( slot.uiSlot != 0 )
+        {
+            pPlayer->AddChangeWeapon ( TICK_RATE, static_cast < eWeaponSlot > ( slot.uiSlot ), 1 );
         }
         else
         {
-            pPlayer->AddChangeWeapon ( TICK_RATE, 0, 0 );
+            pPlayer->SetCurrentWeaponSlot ( static_cast < eWeaponSlot > ( 0 ) );
         }
     }
 
@@ -610,8 +613,8 @@ void CNetAPI::ReadKeysync ( CClientPlayer* pPlayer, NetBitStreamInterface& BitSt
         // null out the crouch key or it will conflict with the crouch syncing
         ControllerState.ShockButtonL = 0;
         pPlayer->SetControllerState ( ControllerState );
-        pPlayer->Duck ( bDucked );   
-        pPlayer->SetChoking ( bChoking );       
+        pPlayer->Duck ( flags.bIsDucked );   
+        pPlayer->SetChoking ( flags.bIsChoking );       
     }
 
     // Increment keysync counter
@@ -631,13 +634,13 @@ void CNetAPI::WriteKeysync ( CClientPed* pPlayerModel, NetBitStreamInterface& Bi
     WriteSmallKeysync ( ControllerState, LastControllerState, BitStream );
 
     // Flags
-    unsigned char ucFlags = 0;
-    ucFlags |= pPlayerModel->IsDucked () ? 1:0;
-    ucFlags |= pPlayerModel->IsChoking () << 1;
-    ucFlags |= g_pMultiplayer->GetAkimboTargetUp () << 2;
+    SKeysyncFlags flags;
+    flags.bIsDucked = ( pPlayerModel->IsDucked () == true );
+    flags.bIsChoking = ( pPlayerModel->IsChoking () == true );
+    flags.bAkimboTargetUp = ( g_pMultiplayer->GetAkimboTargetUp () == true );
 
     // Write the flags
-    BitStream.Write ( ucFlags );
+    BitStream.WriteBits ( reinterpret_cast < const char* > ( &flags ), SKeysyncFlags::BITCOUNT );
 
     // Are we shooting?
     if ( ControllerState.ButtonCircle )
@@ -646,14 +649,14 @@ void CNetAPI::WriteKeysync ( CClientPed* pPlayerModel, NetBitStreamInterface& Bi
         CWeapon * pPlayerWeapon = pPlayerModel->GetWeapon ();
         if ( pPlayerWeapon )
         {
+            BitStream.Write ( (bool)true );
+
             // Write the type
-            unsigned char ucSlot = static_cast < unsigned char > ( pPlayerWeapon->GetSlot () );
-            unsigned char ucType = static_cast < unsigned char > ( pPlayerWeapon->GetType () );
+            SWeaponSlotSync slot;
+            slot.uiSlot = pPlayerWeapon->GetSlot ();
+            BitStream.WriteBits ( reinterpret_cast < const char* > ( &slot ), SWeaponSlotSync::BITCOUNT );
 
-            BitStream.Write ( ucSlot );
-            BitStream.Write ( ucType );
-
-            if ( ucType != 0 )
+            if ( slot.uiSlot != 0 && slot.uiSlot != 1 && slot.uiSlot != 10 && slot.uiSlot != 11 )
             {
                  // Write the clip ammo
                 unsigned short usAmmoInClip = static_cast < unsigned short > ( pPlayerWeapon->GetAmmoInClip () );
@@ -683,8 +686,7 @@ void CNetAPI::WriteKeysync ( CClientPed* pPlayerModel, NetBitStreamInterface& Bi
         }
         else
         {
-            BitStream.Write ( static_cast < unsigned char > ( 0 ) ); // Slot
-            BitStream.Write ( static_cast < unsigned char > ( 0 ) ); // Type
+            BitStream.Write ( (bool)false );
         }
     }
 
@@ -794,11 +796,14 @@ void CNetAPI::ReadPlayerPuresync ( CClientPlayer* pPlayer, NetBitStreamInterface
         SWeaponSlotSync slot;
         BitStream.ReadBits ( reinterpret_cast < char* > ( &slot ), SWeaponSlotSync::BITCOUNT );
 
-        pPlayer->SetCurrentWeaponSlot ( static_cast < eWeaponSlot > ( slot.uiSlot ) );
-
         if ( slot.uiSlot != 0 && slot.uiSlot != 1 && slot.uiSlot != 10 && slot.uiSlot != 11 )
         {
-            unsigned char ucCurrentWeapon = pPlayer->GetCurrentWeaponType ();
+            CWeapon* pWeapon = pPlayer->GetWeapon ( static_cast < eWeaponSlot > ( slot.uiSlot ) );
+            unsigned char ucCurrentWeapon = 0;
+            if ( pWeapon )
+            {
+                ucCurrentWeapon = pWeapon->GetType ();
+            }
 
             // Is the current weapon a goggle (44 or 45) or a camera (43), or a detonator (40), don't apply the fire key
             if ( ucCurrentWeapon == 44 || ucCurrentWeapon == 45 || ucCurrentWeapon == 43 || ucCurrentWeapon == 40 )
@@ -848,6 +853,10 @@ void CNetAPI::ReadPlayerPuresync ( CClientPlayer* pPlayer, NetBitStreamInterface
 
             // Interpolate the source/target vectors
             pPlayer->SetTargetTarget ( TICK_RATE, vecSource, vecTemp );
+        }
+        else
+        {
+            pPlayer->SetCurrentWeaponSlot ( static_cast < eWeaponSlot > ( slot.uiSlot ) );
         }
     }
     else

@@ -33,66 +33,66 @@ bool CKeysyncPacket::Read ( NetServerBitStreamInterface& BitStream )
         ReadSmallKeysync ( ControllerState, LastControllerState, BitStream );        
 
         // Flags
-        unsigned char ucFlags;
-        BitStream.Read ( ucFlags );
-
-        // Decode the flags
-        bool bDucked = ( ucFlags & 0x01 ) ? true:false;
-        bool bChoking = ( ucFlags & 0x02 ) ? true:false;
-        bool bArmUp = ( ucFlags & 0x04 ) ? true:false;
+        SKeysyncFlags flags;
+        BitStream.Read ( reinterpret_cast < char* > ( &flags ), SKeysyncFlags::BITCOUNT );
 
         // Set the ducked and choking state
-        pSourcePlayer->SetDucked ( bDucked );
-        pSourcePlayer->SetChoking ( bChoking );
+        pSourcePlayer->SetDucked ( flags.bIsDucked );
+        pSourcePlayer->SetChoking ( flags.bIsChoking );
 
         // If he's shooting
         if ( ControllerState.ButtonCircle )
         {
-            // Read out the current weapon slot and set it
-            unsigned char ucCurrentWeaponSlot;
-            unsigned char ucCurrentWeaponType;
+            bool bHasWeapon = BitStream.ReadBit ();
 
-            BitStream.Read ( ucCurrentWeaponSlot );
-            BitStream.Read ( ucCurrentWeaponType );
-
-            pSourcePlayer->SetWeaponSlot ( ucCurrentWeaponSlot );
-            pSourcePlayer->SetWeaponType ( ucCurrentWeaponType );
-
-            // Did he have a weapon?
-            if ( ucCurrentWeaponType != 0 )
+            if ( bHasWeapon )
             {
-                // And ammo in clip
-                unsigned short usAmmoInClip;
-                BitStream.Read ( usAmmoInClip );
-                pSourcePlayer->SetWeaponAmmoInClip ( usAmmoInClip );
+                // Read out the current weapon slot and set it
+                SWeaponSlotSync slot;
+                BitStream.ReadBits ( reinterpret_cast < char* > ( &slot ), SWeaponSlotSync::BITCOUNT );
 
-				// Read out the aim directions
-				float fArmX, fArmY;
-				BitStream.Read ( fArmX );
-				BitStream.Read ( fArmY );
+                pSourcePlayer->SetWeaponSlot ( slot.uiSlot );
 
-				// Set the arm directions and whether or not arms are up
-				pSourcePlayer->SetAimDirections ( fArmX, fArmY );
-				pSourcePlayer->SetAkimboArmUp ( bArmUp );
+                // Did he have a weapon?
+                if ( slot.uiSlot != 0 && slot.uiSlot != 1 && slot.uiSlot != 10 && slot.uiSlot != 11 )
+                {
+                    // And ammo in clip
+                    unsigned short usAmmoInClip;
+                    BitStream.Read ( usAmmoInClip );
+                    pSourcePlayer->SetWeaponAmmoInClip ( usAmmoInClip );
 
-                // Source vector
-                CVector vecTemp;
-                BitStream.Read ( vecTemp.fX );
-                BitStream.Read ( vecTemp.fY );
-                BitStream.Read ( vecTemp.fZ );
-                pSourcePlayer->SetSniperSourceVector ( vecTemp );
+				    // Read out the aim directions
+				    float fArmX, fArmY;
+				    BitStream.Read ( fArmX );
+				    BitStream.Read ( fArmY );
 
-                // Read out the weapon target vector
-                CVector vecTarget;
-                BitStream.Read ( vecTarget.fX );
-                BitStream.Read ( vecTarget.fY );
-                BitStream.Read ( vecTarget.fZ );
-                pSourcePlayer->SetTargettingVector ( vecTarget );
+				    // Set the arm directions and whether or not arms are up
+				    pSourcePlayer->SetAimDirections ( fArmX, fArmY );
+                    pSourcePlayer->SetAkimboArmUp ( flags.bAkimboTargetUp );
 
-                // Read out the driveby direction
-                unsigned char ucDriveByDirection;
-                BitStream.Read ( ucDriveByDirection );
-                pSourcePlayer->SetDriveByDirection ( ucDriveByDirection );
+                    // Source vector
+                    CVector vecTemp;
+                    BitStream.Read ( vecTemp.fX );
+                    BitStream.Read ( vecTemp.fY );
+                    BitStream.Read ( vecTemp.fZ );
+                    pSourcePlayer->SetSniperSourceVector ( vecTemp );
+
+                    // Read out the weapon target vector
+                    CVector vecTarget;
+                    BitStream.Read ( vecTarget.fX );
+                    BitStream.Read ( vecTarget.fY );
+                    BitStream.Read ( vecTarget.fZ );
+                    pSourcePlayer->SetTargettingVector ( vecTarget );
+
+                    // Read out the driveby direction
+                    unsigned char ucDriveByDirection;
+                    BitStream.Read ( ucDriveByDirection );
+                    pSourcePlayer->SetDriveByDirection ( ucDriveByDirection );
+                }
+            }
+            else
+            {
+                pSourcePlayer->SetWeaponSlot ( 0 );
             }
         }
 
@@ -144,25 +144,23 @@ bool CKeysyncPacket::Write ( NetServerBitStreamInterface& BitStream ) const
         WriteSmallKeysync ( ControllerState, LastControllerState, BitStream );
 
         // Flags
-        unsigned char ucFlags = 0;
-        ucFlags |= pSourcePlayer->IsDucked () ? 1:0;
-        ucFlags |= pSourcePlayer->IsChoking () << 1;
-        ucFlags |= pSourcePlayer->IsAkimboArmUp () << 2;
+        SKeysyncFlags flags;
+        flags.bIsDucked = ( pSourcePlayer->IsDucked () == true );
+        flags.bIsChoking = ( pSourcePlayer->IsChoking () == true );
+        flags.bAkimboTargetUp = ( pSourcePlayer->IsAkimboArmUp () == true );
 
         // Write the flags
-        BitStream.Write ( ucFlags );
+        BitStream.WriteBits ( reinterpret_cast < const char* > ( &flags ), SKeysyncFlags::BITCOUNT );
 
         // If he's shooting
         if ( ControllerState.ButtonCircle )
         {
-            // Write his current weapon
-            unsigned char ucCurrentWeaponSlot = pSourcePlayer->GetWeaponSlot ();
-            unsigned char ucCurrentWeaponType = pSourcePlayer->GetWeaponType ();
+            // Write his current weapon slot
+            SWeaponSlotSync slot;
+            slot.uiSlot = pSourcePlayer->GetWeaponSlot ();
+            BitStream.WriteBits ( reinterpret_cast < const char* > ( &slot ), SWeaponSlotSync::BITCOUNT );
 
-            BitStream.Write ( ucCurrentWeaponSlot );
-            BitStream.Write ( ucCurrentWeaponType );
-
-            if ( ucCurrentWeaponType != 0 )
+            if ( slot.uiSlot != 0 && slot.uiSlot != 1 && slot.uiSlot != 10 && slot.uiSlot != 11 )
             {
                 // Write his ammo in clip and aim directions
                 BitStream.Write ( pSourcePlayer->GetWeaponAmmoInClip () );

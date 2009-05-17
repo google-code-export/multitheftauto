@@ -28,6 +28,17 @@ struct SPlayerPuresyncFlags
     bool bHasAWeapon : 1;
 };
 
+struct SKeysyncFlags
+{
+    enum { BITCOUNT = 3 };
+
+    SKeysyncFlags () { memset ( this, 0, sizeof ( *this ) ); }
+
+    bool bIsDucked : 1;
+    bool bIsChoking : 1;
+    bool bAkimboTargetUp : 1;
+};
+
 struct SWeaponSlotSync
 {
     enum { BITCOUNT = 4 };
