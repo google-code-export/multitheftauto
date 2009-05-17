@@ -227,6 +227,15 @@ bool CPlayerPuresyncPacket::Read ( NetServerBitStreamInterface& BitStream )
     return false;
 }
 
+/*
+template < class T >
+bool CompareAndSet ( const T& current, T& previous )
+{
+    bool bChanged = current != previous;
+    previous = current;
+    return bChanged;
+}
+*/
 
 bool CPlayerPuresyncPacket::Write ( NetServerBitStreamInterface& BitStream ) const
 {
@@ -269,6 +278,31 @@ bool CPlayerPuresyncPacket::Write ( NetServerBitStreamInterface& BitStream ) con
 
         BitStream.Write ( usLatency );
         WriteFullKeysync ( ControllerState, BitStream );   
+/*
+        // Figure out what to send
+        SPlayerPuresyncSentHeader sent;
+        sent.bFlags             = CompareAndSet ( usFlags,          pSourcePlayer->lastSent.usFlags );
+        sent.bPosition          = CompareAndSet ( vecPosition,      pSourcePlayer->lastSent.vecPosition );
+        sent.bRotation          = CompareAndSet ( fRotation,        pSourcePlayer->lastSent.fRotation );
+        sent.bVelocity          = CompareAndSet ( vecVelocity,      pSourcePlayer->lastSent.vecVelocity );
+        sent.bHealth            = CompareAndSet ( ucHealth,         pSourcePlayer->lastSent.ucHealth );
+        sent.bArmor             = CompareAndSet ( ucArmor,          pSourcePlayer->lastSent.ucArmor );
+        sent.bCameraRotation    = CompareAndSet ( fCameraRotation,  pSourcePlayer->lastSent.fCameraRotation );
+        sent.bWeaponType        = CompareAndSet ( ucWeaponType,     pSourcePlayer->lastSent.ucWeaponType );
+        sent.Write ( BitStream );
+
+        if ( sent.bPosition )
+        {
+            BitStream.Write ( vecPosition.fX );
+            BitStream.Write ( vecPosition.fY );
+            BitStream.Write ( vecPosition.fZ ); 
+        }
+
+        if ( sent.bRotation )
+            BitStream.Write ( fRotation );    
+
+        etc... Could also do a 'sent' header in WriteFullKeysync
+*/
         BitStream.WriteBits ( reinterpret_cast < const char* > ( &flags ), SPlayerPuresyncFlags::BITCOUNT );
         
         if ( pContactElement )
@@ -296,7 +330,26 @@ bool CPlayerPuresyncPacket::Write ( NetServerBitStreamInterface& BitStream ) con
             CVector vecSniperSource = pSourcePlayer->GetSniperSourceVector ();
             CVector vecTargetting;
             pSourcePlayer->GetTargettingVector ( vecTargetting );
+/*
+            // Figure out what to send
+            SPlayerPuresyncWeaponSentHeader sent;
+            sent.bWeaponAmmoInClip      = CompareAndSet ( usWeaponAmmoInClip,   pSourcePlayer->lastSent.usWeaponAmmoInClip );
+            sent.bAimDirectionX         = CompareAndSet ( fAimDirectionX,       pSourcePlayer->lastSent.fAimDirectionX );
+            sent.bAimDirectionY         = CompareAndSet ( fAimDirectionY,       pSourcePlayer->lastSent.fAimDirectionY );
+            sent.bSniperSource          = CompareAndSet ( vecSniperSource,      pSourcePlayer->lastSent.vecSniperSource );
+            sent.bTargetting            = CompareAndSet ( vecTargetting,        pSourcePlayer->lastSent.vecTargetting );
+            sent.Write ( BitStream );
 
+            if ( sent.bWeaponAmmoInClip )
+                BitStream.Write ( usWeaponAmmoInClip );
+
+            if ( sent.bAimDirectionX )
+			    BitStream.Write ( fAimDirectionX );
+            if ( sent.bAimDirectionY )
+			    BitStream.Write ( fAimDirectionY );
+
+            etc...
+*/
             BitStream.Write ( usWeaponAmmoInClip );
 
 			BitStream.Write ( fAimDirectionX );
