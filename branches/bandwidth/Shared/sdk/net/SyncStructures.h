@@ -12,7 +12,7 @@
 
 struct SPlayerPuresyncFlags
 {
-    enum { BITCOUNT = 9 };
+    enum { BITCOUNT = 10 };
 
     SPlayerPuresyncFlags () { memset ( this, 0, sizeof ( *this ) ); }
 
@@ -25,4 +25,14 @@ struct SPlayerPuresyncFlags
     bool bIsChoking : 1;
     bool bAkimboTargetUp : 1;
     bool bIsOnFire : 1;
+    bool bHasAWeapon : 1;
+};
+
+struct SWeaponSlotSync
+{
+    enum { BITCOUNT = 4 };
+
+    SWeaponSlotSync () { memset ( this, 0, sizeof ( *this ) ); }
+
+    unsigned int uiSlot : 4;
 };

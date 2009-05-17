@@ -1118,6 +1118,7 @@ void CGame::AddBuiltInEvents ( void )
 
     // Ped events
     m_Events.AddEvent ( "onPedWasted", "ammo, killer, weapon, bodypart", NULL, false );
+    m_Events.AddEvent ( "onPedWeaponSwitch", "previous, current", NULL, false );
     
     // Element events
     m_Events.AddEvent ( "onElementColShapeHit", "colshape, matchingDimension", NULL, false );

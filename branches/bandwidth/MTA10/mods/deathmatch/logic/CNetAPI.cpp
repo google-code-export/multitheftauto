@@ -789,64 +789,72 @@ void CNetAPI::ReadPlayerPuresync ( CClientPlayer* pPlayer, NetBitStreamInterface
     BitStream.Read ( fCameraRotation );    
 
     // Current weapon id
-    unsigned char ucCurrentWeapon = 0;
-    BitStream.Read ( ucCurrentWeapon );
-    if ( ucCurrentWeapon != 0 )
+    if ( flags.bHasAWeapon )
     {
-        // Is the current weapon a goggle (44 or 45) or a camera (43), or a detonator (40), don't apply the fire key
-        if ( ucCurrentWeapon == 44 || ucCurrentWeapon == 45 || ucCurrentWeapon == 43 || ucCurrentWeapon == 40 )
+        SWeaponSlotSync slot;
+        BitStream.ReadBits ( reinterpret_cast < char* > ( &slot ), SWeaponSlotSync::BITCOUNT );
+
+        pPlayer->SetCurrentWeaponSlot ( static_cast < eWeaponSlot > ( slot.uiSlot ) );
+
+        if ( slot.uiSlot != 0 && slot.uiSlot != 1 && slot.uiSlot != 10 && slot.uiSlot != 11 )
         {
-            ControllerState.ButtonCircle = 0;
+            unsigned char ucCurrentWeapon = pPlayer->GetCurrentWeaponType ();
+
+            // Is the current weapon a goggle (44 or 45) or a camera (43), or a detonator (40), don't apply the fire key
+            if ( ucCurrentWeapon == 44 || ucCurrentWeapon == 45 || ucCurrentWeapon == 43 || ucCurrentWeapon == 40 )
+            {
+                ControllerState.ButtonCircle = 0;
+            }
+
+            // Read out the weapon ammo
+            unsigned short usWeaponAmmo;
+            BitStream.Read ( usWeaponAmmo );
+
+            // Valid current weapon id?
+            if ( CClientPickupManager::IsValidWeaponID ( ucCurrentWeapon ) )
+            {
+                pPlayer->AddChangeWeapon ( TICK_RATE, ucCurrentWeapon, usWeaponAmmo );
+            }
+            else
+            {
+                pPlayer->AddChangeWeapon ( TICK_RATE, 0, 0 );
+            }
+
+    		// Make sure that if he doesn't have an akimbo weapon his hands up state is false
+	    	if ( !IsWeaponIDAkimbo ( ucCurrentWeapon ) )
+		    {
+                flags.bAkimboTargetUp = false;
+		    }
+
+            // Read out the aim directions
+            float fArmX, fArmY;
+		    BitStream.Read ( fArmX );
+		    BitStream.Read ( fArmY );
+
+            // Read out source vector
+            CVector vecSource;
+            BitStream.Read ( vecSource.fX );
+            BitStream.Read ( vecSource.fY );
+            BitStream.Read ( vecSource.fZ );
+
+            // Read out the target vector and set it
+            CVector vecTemp;
+            BitStream.Read ( vecTemp.fX );
+            BitStream.Read ( vecTemp.fY );
+            BitStream.Read ( vecTemp.fZ );
+
+            // Interpolate the aiming
+            pPlayer->SetAimInterpolated ( TICK_RATE, fArmX, fArmY, flags.bAkimboTargetUp, 0 );
+
+            // Interpolate the source/target vectors
+            pPlayer->SetTargetTarget ( TICK_RATE, vecSource, vecTemp );
         }
-
-        // Read out the weapon ammo
-        unsigned short usWeaponAmmo;
-        BitStream.Read ( usWeaponAmmo );
-
-        // Valid current weapon id?
-        if ( CClientPickupManager::IsValidWeaponID ( ucCurrentWeapon ) )
-        {
-            pPlayer->AddChangeWeapon ( TICK_RATE, ucCurrentWeapon, usWeaponAmmo );
-        }
-        else
-        {
-            pPlayer->AddChangeWeapon ( TICK_RATE, 0, 0 );
-        }
-
-		// Make sure that if he doesn't have an akimbo weapon his hands up state is false
-		if ( !IsWeaponIDAkimbo ( ucCurrentWeapon ) )
-		{
-            flags.bAkimboTargetUp = false;
-		}
-
-        // Read out the aim directions
-        float fArmX, fArmY;
-		BitStream.Read ( fArmX );
-		BitStream.Read ( fArmY );
-
-        // Read out source vector
-        CVector vecSource;
-        BitStream.Read ( vecSource.fX );
-        BitStream.Read ( vecSource.fY );
-        BitStream.Read ( vecSource.fZ );
-
-        // Read out the target vector and set it
-        CVector vecTemp;
-        BitStream.Read ( vecTemp.fX );
-        BitStream.Read ( vecTemp.fY );
-        BitStream.Read ( vecTemp.fZ );
-
-        // Interpolate the aiming
-        pPlayer->SetAimInterpolated ( TICK_RATE, fArmX, fArmY, flags.bAkimboTargetUp, 0 );
-
-        // Interpolate the source/target vectors
-        pPlayer->SetTargetTarget ( TICK_RATE, vecSource, vecTemp );
     }
     else
     {
         // Make him empty-handed
         pPlayer->SetCurrentWeaponSlot ( static_cast < eWeaponSlot > ( 0 ) );
-    }    
+    }
 
      // null out the crouch bit or it'll conflict with the crouched syncing
     ControllerState.ShockButtonL = 0;    
@@ -893,8 +901,12 @@ void CNetAPI::WritePlayerPuresync ( CClientPed* pPlayerModel, NetBitStreamInterf
     pPlayerModel->GetControllerState ( ControllerState );
     WriteFullKeysync ( ControllerState, BitStream );
 
+    // Get the contact entity
     CClientEntity* pContactEntity = pPlayerModel->GetContactEntity ();
     bool bInContact = ( pContactEntity && pContactEntity->GetID () != INVALID_ELEMENT_ID && !pContactEntity->IsLocalEntity() );
+
+    // Grab the current weapon
+    CWeapon * pPlayerWeapon = pPlayerModel->GetWeapon();
 
     // Write the flags
     SPlayerPuresyncFlags flags;
@@ -907,6 +919,11 @@ void CNetAPI::WritePlayerPuresync ( CClientPed* pPlayerModel, NetBitStreamInterf
     flags.bIsChoking = ( pPlayerModel->IsChoking () == true );
     flags.bAkimboTargetUp = ( g_pMultiplayer->GetAkimboTargetUp () == true );
     flags.bIsOnFire = ( pPlayerModel->IsOnFire () == true );
+    flags.bHasAWeapon = ( pPlayerWeapon != NULL );
+
+    if ( pPlayerWeapon->GetSlot () > 15 )
+        flags.bHasAWeapon = false;
+
     BitStream.WriteBits ( reinterpret_cast < const char* > ( &flags ), SPlayerPuresyncFlags::BITCOUNT );
 
     // Player position
@@ -955,17 +972,14 @@ void CNetAPI::WritePlayerPuresync ( CClientPed* pPlayerModel, NetBitStreamInterf
     // Write the camera rotation
     BitStream.Write ( g_pGame->GetCamera ()->GetCameraRotation () );
 
-    // Grab the current weapon
-    CWeapon * pPlayerWeapon = pPlayerModel->GetWeapon();
-    if ( pPlayerWeapon )
+    if ( flags.bHasAWeapon )
     {
         // Write the weapon slot
-        unsigned char ucWeaponSlot = static_cast < unsigned char > ( pPlayerWeapon->GetSlot () );
-        unsigned char ucWeaponType = static_cast < unsigned char > ( pPlayerWeapon->GetType () );
-        BitStream.Write ( ucWeaponSlot );
-		BitStream.Write ( ucWeaponType );
+        SWeaponSlotSync slot;
+        slot.uiSlot = pPlayerWeapon->GetSlot ();
+        BitStream.Write ( reinterpret_cast < const char* > ( &slot ), SWeaponSlotSync::BITCOUNT );
 
-        if ( ucWeaponType != 0 )
+        if ( slot.uiSlot != 0 && slot.uiSlot != 1 && slot.uiSlot != 10 && slot.uiSlot != 11 )
         {
             // Write the ammo states
             unsigned short usAmmoInClip = static_cast < unsigned short > ( pPlayerWeapon->GetAmmoInClip () );
@@ -992,11 +1006,6 @@ void CNetAPI::WritePlayerPuresync ( CClientPed* pPlayerModel, NetBitStreamInterf
             BitStream.Write ( vecTarget.fY );
             BitStream.Write ( vecTarget.fZ );
         }
-    }
-    else
-    {
-        BitStream.Write ( static_cast < unsigned char > ( 0 ) );
-        BitStream.Write ( static_cast < unsigned char > ( 0 ) );
     }
 
     // Write our damage info if different from last time
