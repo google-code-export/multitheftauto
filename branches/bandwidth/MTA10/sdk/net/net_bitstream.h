@@ -23,7 +23,6 @@ public:
     virtual void        ResetReadPointer            ( void ) = 0;
 	
     // Don't use this, it screws up randomly in certain conditions causing packet misalign
-	virtual void        Write                       ( bool& input ) = 0;
 	virtual void        Write                       ( const unsigned char& input ) = 0;
 	virtual void        Write                       ( const char& input ) = 0;
 	virtual void        Write                       ( const unsigned short& input ) = 0;
@@ -48,6 +47,7 @@ public:
 	virtual void        WriteCompressed             ( const double& input ) = 0;
 
     virtual void        WriteBits                   ( const char* input, unsigned int numbits ) = 0;
+    virtual void        WriteBit                    ( bool input ) = 0;
 
 	// Write a normalized 3D vector, using (at most) 4 bytes + 3 bits instead of 12 bytes.  Will further compress y or z axis aligned vectors. Accurate to 1/32767.5.
 	virtual void WriteNormVector( float x, float y, float z ) = 0;
@@ -64,8 +64,6 @@ public:
 		float m10, float m11, float m12,
 		float m20, float m21, float m22 ) = 0;
 
-    // Don't use this, it screws up randomly in certain conditions causing packet misalign
-	//virtual bool        Read                        ( bool& output ) = 0;
 	virtual bool        Read                        ( unsigned char& output ) = 0;
 	virtual bool        Read                        ( char& output ) = 0;
 	virtual bool        Read                        ( unsigned short& output ) = 0;

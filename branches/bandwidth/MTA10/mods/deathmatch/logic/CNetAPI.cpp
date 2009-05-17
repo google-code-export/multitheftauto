@@ -649,7 +649,7 @@ void CNetAPI::WriteKeysync ( CClientPed* pPlayerModel, NetBitStreamInterface& Bi
         CWeapon * pPlayerWeapon = pPlayerModel->GetWeapon ();
         if ( pPlayerWeapon )
         {
-            BitStream.Write ( (bool)true );
+            BitStream.WriteBit ( true );
 
             // Write the type
             SWeaponSlotSync slot;
@@ -686,7 +686,7 @@ void CNetAPI::WriteKeysync ( CClientPed* pPlayerModel, NetBitStreamInterface& Bi
         }
         else
         {
-            BitStream.Write ( (bool)false );
+            BitStream.WriteBit ( false );
         }
     }
 
