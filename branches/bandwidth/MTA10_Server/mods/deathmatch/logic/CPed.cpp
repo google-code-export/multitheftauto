@@ -196,6 +196,14 @@ bool CPed::HasValidModel ( void )
     return CPedManager::IsValidModel ( m_usModel );
 }
 
+void CPed::SetWeaponSlot ( unsigned char ucSlot )
+{
+    if ( ucSlot < WEAPON_SLOTS )
+    {
+        m_ucWeaponSlot = ucSlot;
+    }
+}
+
 
 CWeapon* CPed::GetWeapon ( unsigned char ucSlot )
 {

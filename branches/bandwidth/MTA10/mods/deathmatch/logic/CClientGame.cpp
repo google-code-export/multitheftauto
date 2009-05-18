@@ -1546,27 +1546,44 @@ void CClientGame::UpdatePlayerWeapons ( void )
     eWeaponSlot currentSlot = m_pLocalPlayer->GetCurrentWeaponSlot ();
     if ( currentSlot != m_lastWeaponSlot )
     {
-        CWeapon* pWeapon = m_pLocalPlayer->GetWeapon ( m_lastWeaponSlot );
-        if ( pWeapon && (int)m_lastWeaponSlot != WEAPONSLOT_MAX )
-        {
-            /* Send a packet to the server with info about the old weapon,
-               so the server stays in sync reliably */        
-            CBitStream bitStream;
-            bitStream.pBitStream->Write ( pWeapon->GetSlot () );
-            bitStream.pBitStream->Write ( pWeapon->GetType () );
-            if ( pWeapon->GetType () != 0 )
-                bitStream.pBitStream->Write ( pWeapon->GetAmmoTotal () );
-            if ( pWeapon->GetAmmoTotal () != 0 )
-                bitStream.pBitStream->Write ( pWeapon->GetAmmoInClip () );
-            m_pNetAPI->RPC ( PLAYER_WEAPON, bitStream.pBitStream );
-        }
-
         CLuaArguments Arguments;
         Arguments.PushNumber ( m_lastWeaponSlot );
         Arguments.PushNumber ( currentSlot );
-        m_pLocalPlayer->CallEvent ( "onClientPlayerWeaponSwitch", Arguments, true );
+        bool bCancelled = !m_pLocalPlayer->CallEvent ( "onClientPlayerWeaponSwitch", Arguments, true );
 
-        m_lastWeaponSlot = m_pLocalPlayer->GetCurrentWeaponSlot ();
+        if ( bCancelled )
+        {
+            m_pLocalPlayer->SetCurrentWeaponSlot ( m_lastWeaponSlot );
+        }
+        else
+        {
+            CBitStream bitStream;
+            CWeapon* pWeapon = m_pLocalPlayer->GetWeapon ();
+            NetBitStreamInterface& BitStream = *(bitStream.pBitStream);
+            SWeaponSlotSync slot;
+
+            if ( pWeapon )
+            {
+                /* Send a packet to the server with info about the NEW weapon,
+                   so the server stays in sync reliably */        
+                slot.uiSlot = static_cast < unsigned int > ( pWeapon->GetSlot () );
+                BitStream.WriteBits ( reinterpret_cast < const char* > ( &slot ), SWeaponSlotSync::BITCOUNT );
+
+                if ( slot.uiSlot != 0 && slot.uiSlot != 1 && slot.uiSlot != 10 && slot.uiSlot != 11 )
+                {
+                    BitStream.Write ( static_cast < unsigned short > ( pWeapon->GetAmmoTotal () ) );
+                    BitStream.Write ( static_cast < unsigned short > ( pWeapon->GetAmmoInClip () ) );
+                }
+            }
+            else
+            {
+                slot.uiSlot = 0;
+                BitStream.WriteBits ( reinterpret_cast < const char* > ( &slot ), SWeaponSlotSync::BITCOUNT );
+            }
+
+            m_pNetAPI->RPC ( PLAYER_WEAPON, bitStream.pBitStream );
+            m_lastWeaponSlot = m_pLocalPlayer->GetCurrentWeaponSlot ();
+        }
     }
 }
 

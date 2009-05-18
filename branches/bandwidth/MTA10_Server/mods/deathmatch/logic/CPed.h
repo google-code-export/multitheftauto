@@ -117,7 +117,7 @@ public:
 
     CWeapon*                                    GetWeapon                   ( unsigned char ucSlot = 0xFF );
     inline unsigned char                        GetWeaponSlot               ( void )                            { return m_ucWeaponSlot; }
-    inline void                                 SetWeaponSlot               ( unsigned char ucSlot )            { m_ucWeaponSlot = ucSlot; }
+    void                                        SetWeaponSlot               ( unsigned char ucSlot );
     inline unsigned char                        GetCurrentWeaponState       ( void )                            { return m_ucCurrentWeaponState; };
     inline void                                 SetCurrentWeaponState       ( unsigned char ucWeaponState )     { m_ucCurrentWeaponState = ucWeaponState; };
     unsigned char                               GetWeaponType               ( unsigned char ucSlot = 0xFF );

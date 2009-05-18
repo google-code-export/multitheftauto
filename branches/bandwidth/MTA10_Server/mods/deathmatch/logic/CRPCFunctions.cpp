@@ -124,20 +124,30 @@ void CRPCFunctions::PlayerWeapon ( NetBitStreamInterface & bitStream )
 {
     if ( m_pSourcePlayer->IsJoined () && m_pSourcePlayer->IsSpawned () )
     {
-        unsigned char ucSlot, ucType;
-        bitStream.Read ( ucSlot );
-        bitStream.Read ( ucType );
-        unsigned short usAmmo = 0;
-        if ( ucType != 0 ) bitStream.Read ( usAmmo );
-        unsigned short usAmmoInClip = 0;
-        if ( usAmmo != 0 ) bitStream.Read ( usAmmoInClip );
+        SWeaponSlotSync slot;
+        bitStream.ReadBits ( reinterpret_cast < char * > ( &slot ), SWeaponSlotSync::BITCOUNT );
 
-        CWeapon* pWeapon = m_pSourcePlayer->GetWeapon ( ucSlot );
-        if ( pWeapon )
+        m_pSourcePlayer->SetWeaponSlot ( slot.uiSlot );
+        CWeapon* pWeapon = m_pSourcePlayer->GetWeapon ( slot.uiSlot );
+
+        if ( slot.uiSlot != 0 && slot.uiSlot != 1 && slot.uiSlot != 10 && slot.uiSlot != 11 )
         {
-            pWeapon->ucType = ucType;
-            pWeapon->usAmmo = usAmmo;
-            pWeapon->usAmmoInClip = usAmmoInClip;
+            if ( pWeapon )
+            {
+                unsigned short usAmmo = 0;
+                unsigned short usAmmoInClip = 0;
+
+                bitStream.Read ( usAmmo );
+                bitStream.Read ( usAmmoInClip );
+
+                pWeapon->usAmmo = usAmmo;
+                pWeapon->usAmmoInClip = usAmmoInClip;
+            }
+        }
+        else if ( pWeapon )
+        {
+            pWeapon->usAmmo = 1;
+            pWeapon->usAmmoInClip = 1;
         }
     }
 }

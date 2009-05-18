@@ -131,6 +131,7 @@ bool CPlayerPuresyncPacket::Read ( NetBitStreamInterface& BitStream )
             BitStream.Read ( reinterpret_cast < char* > ( &slot ), SWeaponSlotSync::BITCOUNT );
 
             pSourcePlayer->SetWeaponSlot ( slot.uiSlot );
+
             if ( slot.uiSlot != 0 && slot.uiSlot != 1 && slot.uiSlot != 10 && slot.uiSlot != 11 )
             {
                 // Read out the ammo states
