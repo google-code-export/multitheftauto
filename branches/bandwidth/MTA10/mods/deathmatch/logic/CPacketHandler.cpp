@@ -645,8 +645,18 @@ void CPacketHandler::Packet_PlayerList ( NetBitStreamInterface& bitStream )
                 pPlayer->SetDimension ( usDimension );
                 pPlayer->SetFightingStyle ( ( eFightingStyle ) ucFightingStyle );
                 pPlayer->SetAlpha ( ucAlpha );
-
                 pPlayer->SetInterior ( ucInterior );
+
+                // Read the weapon slots
+                for ( unsigned int i = 0; i < 16; ++i )
+                {
+                    if ( bitStream.ReadBit () == true )
+                    {
+                        unsigned char ucWeaponType;
+                        bitStream.Read ( ucWeaponType );
+                        pPlayer->GiveWeapon ( static_cast < eWeaponType > ( ucWeaponType ), 1 );
+                    }
+                }
             }
 
             // Print the join message in the chat
