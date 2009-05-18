@@ -14,8 +14,8 @@
 
 #include <net/bitstream.h>
 
-// WARNING: the this+4 is an ugly hack to avoid the vtable first 4 bytes.
-// If you have a better solution that is not as ugly as this, please fix it.
+#pragma pack(push)
+#pragma pack(1)
 
 struct ISyncStructure
 {
@@ -30,23 +30,26 @@ struct SPlayerPuresyncFlags : public ISyncStructure
 
     bool Read ( NetBitStreamInterface& bitStream )
     {
-        return bitStream.ReadBits ( reinterpret_cast < char* > ( this ) + 4, BITCOUNT );
+        return bitStream.ReadBits ( reinterpret_cast < char* > ( &data ), BITCOUNT );
     }
     void Write ( NetBitStreamInterface& bitStream )
     {
-        bitStream.WriteBits ( reinterpret_cast < const char* > ( this ) + 4, BITCOUNT );
+        bitStream.WriteBits ( reinterpret_cast < const char* > ( &data ), BITCOUNT );
     }
 
-    bool bIsInWater : 1;
-    bool bIsOnGround : 1;
-    bool bHasJetPack : 1;
-    bool bIsDucked : 1;
-    bool bWearsGoogles : 1;
-    bool bHasContact : 1;
-    bool bIsChoking : 1;
-    bool bAkimboTargetUp : 1;
-    bool bIsOnFire : 1;
-    bool bHasAWeapon : 1;
+    struct
+    {
+        bool bIsInWater : 1;
+        bool bIsOnGround : 1;
+        bool bHasJetPack : 1;
+        bool bIsDucked : 1;
+        bool bWearsGoogles : 1;
+        bool bHasContact : 1;
+        bool bIsChoking : 1;
+        bool bAkimboTargetUp : 1;
+        bool bIsOnFire : 1;
+        bool bHasAWeapon : 1;
+    } data;
 };
 
 struct SKeysyncFlags : public ISyncStructure
@@ -55,16 +58,19 @@ struct SKeysyncFlags : public ISyncStructure
 
     bool Read ( NetBitStreamInterface& bitStream )
     {
-        return bitStream.ReadBits ( reinterpret_cast < char* > ( this ) + 4, BITCOUNT );
+        return bitStream.ReadBits ( reinterpret_cast < char* > ( &data ), BITCOUNT );
     }
     void Write ( NetBitStreamInterface& bitStream )
     {
-        bitStream.WriteBits ( reinterpret_cast < const char* > ( this ) + 4, BITCOUNT );
+        bitStream.WriteBits ( reinterpret_cast < const char* > ( &data ), BITCOUNT );
     }
 
-    bool bIsDucked : 1;
-    bool bIsChoking : 1;
-    bool bAkimboTargetUp : 1;
+    struct
+    {
+        bool bIsDucked : 1;
+        bool bIsChoking : 1;
+        bool bAkimboTargetUp : 1;
+    } data;
 };
 
 struct SWeaponSlotSync : public ISyncStructure
@@ -73,12 +79,17 @@ struct SWeaponSlotSync : public ISyncStructure
 
     bool Read ( NetBitStreamInterface& bitStream )
     {
-        return bitStream.ReadBits ( reinterpret_cast < char* > ( this ) + 4, BITCOUNT );
+        return bitStream.ReadBits ( reinterpret_cast < char* > ( &data ), BITCOUNT );
     }
     void Write ( NetBitStreamInterface& bitStream )
     {
-        bitStream.WriteBits ( reinterpret_cast < const char* > ( this ) + 4, BITCOUNT );
+        bitStream.WriteBits ( reinterpret_cast < const char* > ( &data ), BITCOUNT );
     }
 
-    unsigned int uiSlot : 4;
+    struct
+    {
+        unsigned int uiSlot : 4;
+    } data;
 };
+
+#pragma pack(pop)

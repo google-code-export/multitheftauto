@@ -43,18 +43,18 @@ bool CPlayerPuresyncPacket::Read ( NetBitStreamInterface& BitStream )
         SPlayerPuresyncFlags flags;
         BitStream.Read ( &flags );
 
-        pSourcePlayer->SetInWater ( flags.bIsInWater );
-        pSourcePlayer->SetOnGround ( flags.bIsOnGround );
-        pSourcePlayer->SetHasJetPack ( flags.bHasJetPack );
-        pSourcePlayer->SetDucked ( flags.bIsDucked );
-        pSourcePlayer->SetWearingGoggles ( flags.bWearsGoogles );
-        pSourcePlayer->SetChoking ( flags.bIsChoking );
-        pSourcePlayer->SetAkimboArmUp ( flags.bAkimboTargetUp );
-        pSourcePlayer->SetOnFire ( flags.bIsOnFire );
+        pSourcePlayer->SetInWater ( flags.data.bIsInWater );
+        pSourcePlayer->SetOnGround ( flags.data.bIsOnGround );
+        pSourcePlayer->SetHasJetPack ( flags.data.bHasJetPack );
+        pSourcePlayer->SetDucked ( flags.data.bIsDucked );
+        pSourcePlayer->SetWearingGoggles ( flags.data.bWearsGoogles );
+        pSourcePlayer->SetChoking ( flags.data.bIsChoking );
+        pSourcePlayer->SetAkimboArmUp ( flags.data.bAkimboTargetUp );
+        pSourcePlayer->SetOnFire ( flags.data.bIsOnFire );
 
         // Contact element
         CElement* pContactElement = NULL;
-        if ( flags.bHasContact )
+        if ( flags.data.bHasContact )
         {            
             ElementID Temp;
             BitStream.Read ( Temp );
@@ -124,15 +124,16 @@ bool CPlayerPuresyncPacket::Read ( NetBitStreamInterface& BitStream )
         BitStream.Read ( fCameraRotation );
         pSourcePlayer->SetCameraRotation ( fCameraRotation );        
 
-        if ( flags.bHasAWeapon )
+        if ( flags.data.bHasAWeapon )
         {
             // Current weapon slot
             SWeaponSlotSync slot;
-            BitStream.Read ( reinterpret_cast < char* > ( &slot ), SWeaponSlotSync::BITCOUNT );
+            BitStream.Read ( &slot );
+            unsigned int uiSlot = slot.data.uiSlot;
 
-            pSourcePlayer->SetWeaponSlot ( slot.uiSlot );
+            pSourcePlayer->SetWeaponSlot ( uiSlot );
 
-            if ( slot.uiSlot != 0 && slot.uiSlot != 1 && slot.uiSlot != 10 && slot.uiSlot != 11 )
+            if ( uiSlot != 0 && uiSlot != 1 && uiSlot != 10 && uiSlot != 11 )
             {
                 // Read out the ammo states
                 unsigned short usAmmoInClip;
@@ -247,16 +248,16 @@ bool CPlayerPuresyncPacket::Write ( NetBitStreamInterface& BitStream ) const
 
         // Flags
         SPlayerPuresyncFlags flags;
-        flags.bIsInWater = ( pSourcePlayer->IsInWater () == true );
-        flags.bIsOnGround = ( pSourcePlayer->IsOnGround () == true );
-        flags.bHasJetPack = ( pSourcePlayer->HasJetPack () == true );
-        flags.bIsDucked = ( pSourcePlayer->IsDucked () == true );
-        flags.bWearsGoogles = ( pSourcePlayer->IsWearingGoggles () == true );
-        flags.bHasContact = ( pContactElement != NULL );
-        flags.bIsChoking = ( pSourcePlayer->IsChoking () == true );
-        flags.bAkimboTargetUp = ( pSourcePlayer->IsAkimboArmUp () == true );
-        flags.bIsOnFire = ( pSourcePlayer->IsOnFire () == true );
-        flags.bHasAWeapon = ( ucWeaponSlot != 0 );
+        flags.data.bIsInWater       = ( pSourcePlayer->IsInWater () == true );
+        flags.data.bIsOnGround      = ( pSourcePlayer->IsOnGround () == true );
+        flags.data.bHasJetPack      = ( pSourcePlayer->HasJetPack () == true );
+        flags.data.bIsDucked        = ( pSourcePlayer->IsDucked () == true );
+        flags.data.bWearsGoogles    = ( pSourcePlayer->IsWearingGoggles () == true );
+        flags.data.bHasContact      = ( pContactElement != NULL );
+        flags.data.bIsChoking       = ( pSourcePlayer->IsChoking () == true );
+        flags.data.bAkimboTargetUp  = ( pSourcePlayer->IsAkimboArmUp () == true );
+        flags.data.bIsOnFire        = ( pSourcePlayer->IsOnFire () == true );
+        flags.data.bHasAWeapon      = ( ucWeaponSlot != 0 );
 
         CVector vecPosition = pSourcePlayer->GetPosition ();
         if ( pContactElement )
@@ -317,12 +318,14 @@ bool CPlayerPuresyncPacket::Write ( NetBitStreamInterface& BitStream ) const
         BitStream.Write ( ucArmor );
         BitStream.Write ( fCameraRotation );
 
-        if ( flags.bHasAWeapon )
+        if ( flags.data.bHasAWeapon )
         {
+            unsigned int uiSlot = ucWeaponSlot;
             SWeaponSlotSync slot;
-            slot.uiSlot = ucWeaponSlot;
+            slot.data.uiSlot = uiSlot;
             BitStream.Write ( &slot );
-            if ( slot.uiSlot != 0 && slot.uiSlot != 1 && slot.uiSlot != 10 && slot.uiSlot != 11 )
+
+            if ( uiSlot != 0 && uiSlot != 1 && uiSlot != 10 && uiSlot != 11 )
             {
                 unsigned short usWeaponAmmoInClip = pSourcePlayer->GetWeaponAmmoInClip ();
                 float fAimDirectionX = pSourcePlayer->GetAimDirectionX ();

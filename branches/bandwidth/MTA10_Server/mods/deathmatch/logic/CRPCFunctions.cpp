@@ -126,11 +126,12 @@ void CRPCFunctions::PlayerWeapon ( NetBitStreamInterface & bitStream )
     {
         SWeaponSlotSync slot;
         bitStream.Read ( &slot );
+        unsigned int uiSlot = slot.data.uiSlot;
 
-        m_pSourcePlayer->SetWeaponSlot ( slot.uiSlot );
-        CWeapon* pWeapon = m_pSourcePlayer->GetWeapon ( slot.uiSlot );
+        m_pSourcePlayer->SetWeaponSlot ( uiSlot );
+        CWeapon* pWeapon = m_pSourcePlayer->GetWeapon ( uiSlot );
 
-        if ( slot.uiSlot != 0 && slot.uiSlot != 1 && slot.uiSlot != 10 && slot.uiSlot != 11 )
+        if ( uiSlot != 0 && uiSlot != 1 && uiSlot != 10 && uiSlot != 11 )
         {
             if ( pWeapon )
             {

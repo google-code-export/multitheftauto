@@ -1566,10 +1566,11 @@ void CClientGame::UpdatePlayerWeapons ( void )
             {
                 /* Send a packet to the server with info about the NEW weapon,
                    so the server stays in sync reliably */        
-                slot.uiSlot = static_cast < unsigned int > ( pWeapon->GetSlot () );
+                unsigned int uiSlot = static_cast < unsigned int > ( pWeapon->GetSlot () );
+                slot.data.uiSlot = uiSlot;
                 BitStream.Write ( &slot );
 
-                if ( slot.uiSlot != 0 && slot.uiSlot != 1 && slot.uiSlot != 10 && slot.uiSlot != 11 )
+                if ( uiSlot != 0 && uiSlot != 1 && uiSlot != 10 && uiSlot != 11 )
                 {
                     BitStream.Write ( static_cast < unsigned short > ( pWeapon->GetAmmoTotal () ) );
                     BitStream.Write ( static_cast < unsigned short > ( pWeapon->GetAmmoInClip () ) );
@@ -1577,7 +1578,7 @@ void CClientGame::UpdatePlayerWeapons ( void )
             }
             else
             {
-                slot.uiSlot = 0;
+                slot.data.uiSlot = 0;
                 BitStream.Write ( &slot );
             }
 

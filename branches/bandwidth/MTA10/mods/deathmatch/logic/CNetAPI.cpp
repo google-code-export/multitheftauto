@@ -490,11 +490,12 @@ void CNetAPI::ReadKeysync ( CClientPlayer* pPlayer, NetBitStreamInterface& BitSt
     {
         // Read out his current weapon slot
         SWeaponSlotSync slot;
-        BitStream.ReadBits ( reinterpret_cast < char *> ( &slot ), SWeaponSlotSync::BITCOUNT );
+        BitStream.Read ( &slot );
+        unsigned int uiSlot = slot.data.uiSlot;
 
-        if ( slot.uiSlot != 0 && slot.uiSlot != 1 && slot.uiSlot != 10 && slot.uiSlot != 11 )
+        if ( uiSlot != 0 && uiSlot != 1 && uiSlot != 10 && uiSlot != 11 )
         {
-            CWeapon* pWeapon = pPlayer->GetWeapon ( static_cast < eWeaponSlot > ( slot.uiSlot ) );
+            CWeapon* pWeapon = pPlayer->GetWeapon ( static_cast < eWeaponSlot > ( uiSlot ) );
             unsigned char ucCurrentWeaponType = 0;
             if ( pWeapon )
             {
@@ -538,7 +539,7 @@ void CNetAPI::ReadKeysync ( CClientPlayer* pPlayer, NetBitStreamInterface& BitSt
 			// Make sure that if he doesn't have an akimbo weapon his hands up state is false
 			if ( !IsWeaponIDAkimbo ( ucCurrentWeaponType ) )
 			{
-                flags.bAkimboTargetUp = false;
+                flags.data.bAkimboTargetUp = false;
 			}
 
             // Read out the aim directions
@@ -569,12 +570,12 @@ void CNetAPI::ReadKeysync ( CClientPlayer* pPlayer, NetBitStreamInterface& BitSt
             else
             {
                 pPlayer->SetTargetTarget ( TICK_RATE, vecSource, vecTemp );
-                pPlayer->SetAimInterpolated ( TICK_RATE, fArmX, fArmY, flags.bAkimboTargetUp, ucDriveByAim );
+                pPlayer->SetAimInterpolated ( TICK_RATE, fArmX, fArmY, flags.data.bAkimboTargetUp, ucDriveByAim );
             }
         }
-        else if ( slot.uiSlot != 0 )
+        else if ( uiSlot != 0 )
         {
-            pPlayer->AddChangeWeapon ( TICK_RATE, static_cast < eWeaponSlot > ( slot.uiSlot ), 1 );
+            pPlayer->AddChangeWeapon ( TICK_RATE, static_cast < eWeaponSlot > ( uiSlot ), 1 );
         }
         else
         {
@@ -613,8 +614,8 @@ void CNetAPI::ReadKeysync ( CClientPlayer* pPlayer, NetBitStreamInterface& BitSt
         // null out the crouch key or it will conflict with the crouch syncing
         ControllerState.ShockButtonL = 0;
         pPlayer->SetControllerState ( ControllerState );
-        pPlayer->Duck ( flags.bIsDucked );   
-        pPlayer->SetChoking ( flags.bIsChoking );       
+        pPlayer->Duck ( flags.data.bIsDucked );   
+        pPlayer->SetChoking ( flags.data.bIsChoking );       
     }
 
     // Increment keysync counter
@@ -635,9 +636,9 @@ void CNetAPI::WriteKeysync ( CClientPed* pPlayerModel, NetBitStreamInterface& Bi
 
     // Flags
     SKeysyncFlags flags;
-    flags.bIsDucked = ( pPlayerModel->IsDucked () == true );
-    flags.bIsChoking = ( pPlayerModel->IsChoking () == true );
-    flags.bAkimboTargetUp = ( g_pMultiplayer->GetAkimboTargetUp () == true );
+    flags.data.bIsDucked        = ( pPlayerModel->IsDucked () == true );
+    flags.data.bIsChoking       = ( pPlayerModel->IsChoking () == true );
+    flags.data.bAkimboTargetUp  = ( g_pMultiplayer->GetAkimboTargetUp () == true );
 
     // Write the flags
     BitStream.Write ( &flags );
@@ -652,11 +653,12 @@ void CNetAPI::WriteKeysync ( CClientPed* pPlayerModel, NetBitStreamInterface& Bi
             BitStream.WriteBit ( true );
 
             // Write the type
+            unsigned int uiSlot = pPlayerWeapon->GetSlot ();
             SWeaponSlotSync slot;
-            slot.uiSlot = pPlayerWeapon->GetSlot ();
+            slot.data.uiSlot = uiSlot;
             BitStream.Write ( &slot );
 
-            if ( slot.uiSlot != 0 && slot.uiSlot != 1 && slot.uiSlot != 10 && slot.uiSlot != 11 )
+            if ( uiSlot != 0 && uiSlot != 1 && uiSlot != 10 && uiSlot != 11 )
             {
                  // Write the clip ammo
                 unsigned short usAmmoInClip = static_cast < unsigned short > ( pPlayerWeapon->GetAmmoInClip () );
@@ -736,12 +738,12 @@ void CNetAPI::ReadPlayerPuresync ( CClientPlayer* pPlayer, NetBitStreamInterface
     BitStream.Read ( &flags );
 
     // Set the jetpack and google states
-    if ( flags.bHasJetPack != pPlayer->HasJetPack () )
-        pPlayer->SetHasJetPack ( flags.bHasJetPack );
-    pPlayer->SetWearingGoggles ( flags.bWearsGoogles );
+    if ( flags.data.bHasJetPack != pPlayer->HasJetPack () )
+        pPlayer->SetHasJetPack ( flags.data.bHasJetPack );
+    pPlayer->SetWearingGoggles ( flags.data.bWearsGoogles );
 
     CClientEntity* pContactEntity = NULL;
-    if ( flags.bHasContact )
+    if ( flags.data.bHasContact )
     {
         ElementID Temp;
         BitStream.Read ( Temp );
@@ -791,14 +793,16 @@ void CNetAPI::ReadPlayerPuresync ( CClientPlayer* pPlayer, NetBitStreamInterface
     BitStream.Read ( fCameraRotation );    
 
     // Current weapon id
-    if ( flags.bHasAWeapon )
+    if ( flags.data.bHasAWeapon )
     {
         SWeaponSlotSync slot;
         BitStream.Read ( &slot );
 
-        if ( slot.uiSlot != 0 && slot.uiSlot != 1 && slot.uiSlot != 10 && slot.uiSlot != 11 )
+        unsigned int uiSlot = slot.data.uiSlot;
+
+        if ( uiSlot != 0 && uiSlot != 1 && uiSlot != 10 && uiSlot != 11 )
         {
-            CWeapon* pWeapon = pPlayer->GetWeapon ( static_cast < eWeaponSlot > ( slot.uiSlot ) );
+            CWeapon* pWeapon = pPlayer->GetWeapon ( static_cast < eWeaponSlot > ( uiSlot ) );
             unsigned char ucCurrentWeapon = 0;
             if ( pWeapon )
             {
@@ -828,7 +832,7 @@ void CNetAPI::ReadPlayerPuresync ( CClientPlayer* pPlayer, NetBitStreamInterface
     		// Make sure that if he doesn't have an akimbo weapon his hands up state is false
 	    	if ( !IsWeaponIDAkimbo ( ucCurrentWeapon ) )
 		    {
-                flags.bAkimboTargetUp = false;
+                flags.data.bAkimboTargetUp = false;
 		    }
 
             // Read out the aim directions
@@ -849,14 +853,14 @@ void CNetAPI::ReadPlayerPuresync ( CClientPlayer* pPlayer, NetBitStreamInterface
             BitStream.Read ( vecTemp.fZ );
 
             // Interpolate the aiming
-            pPlayer->SetAimInterpolated ( TICK_RATE, fArmX, fArmY, flags.bAkimboTargetUp, 0 );
+            pPlayer->SetAimInterpolated ( TICK_RATE, fArmX, fArmY, flags.data.bAkimboTargetUp, 0 );
 
             // Interpolate the source/target vectors
             pPlayer->SetTargetTarget ( TICK_RATE, vecSource, vecTemp );
         }
         else
         {
-            pPlayer->SetCurrentWeaponSlot ( static_cast < eWeaponSlot > ( slot.uiSlot ) );
+            pPlayer->SetCurrentWeaponSlot ( static_cast < eWeaponSlot > ( slot.data.uiSlot ) );
         }
     }
     else
@@ -889,9 +893,9 @@ void CNetAPI::ReadPlayerPuresync ( CClientPlayer* pPlayer, NetBitStreamInterface
     pPlayer->SetMoveSpeed ( vecMoveSpeed );
     pPlayer->SetControllerState ( ControllerState );
     pPlayer->SetCameraRotation ( fCameraRotation );
-    pPlayer->Duck ( flags.bIsDucked );
-    pPlayer->SetChoking ( flags.bIsChoking );
-    pPlayer->SetOnFire ( flags.bIsOnFire );
+    pPlayer->Duck ( flags.data.bIsDucked );
+    pPlayer->SetChoking ( flags.data.bIsChoking );
+    pPlayer->SetOnFire ( flags.data.bIsOnFire );
 
     // Remember now as the last puresync time
     pPlayer->SetLastPuresyncTime ( CClientTime::GetTime () );
@@ -919,19 +923,19 @@ void CNetAPI::WritePlayerPuresync ( CClientPed* pPlayerModel, NetBitStreamInterf
 
     // Write the flags
     SPlayerPuresyncFlags flags;
-    flags.bIsInWater = ( pPlayerModel->IsInWater () == true );
-    flags.bIsOnGround = ( pPlayerModel->IsOnGround () == true );
-    flags.bHasJetPack = ( pPlayerModel->HasJetPack () == true );
-    flags.bIsDucked = ( pPlayerModel->IsDucked () == true );
-    flags.bWearsGoogles = ( pPlayerModel->IsWearingGoggles () == true );
-    flags.bHasContact = bInContact;
-    flags.bIsChoking = ( pPlayerModel->IsChoking () == true );
-    flags.bAkimboTargetUp = ( g_pMultiplayer->GetAkimboTargetUp () == true );
-    flags.bIsOnFire = ( pPlayerModel->IsOnFire () == true );
-    flags.bHasAWeapon = ( pPlayerWeapon != NULL );
+    flags.data.bIsInWater       = ( pPlayerModel->IsInWater () == true );
+    flags.data.bIsOnGround      = ( pPlayerModel->IsOnGround () == true );
+    flags.data.bHasJetPack      = ( pPlayerModel->HasJetPack () == true );
+    flags.data.bIsDucked        = ( pPlayerModel->IsDucked () == true );
+    flags.data.bWearsGoogles    = ( pPlayerModel->IsWearingGoggles () == true );
+    flags.data.bHasContact      = bInContact;
+    flags.data.bIsChoking       = ( pPlayerModel->IsChoking () == true );
+    flags.data.bAkimboTargetUp  = ( g_pMultiplayer->GetAkimboTargetUp () == true );
+    flags.data.bIsOnFire        = ( pPlayerModel->IsOnFire () == true );
+    flags.data.bHasAWeapon      = ( pPlayerWeapon != NULL );
 
     if ( pPlayerWeapon->GetSlot () > 15 )
-        flags.bHasAWeapon = false;
+        flags.data.bHasAWeapon = false;
 
     BitStream.Write ( &flags );
 
@@ -981,14 +985,15 @@ void CNetAPI::WritePlayerPuresync ( CClientPed* pPlayerModel, NetBitStreamInterf
     // Write the camera rotation
     BitStream.Write ( g_pGame->GetCamera ()->GetCameraRotation () );
 
-    if ( flags.bHasAWeapon )
+    if ( flags.data.bHasAWeapon )
     {
         // Write the weapon slot
+        unsigned int uiSlot = pPlayerWeapon->GetSlot ();
         SWeaponSlotSync slot;
-        slot.uiSlot = pPlayerWeapon->GetSlot ();
-        BitStream.Write ( reinterpret_cast < const char* > ( &slot ), SWeaponSlotSync::BITCOUNT );
+        slot.data.uiSlot = uiSlot;
+        BitStream.Write ( &slot );
 
-        if ( slot.uiSlot != 0 && slot.uiSlot != 1 && slot.uiSlot != 10 && slot.uiSlot != 11 )
+        if ( uiSlot != 0 && uiSlot != 1 && uiSlot != 10 && uiSlot != 11 )
         {
             // Write the ammo states
             unsigned short usAmmoInClip = static_cast < unsigned short > ( pPlayerWeapon->GetAmmoInClip () );
