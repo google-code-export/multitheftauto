@@ -1691,7 +1691,6 @@ void CClientPed::SetCurrentWeaponSlot ( eWeaponSlot weaponSlot )
                 newWeapon->SetAmmoInClip(ammoInClip);
                 newWeapon->SetAmmoTotal(ammoInTotal);
             }
-
             m_pPlayerPed->SetCurrentWeaponSlot ( weaponSlot );
         }
         m_CurrentWeaponSlot = weaponSlot;
@@ -2760,7 +2759,10 @@ void CClientPed::_CreateModel ( void )
 
         // Restore their weapons
         for ( int i = 0 ; i < (int)WEAPONSLOT_MAX ; i++ )
-            GiveWeapon ( m_WeaponTypes [ i ], 1 );   // TODO: store ammo for each weapon
+        {
+            if ( m_WeaponTypes [ i ] != WEAPONTYPE_UNARMED )
+                GiveWeapon ( m_WeaponTypes [ i ], 1 );   // TODO: store ammo for each weapon
+        }
 
         m_pPlayerPed->SetCurrentWeaponSlot ( m_CurrentWeaponSlot );
         m_pPlayerPed->SetFightingStyle ( m_FightingStyle, 6 );  
