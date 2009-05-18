@@ -41,7 +41,7 @@ void CWeaponRPCs::GiveWeapon ( NetBitStreamInterface& bitStream )
         if ( pPed )
         {
             // Don't change remote players weapons (affects sync)
-            if ( pPed->GetType () == CCLIENTPED || ( CClientPlayer * ) pPed == m_pPlayerManager->GetLocalPlayer () )
+            if ( pPed->GetType () == CCLIENTPED || pPed->GetType () == CCLIENTPLAYER )
             {
                 // Valid weapon id?
                 if ( ucWeaponID == 0 || CClientPickupManager::IsValidWeaponID ( ucWeaponID ) )
