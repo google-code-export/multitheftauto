@@ -61,7 +61,7 @@ void CRPCFunctions::AddHandler ( unsigned char ucID, pfnRPCHandler Callback )
 }
 
 
-void CRPCFunctions::ProcessPacket ( NetServerPlayerID& Socket, NetServerBitStreamInterface& bitStream )
+void CRPCFunctions::ProcessPacket ( NetServerPlayerID& Socket, NetBitStreamInterface& bitStream )
 {
     m_pSourcePlayer = m_pPlayerManager->Get ( Socket );
     if ( m_pSourcePlayer && !m_pSourcePlayer->IsBeingDeleted () )
@@ -84,7 +84,7 @@ void CRPCFunctions::ProcessPacket ( NetServerPlayerID& Socket, NetServerBitStrea
 }
 
 
-void CRPCFunctions::PlayerInGameNotice ( NetServerBitStreamInterface & bitStream )
+void CRPCFunctions::PlayerInGameNotice ( NetBitStreamInterface & bitStream )
 {
     // Already ingame? Protocol error
     if ( m_pSourcePlayer->IsIngame () )
@@ -99,7 +99,7 @@ void CRPCFunctions::PlayerInGameNotice ( NetServerBitStreamInterface & bitStream
 }
 
 
-void CRPCFunctions::PlayerTarget ( NetServerBitStreamInterface & bitStream )
+void CRPCFunctions::PlayerTarget ( NetBitStreamInterface & bitStream )
 {
     if ( m_pSourcePlayer->IsJoined () )
     {
@@ -120,7 +120,7 @@ void CRPCFunctions::PlayerTarget ( NetServerBitStreamInterface & bitStream )
 }
 
 
-void CRPCFunctions::PlayerWeapon ( NetServerBitStreamInterface & bitStream )
+void CRPCFunctions::PlayerWeapon ( NetBitStreamInterface & bitStream )
 {
     if ( m_pSourcePlayer->IsJoined () && m_pSourcePlayer->IsSpawned () )
     {
@@ -143,7 +143,7 @@ void CRPCFunctions::PlayerWeapon ( NetServerBitStreamInterface & bitStream )
 }
 
 
-void CRPCFunctions::KeyBind ( NetServerBitStreamInterface & bitStream )
+void CRPCFunctions::KeyBind ( NetBitStreamInterface & bitStream )
 {
     unsigned char ucType, ucKeyLength, ucHitState;
     bitStream.Read ( ucType );
@@ -160,7 +160,7 @@ void CRPCFunctions::KeyBind ( NetServerBitStreamInterface & bitStream )
 }
 
 
-void CRPCFunctions::CursorEvent ( NetServerBitStreamInterface & bitStream )
+void CRPCFunctions::CursorEvent ( NetBitStreamInterface & bitStream )
 {
     unsigned char ucButton;
     CVector2D vecCursorPosition;
@@ -233,7 +233,7 @@ void CRPCFunctions::CursorEvent ( NetServerBitStreamInterface & bitStream )
 }
 
 
-void CRPCFunctions::RequestStealthKill ( NetServerBitStreamInterface & bitStream )
+void CRPCFunctions::RequestStealthKill ( NetBitStreamInterface & bitStream )
 {
     ElementID ID;
     bitStream.Read ( ID );

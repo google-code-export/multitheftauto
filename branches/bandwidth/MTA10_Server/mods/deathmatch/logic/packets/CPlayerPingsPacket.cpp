@@ -13,7 +13,7 @@
 
 #include "StdInc.h"
 
-bool CPlayerPingsPacket::Write ( NetServerBitStreamInterface& BitStream ) const
+bool CPlayerPingsPacket::Write ( NetBitStreamInterface& BitStream ) const
 {
     // Got any players?
     if ( m_List.size () > 0 )

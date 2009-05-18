@@ -601,7 +601,7 @@ bool XMLColorToInt ( const char* szColor, unsigned char& ucRed, unsigned char& u
 }
 
 
-bool ReadSmallKeysync ( CControllerState& ControllerState, const CControllerState& LastControllerState, NetServerBitStreamInterface& BitStream )
+bool ReadSmallKeysync ( CControllerState& ControllerState, const CControllerState& LastControllerState, NetBitStreamInterface& BitStream )
 {
     // Read out the byte with keysyncs
     unsigned char ucKeys;
@@ -665,7 +665,7 @@ bool ReadSmallKeysync ( CControllerState& ControllerState, const CControllerStat
 }
 
 
-void WriteSmallKeysync ( const CControllerState& ControllerState, const CControllerState& LastControllerState, NetServerBitStreamInterface& BitStream )
+void WriteSmallKeysync ( const CControllerState& ControllerState, const CControllerState& LastControllerState, NetBitStreamInterface& BitStream )
 {
     // Put the controllerstate bools into a key byte
     unsigned char ucKeys = 0;
@@ -707,7 +707,7 @@ void WriteSmallKeysync ( const CControllerState& ControllerState, const CControl
 }
 
 
-bool ReadFullKeysync ( CControllerState& ControllerState, NetServerBitStreamInterface& BitStream )
+bool ReadFullKeysync ( CControllerState& ControllerState, NetBitStreamInterface& BitStream )
 {
     // Read out the byte with keysyncs
     unsigned char ucKeys;
@@ -732,7 +732,7 @@ bool ReadFullKeysync ( CControllerState& ControllerState, NetServerBitStreamInte
 }
 
 
-void WriteFullKeysync ( const CControllerState& ControllerState, NetServerBitStreamInterface& BitStream )
+void WriteFullKeysync ( const CControllerState& ControllerState, NetBitStreamInterface& BitStream )
 {
     // Put the controllerstate bools into a key byte
     unsigned char ucKeys = 0;

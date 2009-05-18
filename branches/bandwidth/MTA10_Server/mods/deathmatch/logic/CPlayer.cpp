@@ -207,7 +207,7 @@ void CPlayer::Send ( const CPacket& Packet, NetServerPacketOrdering packetOrderi
     }
 
     // Allocate a bitstream for it
-    NetServerBitStreamInterface* pBitStream = g_pNetServer->AllocateNetServerBitStream ();
+    NetBitStreamInterface* pBitStream = g_pNetServer->AllocateNetServerBitStream ();
     if ( pBitStream )
     {
         // Write the content to it and send it

@@ -17,7 +17,7 @@ CProjectileSyncPacket::CProjectileSyncPacket ( void )
 }
 
 
-bool CProjectileSyncPacket::Read ( NetServerBitStreamInterface& BitStream )
+bool CProjectileSyncPacket::Read ( NetBitStreamInterface& BitStream )
 {
     if ( BitStream.Read ( m_OriginID ) &&
          BitStream.Read ( m_vecOrigin.fX ) &&
@@ -60,7 +60,7 @@ bool CProjectileSyncPacket::Read ( NetServerBitStreamInterface& BitStream )
 }
 
 
-bool CProjectileSyncPacket::Write ( NetServerBitStreamInterface& BitStream ) const
+bool CProjectileSyncPacket::Write ( NetBitStreamInterface& BitStream ) const
 {
     // Write the source player and latency if any. Otherwize 0
     if ( m_pSourceElement )

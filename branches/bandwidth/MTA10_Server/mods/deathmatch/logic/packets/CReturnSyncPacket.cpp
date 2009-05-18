@@ -18,7 +18,7 @@ CReturnSyncPacket::CReturnSyncPacket ( CPlayer * pPlayer )
     m_pSourceElement = pPlayer;
 }
 
-bool CReturnSyncPacket::Write ( NetServerBitStreamInterface& BitStream ) const
+bool CReturnSyncPacket::Write ( NetBitStreamInterface& BitStream ) const
 {
     // Got a player to write?
     if ( m_pSourceElement )

@@ -17,7 +17,7 @@
 
 extern CGame* g_pGame;
 
-bool CPlayerPuresyncPacket::Read ( NetServerBitStreamInterface& BitStream )
+bool CPlayerPuresyncPacket::Read ( NetBitStreamInterface& BitStream )
 {
     if ( m_pSourceElement )
     {
@@ -230,7 +230,7 @@ bool CompareAndSet ( const T& current, T& previous )
 }
 */
 
-bool CPlayerPuresyncPacket::Write ( NetServerBitStreamInterface& BitStream ) const
+bool CPlayerPuresyncPacket::Write ( NetBitStreamInterface& BitStream ) const
 {
     if ( m_pSourceElement )
     {

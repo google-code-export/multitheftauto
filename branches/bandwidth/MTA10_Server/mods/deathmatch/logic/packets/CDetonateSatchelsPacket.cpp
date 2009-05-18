@@ -17,13 +17,13 @@ CDetonateSatchelsPacket::CDetonateSatchelsPacket ( void )
 }
 
 
-bool CDetonateSatchelsPacket::Read ( NetServerBitStreamInterface& BitStream )
+bool CDetonateSatchelsPacket::Read ( NetBitStreamInterface& BitStream )
 {
     return true;
 }
 
 
-bool CDetonateSatchelsPacket::Write ( NetServerBitStreamInterface& BitStream ) const
+bool CDetonateSatchelsPacket::Write ( NetBitStreamInterface& BitStream ) const
 {
     // Write the source player and latency if any. Otherwize 0
     if ( m_pSourceElement )

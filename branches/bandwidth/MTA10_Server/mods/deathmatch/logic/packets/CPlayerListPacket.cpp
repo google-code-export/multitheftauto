@@ -13,7 +13,7 @@
 
 #include "StdInc.h"
 
-bool CPlayerListPacket::Write ( NetServerBitStreamInterface& BitStream ) const
+bool CPlayerListPacket::Write ( NetBitStreamInterface& BitStream ) const
 {
     // bool                  - show the "X has joined the game" messages?
     // [ following repeats <number of players joined> times ]

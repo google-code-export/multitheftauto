@@ -20,7 +20,7 @@ CKeysyncPacket::CKeysyncPacket ( CPlayer * pPlayer )
     m_pSourceElement = pPlayer;
 }
 
-bool CKeysyncPacket::Read ( NetServerBitStreamInterface& BitStream )
+bool CKeysyncPacket::Read ( NetBitStreamInterface& BitStream )
 {
     // Got a player to write?
     if ( m_pSourceElement )
@@ -123,7 +123,7 @@ bool CKeysyncPacket::Read ( NetServerBitStreamInterface& BitStream )
 }
 
 
-bool CKeysyncPacket::Write ( NetServerBitStreamInterface& BitStream ) const
+bool CKeysyncPacket::Write ( NetBitStreamInterface& BitStream ) const
 {
     // Got a player to write?
     if ( m_pSourceElement )
@@ -204,7 +204,7 @@ bool CKeysyncPacket::Write ( NetServerBitStreamInterface& BitStream ) const
 }
 
 
-void CKeysyncPacket::ReadVehicleSpecific ( CVehicle* pVehicle, NetServerBitStreamInterface& BitStream )
+void CKeysyncPacket::ReadVehicleSpecific ( CVehicle* pVehicle, NetBitStreamInterface& BitStream )
 {
     // Turret states
     unsigned short usModel = pVehicle->GetModel ();
@@ -222,7 +222,7 @@ void CKeysyncPacket::ReadVehicleSpecific ( CVehicle* pVehicle, NetServerBitStrea
 }
 
 
-void CKeysyncPacket::WriteVehicleSpecific ( CVehicle* pVehicle, NetServerBitStreamInterface& BitStream ) const
+void CKeysyncPacket::WriteVehicleSpecific ( CVehicle* pVehicle, NetBitStreamInterface& BitStream ) const
 {
     // Turret states
     unsigned short usModel = pVehicle->GetModel ();
