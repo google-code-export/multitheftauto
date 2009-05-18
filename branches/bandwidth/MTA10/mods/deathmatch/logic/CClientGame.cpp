@@ -91,6 +91,7 @@ CClientGame::CClientGame ( bool bLocalPlay )
     m_fGameSpeed = 1.0f;
     m_lMoney = 0;
     m_lastWeaponSlot = WEAPONSLOT_MAX;      // last stored weapon slot, for weapon slot syncing to server (sets to invalid value)
+    ResetAmmoInClip();
 
     m_bNoNewVehicleTask = false;
     m_bTransferResource = false;            // flag controls whether a resource is being transferred or not
@@ -104,6 +105,16 @@ CClientGame::CClientGame ( bool bLocalPlay )
 
     m_bIsPlayingBack = false;
     m_bFirstPlaybackFrame = false;
+
+    //Setup game glitch defaults ( false = disabled )
+    m_Glitches [ GLITCH_QUICKRELOAD ] = false;
+    m_Glitches [ GLITCH_FASTFIRE ] = false;
+    m_Glitches [ GLITCH_FASTMOVE ] = false;
+
+    //Glitch names (for Lua interface)
+    m_GlitchNames["quickreload"] = GLITCH_QUICKRELOAD;
+    m_GlitchNames["fastfire"] = GLITCH_FASTFIRE;
+    m_GlitchNames["fastmove"] = GLITCH_FASTMOVE;
 
     #ifdef MTA_VOICE
     m_pVoice = VoiceCreate();
@@ -1034,6 +1045,7 @@ void CClientGame::DoPulses ( void )
     g_pGame->GetPlayerInfo ()->SetPlayerMoney ( m_lMoney );
     // stop players dying from starvation
     g_pGame->GetPlayerInfo()->SetLastTimeEaten ( 0 );
+    // reset weapon logs (for preventing quickreload)
 
     // Update streaming
     m_pManager->UpdateStreamers ();
@@ -1553,7 +1565,18 @@ void CClientGame::UpdatePlayerWeapons ( void )
 
         if ( bCancelled )
         {
+            // Save the current ammo in clip
+            unsigned short usAmmoInClip = 0;
+            CWeapon* pWeapon = m_pLocalPlayer->GetWeapon ( m_lastWeaponSlot );
+            if ( pWeapon )
+                usAmmoInClip = pWeapon->GetAmmoInClip ();
+
+            // Force it back to the old slot
             m_pLocalPlayer->SetCurrentWeaponSlot ( m_lastWeaponSlot );
+
+            // Restore the ammo in clip that there was in that slot
+            if ( usAmmoInClip > 0 )
+                m_pLocalPlayer->GetWeapon ()->SetAmmoInClip ( usAmmoInClip );
         }
         else
         {
@@ -1564,9 +1587,19 @@ void CClientGame::UpdatePlayerWeapons ( void )
 
             if ( pWeapon )
             {
+                unsigned int uiSlot = static_cast < unsigned int > ( pWeapon->GetSlot () );
+
+                if ( !IsGlitchEnabled ( GLITCH_QUICKRELOAD ) )
+                {
+                    m_wasWeaponAmmoInClip [ m_lastWeaponSlot ] = pWeapon->GetAmmoInClip();
+                    if ( m_wasWeaponAmmoInClip [ uiSlot ] > 0 )
+                    {
+                        m_pLocalPlayer->GetWeapon()->SetAmmoInClip ( m_wasWeaponAmmoInClip [ uiSlot ] );
+                    }
+                }
+
                 /* Send a packet to the server with info about the NEW weapon,
                    so the server stays in sync reliably */        
-                unsigned int uiSlot = static_cast < unsigned int > ( pWeapon->GetSlot () );
                 slot.data.uiSlot = uiSlot;
                 BitStream.Write ( &slot );
 
@@ -3668,7 +3701,7 @@ void CClientGame::PostWeaponFire ( void )
                 else
                     pPed->CallEvent ( "onClientPedWeaponFire", Arguments, true );
             }
-
+            pPed->PostWeaponFire();
 #ifdef MTA_DEBUG
             if ( pPed->IsLocalPlayer () && g_pClientGame->m_bDoPaintballs )
             {
@@ -3951,10 +3984,6 @@ void CClientGame::SendPedWastedPacket( CClientPed* Ped, ElementID damagerID, uns
             // Write some death info
             pBitStream->Write ( animGroup );
             pBitStream->Write ( animID );
-
-            pBitStream->Write ( damagerID );
-            pBitStream->Write ( ucWeapon );
-            pBitStream->Write ( ucBodyPiece );
 
             // Write the position we died in
             CVector vecPosition;
@@ -4331,4 +4360,31 @@ void CClientGame::NotifyBigPacketProgress ( unsigned long ulBytesReceived, unsig
 
     m_pBigPacketTransferBox->DoPulse ();
     m_pBigPacketTransferBox->SetInfoSingleDownload ( "", Min ( ulTotalSize, ulBytesReceived ) );
+}
+
+bool CClientGame::SetGlitchEnabled ( char cGlitch, bool bEnabled )
+{
+    if ( bEnabled != m_Glitches[cGlitch] )
+    {
+        m_Glitches[cGlitch] = bEnabled;
+        return true;
+    }
+    return false;
+}
+
+bool CClientGame::SetGlitchEnabled ( std::string strGlitch, bool bEnabled )
+{
+    char cGlitch = m_GlitchNames[strGlitch];
+    return SetGlitchEnabled(cGlitch, bEnabled);
+}
+
+bool CClientGame::IsGlitchEnabled ( char cGlitch )
+{
+    return m_Glitches[cGlitch] || false;
+}
+
+bool CClientGame::IsGlitchEnabled ( std::string strGlitch )
+{
+    char cGlitch = m_GlitchNames[strGlitch];
+    return IsGlitchEnabled(cGlitch);
 }

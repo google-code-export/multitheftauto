@@ -7163,7 +7163,7 @@ bool CStaticFunctionDefinitions::KickPlayer ( CPlayer* pPlayer, CPlayer* pRespon
 
     // Tell the player that was kicked why. QuitPlayer will delete the player.
     pPlayer->Send ( CPlayerDisconnectedPacket ( szMessage ) );
-    g_pGame->QuitPlayer ( *pPlayer, CClient::QUIT_KICK, false );
+    g_pGame->QuitPlayer ( *pPlayer, CClient::QUIT_KICK, false, szReason, szResponsible );
 
     // Tell everyone else that he was kicked from the game including console
     // m_pPlayerManager->BroadcastOnlyJoined ( CChatEchoPacket ( szInfoMessage, CHATCOLOR_INFO ) );
@@ -7224,7 +7224,7 @@ CBan* CStaticFunctionDefinitions::BanPlayer ( CPlayer* pPlayer, bool bIP, bool b
 
         // Tell the player that was banned why. QuitPlayer will delete the player.
         pPlayer->Send ( CPlayerDisconnectedPacket ( szMessage ) );
-        g_pGame->QuitPlayer ( *pPlayer, CClient::QUIT_BAN, false );
+        g_pGame->QuitPlayer ( *pPlayer, CClient::QUIT_BAN, false, szReason, szResponsible );
 
         // Tell everyone else that he was banned from the game including console
         // m_pPlayerManager->BroadcastOnlyJoined ( CChatEchoPacket ( szInfoMessage, CHATCOLOR_INFO ) );
@@ -7311,7 +7311,7 @@ CBan* CStaticFunctionDefinitions::AddBan ( const char* szIP, const char* szUsern
 
                 // Tell the player that was banned why. QuitPlayer will delete the player.
                 (*iter)->Send ( CPlayerDisconnectedPacket ( szMessage ) );
-                g_pGame->QuitPlayer ( **iter, CClient::QUIT_BAN, false );
+                g_pGame->QuitPlayer ( **iter, CClient::QUIT_BAN, false, szReason, ( pResponsible ) ? pResponsible->GetNick () : "Console" );
             }
         }
         return pBan;
