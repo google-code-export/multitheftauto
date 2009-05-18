@@ -816,6 +816,9 @@ void CPacketHandler::Packet_PlayerSpawn ( NetBitStreamInterface& bitStream )
         // He's no longer dead
         pPlayer->SetDeadOnNetwork ( false );
 
+        // Reset weapons
+        pPlayer->RemoveAllWeapons ();
+
         // Spawn him
         pPlayer->Spawn ( vecPosition,
                          fRotation,
