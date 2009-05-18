@@ -10,11 +10,32 @@
 *
 *****************************************************************************/
 
-struct SPlayerPuresyncFlags
+#pragma once
+
+#include <net/bitstream.h>
+
+// WARNING: the this+4 is an ugly hack to avoid the vtable first 4 bytes.
+// If you have a better solution that is not as ugly as this, please fix it.
+
+struct ISyncStructure
+{
+    virtual         ~ISyncStructure () {}
+    virtual bool    Read            ( NetBitStreamInterface& bitStream ) = 0;
+    virtual void    Write           ( NetBitStreamInterface& bitStream ) = 0;
+};
+
+struct SPlayerPuresyncFlags : public ISyncStructure
 {
     enum { BITCOUNT = 10 };
 
-    SPlayerPuresyncFlags () { memset ( this, 0, sizeof ( *this ) ); }
+    bool Read ( NetBitStreamInterface& bitStream )
+    {
+        return bitStream.ReadBits ( reinterpret_cast < char* > ( this ) + 4, BITCOUNT );
+    }
+    void Write ( NetBitStreamInterface& bitStream )
+    {
+        bitStream.WriteBits ( reinterpret_cast < const char* > ( this ) + 4, BITCOUNT );
+    }
 
     bool bIsInWater : 1;
     bool bIsOnGround : 1;
@@ -28,22 +49,36 @@ struct SPlayerPuresyncFlags
     bool bHasAWeapon : 1;
 };
 
-struct SKeysyncFlags
+struct SKeysyncFlags : public ISyncStructure
 {
     enum { BITCOUNT = 3 };
 
-    SKeysyncFlags () { memset ( this, 0, sizeof ( *this ) ); }
+    bool Read ( NetBitStreamInterface& bitStream )
+    {
+        return bitStream.ReadBits ( reinterpret_cast < char* > ( this ) + 4, BITCOUNT );
+    }
+    void Write ( NetBitStreamInterface& bitStream )
+    {
+        bitStream.WriteBits ( reinterpret_cast < const char* > ( this ) + 4, BITCOUNT );
+    }
 
     bool bIsDucked : 1;
     bool bIsChoking : 1;
     bool bAkimboTargetUp : 1;
 };
 
-struct SWeaponSlotSync
+struct SWeaponSlotSync : public ISyncStructure
 {
     enum { BITCOUNT = 4 };
 
-    SWeaponSlotSync () { memset ( this, 0, sizeof ( *this ) ); }
+    bool Read ( NetBitStreamInterface& bitStream )
+    {
+        return bitStream.ReadBits ( reinterpret_cast < char* > ( this ) + 4, BITCOUNT );
+    }
+    void Write ( NetBitStreamInterface& bitStream )
+    {
+        bitStream.WriteBits ( reinterpret_cast < const char* > ( this ) + 4, BITCOUNT );
+    }
 
     unsigned int uiSlot : 4;
 };

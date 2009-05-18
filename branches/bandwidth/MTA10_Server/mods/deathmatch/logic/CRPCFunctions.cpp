@@ -125,7 +125,7 @@ void CRPCFunctions::PlayerWeapon ( NetBitStreamInterface & bitStream )
     if ( m_pSourcePlayer->IsJoined () && m_pSourcePlayer->IsSpawned () )
     {
         SWeaponSlotSync slot;
-        bitStream.ReadBits ( reinterpret_cast < char * > ( &slot ), SWeaponSlotSync::BITCOUNT );
+        bitStream.Read ( &slot );
 
         m_pSourcePlayer->SetWeaponSlot ( slot.uiSlot );
         CWeapon* pWeapon = m_pSourcePlayer->GetWeapon ( slot.uiSlot );

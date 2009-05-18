@@ -1567,7 +1567,7 @@ void CClientGame::UpdatePlayerWeapons ( void )
                 /* Send a packet to the server with info about the NEW weapon,
                    so the server stays in sync reliably */        
                 slot.uiSlot = static_cast < unsigned int > ( pWeapon->GetSlot () );
-                BitStream.WriteBits ( reinterpret_cast < const char* > ( &slot ), SWeaponSlotSync::BITCOUNT );
+                BitStream.Write ( &slot );
 
                 if ( slot.uiSlot != 0 && slot.uiSlot != 1 && slot.uiSlot != 10 && slot.uiSlot != 11 )
                 {
@@ -1578,7 +1578,7 @@ void CClientGame::UpdatePlayerWeapons ( void )
             else
             {
                 slot.uiSlot = 0;
-                BitStream.WriteBits ( reinterpret_cast < const char* > ( &slot ), SWeaponSlotSync::BITCOUNT );
+                BitStream.Write ( &slot );
             }
 
             m_pNetAPI->RPC ( PLAYER_WEAPON, bitStream.pBitStream );

@@ -41,7 +41,7 @@ bool CPlayerPuresyncPacket::Read ( NetBitStreamInterface& BitStream )
 
         // Read the flags
         SPlayerPuresyncFlags flags;
-        BitStream.ReadBits ( reinterpret_cast < char * > ( &flags ), SPlayerPuresyncFlags::BITCOUNT );
+        BitStream.Read ( &flags );
 
         pSourcePlayer->SetInWater ( flags.bIsInWater );
         pSourcePlayer->SetOnGround ( flags.bIsOnGround );
@@ -300,7 +300,7 @@ bool CPlayerPuresyncPacket::Write ( NetBitStreamInterface& BitStream ) const
 
         etc... Could also do a 'sent' header in WriteFullKeysync
 */
-        BitStream.WriteBits ( reinterpret_cast < const char* > ( &flags ), SPlayerPuresyncFlags::BITCOUNT );
+        BitStream.Write ( &flags );
         
         if ( pContactElement )
             BitStream.Write ( pContactElement->GetID () );            
@@ -321,7 +321,7 @@ bool CPlayerPuresyncPacket::Write ( NetBitStreamInterface& BitStream ) const
         {
             SWeaponSlotSync slot;
             slot.uiSlot = ucWeaponSlot;
-            BitStream.WriteBits ( reinterpret_cast < const char* > ( &slot ), SWeaponSlotSync::BITCOUNT );
+            BitStream.Write ( &slot );
             if ( slot.uiSlot != 0 && slot.uiSlot != 1 && slot.uiSlot != 10 && slot.uiSlot != 11 )
             {
                 unsigned short usWeaponAmmoInClip = pSourcePlayer->GetWeaponAmmoInClip ();

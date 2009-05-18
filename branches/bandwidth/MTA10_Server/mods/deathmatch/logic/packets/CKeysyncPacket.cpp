@@ -34,7 +34,7 @@ bool CKeysyncPacket::Read ( NetBitStreamInterface& BitStream )
 
         // Flags
         SKeysyncFlags flags;
-        BitStream.ReadBits ( reinterpret_cast < char* > ( &flags ), SKeysyncFlags::BITCOUNT );
+        BitStream.Read ( &flags );
 
         // Set the ducked and choking state
         pSourcePlayer->SetDucked ( flags.bIsDucked );
@@ -49,7 +49,7 @@ bool CKeysyncPacket::Read ( NetBitStreamInterface& BitStream )
             {
                 // Read out the current weapon slot and set it
                 SWeaponSlotSync slot;
-                BitStream.ReadBits ( reinterpret_cast < char* > ( &slot ), SWeaponSlotSync::BITCOUNT );
+                BitStream.Read ( &slot );
 
                 pSourcePlayer->SetWeaponSlot ( slot.uiSlot );
 
@@ -150,7 +150,7 @@ bool CKeysyncPacket::Write ( NetBitStreamInterface& BitStream ) const
         flags.bAkimboTargetUp = ( pSourcePlayer->IsAkimboArmUp () == true );
 
         // Write the flags
-        BitStream.WriteBits ( reinterpret_cast < const char* > ( &flags ), SKeysyncFlags::BITCOUNT );
+        BitStream.Write ( &flags );
 
         // If he's shooting
         if ( ControllerState.ButtonCircle )
@@ -158,7 +158,7 @@ bool CKeysyncPacket::Write ( NetBitStreamInterface& BitStream ) const
             // Write his current weapon slot
             SWeaponSlotSync slot;
             slot.uiSlot = pSourcePlayer->GetWeaponSlot ();
-            BitStream.WriteBits ( reinterpret_cast < const char* > ( &slot ), SWeaponSlotSync::BITCOUNT );
+            BitStream.Write ( &slot );
 
             if ( slot.uiSlot != 0 && slot.uiSlot != 1 && slot.uiSlot != 10 && slot.uiSlot != 11 )
             {

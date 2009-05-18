@@ -11,6 +11,8 @@
 
 #pragma once
 
+struct ISyncStructure;
+
 class NetBitStreamInterface
 {
 public:
@@ -33,6 +35,7 @@ public:
     virtual void        Write                       ( const float& input ) = 0;
     virtual void        Write                       ( const double& input ) = 0;
     virtual void        Write                       ( const char* input, int numberOfBytes ) = 0;
+    virtual void        Write                       ( ISyncStructure* syncStruct ) = 0;
 
     virtual void        WriteCompressed             ( const unsigned char& input ) = 0;
     virtual void        WriteCompressed             ( const char& input ) = 0;
@@ -75,6 +78,7 @@ public:
     virtual bool        Read                        ( float& output ) = 0;
     virtual bool        Read                        ( double& output ) = 0;
     virtual bool        Read                        ( char* output, int numberOfBytes ) = 0;
+    virtual bool        Read                        ( ISyncStructure* syncStruct ) = 0;
 
     virtual bool        ReadCompressed              ( unsigned char& output ) = 0;
     virtual bool        ReadCompressed              ( char& output ) = 0;

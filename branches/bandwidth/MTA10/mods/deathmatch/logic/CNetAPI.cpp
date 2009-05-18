@@ -479,7 +479,7 @@ void CNetAPI::ReadKeysync ( CClientPlayer* pPlayer, NetBitStreamInterface& BitSt
 
     // Flags
     SKeysyncFlags flags;
-    BitStream.ReadBits ( reinterpret_cast < char* > ( &flags ), SKeysyncFlags::BITCOUNT );
+    BitStream.Read ( &flags );
 
     // Grab the occupied vehicle
     CClientVehicle* pVehicle = pPlayer->GetOccupiedVehicle ();
@@ -640,7 +640,7 @@ void CNetAPI::WriteKeysync ( CClientPed* pPlayerModel, NetBitStreamInterface& Bi
     flags.bAkimboTargetUp = ( g_pMultiplayer->GetAkimboTargetUp () == true );
 
     // Write the flags
-    BitStream.WriteBits ( reinterpret_cast < const char* > ( &flags ), SKeysyncFlags::BITCOUNT );
+    BitStream.Write ( &flags );
 
     // Are we shooting?
     if ( ControllerState.ButtonCircle )
@@ -654,7 +654,7 @@ void CNetAPI::WriteKeysync ( CClientPed* pPlayerModel, NetBitStreamInterface& Bi
             // Write the type
             SWeaponSlotSync slot;
             slot.uiSlot = pPlayerWeapon->GetSlot ();
-            BitStream.WriteBits ( reinterpret_cast < const char* > ( &slot ), SWeaponSlotSync::BITCOUNT );
+            BitStream.Write ( &slot );
 
             if ( slot.uiSlot != 0 && slot.uiSlot != 1 && slot.uiSlot != 10 && slot.uiSlot != 11 )
             {
@@ -733,7 +733,7 @@ void CNetAPI::ReadPlayerPuresync ( CClientPlayer* pPlayer, NetBitStreamInterface
 
     // Read out puresync flags
     SPlayerPuresyncFlags flags;
-    BitStream.ReadBits ( reinterpret_cast < char* > ( &flags ), SPlayerPuresyncFlags::BITCOUNT );
+    BitStream.Read ( &flags );
 
     // Set the jetpack and google states
     if ( flags.bHasJetPack != pPlayer->HasJetPack () )
@@ -794,7 +794,7 @@ void CNetAPI::ReadPlayerPuresync ( CClientPlayer* pPlayer, NetBitStreamInterface
     if ( flags.bHasAWeapon )
     {
         SWeaponSlotSync slot;
-        BitStream.ReadBits ( reinterpret_cast < char* > ( &slot ), SWeaponSlotSync::BITCOUNT );
+        BitStream.Read ( &slot );
 
         if ( slot.uiSlot != 0 && slot.uiSlot != 1 && slot.uiSlot != 10 && slot.uiSlot != 11 )
         {
@@ -933,7 +933,7 @@ void CNetAPI::WritePlayerPuresync ( CClientPed* pPlayerModel, NetBitStreamInterf
     if ( pPlayerWeapon->GetSlot () > 15 )
         flags.bHasAWeapon = false;
 
-    BitStream.WriteBits ( reinterpret_cast < const char* > ( &flags ), SPlayerPuresyncFlags::BITCOUNT );
+    BitStream.Write ( &flags );
 
     // Player position
     CVector vecActualPosition;
