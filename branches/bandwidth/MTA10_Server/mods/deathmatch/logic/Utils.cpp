@@ -724,8 +724,8 @@ bool ReadFullKeysync ( CControllerState& ControllerState, NetBitStreamInterface&
     ControllerState.ShockButtonL    = keys.data.bShockButtonL;
     ControllerState.m_bPedWalk      = keys.data.bPedWalk;
 
-    ControllerState.LeftStickX      = keys.data.cLeftStickX;
-    ControllerState.LeftStickY      = keys.data.cLeftStickY;
+    ControllerState.LeftStickX      = static_cast < short > ( keys.data.cLeftStickX );
+    ControllerState.LeftStickY      = static_cast < short > ( keys.data.cLeftStickY );
 
     return true;
 }
