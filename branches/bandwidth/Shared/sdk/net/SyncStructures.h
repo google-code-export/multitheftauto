@@ -97,16 +97,16 @@ struct SFullKeysyncSync : public ISyncStructure
         bool bState = bitStream.ReadBits ( reinterpret_cast < char* > ( &data ), 8 );
         if ( bState )
         {
-            char ucLeftStickX;
-            bState = bitStream.Read ( ucLeftStickX );
+            char cLeftStickX;
+            bState = bitStream.Read ( cLeftStickX );
             if ( bState )
             {
-                data.sLeftStickX = static_cast < short > ( ((float)ucLeftStickX * 255.0f/256.0f) - 128.0f );
-                unsigned char ucLeftStickY;
-                bState = bitStream.Read ( ucLeftStickY );
+                data.sLeftStickX = static_cast < short > ( (float)cLeftStickX * 128.0f/127.0f );
+                char cLeftStickY;
+                bState = bitStream.Read ( cLeftStickY );
                 if ( bState )
                 {
-                    data.sLeftStickY = static_cast < short > ( ((float)ucLeftStickY * 255.0f/256.0f) - 128.0f );
+                    data.sLeftStickY = static_cast < short > ( (float)cLeftStickY * 128.0f/127.0f );
                 }
             }
         }
@@ -116,10 +116,10 @@ struct SFullKeysyncSync : public ISyncStructure
     void Write ( NetBitStreamInterface& bitStream )
     {
         bitStream.WriteBits ( reinterpret_cast < const char* > ( &data ), 8 );
-        unsigned char ucLeftStickX = static_cast < unsigned char > ( ((float)data.sLeftStickX + 128.0f) * 255/256.0f );
-        bitStream.Write ( ucLeftStickX );
-        unsigned char ucLeftStickY = static_cast < unsigned char > ( ((float)data.sLeftStickX + 128.0f) * 255/256.0f );
-        bitStream.Write ( ucLeftStickY );
+        char cLeftStickX = static_cast < char > ( (float)data.sLeftStickX * 127.0f/128.0f );
+        bitStream.Write ( cLeftStickX );
+        char cLeftStickY = static_cast < char > ( (float)data.sLeftStickX * 127.0f/128.0f );
+        bitStream.Write ( cLeftStickY );
     }
 
     struct
