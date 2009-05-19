@@ -107,7 +107,7 @@ bool CPlayerPuresyncPacket::Read ( NetBitStreamInterface& BitStream )
 
         // Health ( stored with damage )
         unsigned char ucHealth;
-	    BitStream.Read ( ucHealth );
+        BitStream.Read ( ucHealth );
 
         // Armor
         unsigned char ucArmor;
@@ -115,7 +115,7 @@ bool CPlayerPuresyncPacket::Read ( NetBitStreamInterface& BitStream )
 
         float fArmor = static_cast < float > ( ucArmor ) / 1.25f;
         float fOldArmor = pSourcePlayer->GetArmor ();
-		float fArmorLoss = fOldArmor - fArmor;
+        float fArmorLoss = fOldArmor - fArmor;
         
         pSourcePlayer->SetArmor ( fArmor );
 
@@ -133,24 +133,21 @@ bool CPlayerPuresyncPacket::Read ( NetBitStreamInterface& BitStream )
 
             pSourcePlayer->SetWeaponSlot ( uiSlot );
 
-            if ( uiSlot != 0 && uiSlot != 1 && uiSlot != 10 && uiSlot != 11 )
+            if ( CWeaponNames::DoesSlotHaveAmmo ( uiSlot ) )
             {
                 // Read out the ammo states
-                unsigned short usAmmoInClip;
-                BitStream.Read ( usAmmoInClip );
-                pSourcePlayer->SetWeaponAmmoInClip ( usAmmoInClip );
-            
-                unsigned short usTotalAmmo;
-                BitStream.Read ( usTotalAmmo );
-                pSourcePlayer->SetWeaponTotalAmmo ( usTotalAmmo );
+                SWeaponAmmoSync ammo ( pSourcePlayer->GetWeaponType (), true, true );
+                BitStream.Read ( &ammo );
+                pSourcePlayer->SetWeaponAmmoInClip ( ammo.data.usAmmoInClip );
+                pSourcePlayer->SetWeaponTotalAmmo ( ammo.data.usTotalAmmo );
 
                 // Read out the aim directions
                 float fArmX, fArmY;
-			    BitStream.Read ( fArmX );
-			    BitStream.Read ( fArmY );
+                BitStream.Read ( fArmX );
+                BitStream.Read ( fArmY );
 
-			    // Set the arm directions and whether or not arms are up
-			    pSourcePlayer->SetAimDirections ( fArmX, fArmY );
+                // Set the arm directions and whether or not arms are up
+                pSourcePlayer->SetAimDirections ( fArmX, fArmY );
 
                 // Source vector
                 BitStream.Read ( vecTemp.fX );
@@ -164,10 +161,17 @@ bool CPlayerPuresyncPacket::Read ( NetBitStreamInterface& BitStream )
                 BitStream.Read ( vecTemp.fZ );
                 pSourcePlayer->SetTargettingVector ( vecTemp );
             }
+            else
+            {
+                pSourcePlayer->SetWeaponAmmoInClip ( 1 );
+                pSourcePlayer->SetWeaponTotalAmmo ( 1 );
+            }
         }
         else
         {
             pSourcePlayer->SetWeaponSlot ( 0 );
+            pSourcePlayer->SetWeaponAmmoInClip ( 1 );
+            pSourcePlayer->SetWeaponTotalAmmo ( 1 );
         }
 
         // Read out damage info if changed
@@ -325,7 +329,7 @@ bool CPlayerPuresyncPacket::Write ( NetBitStreamInterface& BitStream ) const
             slot.data.uiSlot = uiSlot;
             BitStream.Write ( &slot );
 
-            if ( uiSlot != 0 && uiSlot != 1 && uiSlot != 10 && uiSlot != 11 )
+            if ( CWeaponNames::DoesSlotHaveAmmo ( uiSlot ) )
             {
                 unsigned short usWeaponAmmoInClip = pSourcePlayer->GetWeaponAmmoInClip ();
                 float fAimDirectionX = pSourcePlayer->GetAimDirectionX ();
@@ -354,7 +358,9 @@ bool CPlayerPuresyncPacket::Write ( NetBitStreamInterface& BitStream ) const
 
             etc...
 */
-                BitStream.Write ( usWeaponAmmoInClip );
+                SWeaponAmmoSync ammo ( pSourcePlayer->GetWeaponType (), false, true );
+                ammo.data.usAmmoInClip = usWeaponAmmoInClip;
+                BitStream.Write ( &ammo );
 
 			    BitStream.Write ( fAimDirectionX );
 			    BitStream.Write ( fAimDirectionY );

@@ -131,18 +131,15 @@ void CRPCFunctions::PlayerWeapon ( NetBitStreamInterface & bitStream )
         m_pSourcePlayer->SetWeaponSlot ( uiSlot );
         CWeapon* pWeapon = m_pSourcePlayer->GetWeapon ( uiSlot );
 
-        if ( uiSlot != 0 && uiSlot != 1 && uiSlot != 10 && uiSlot != 11 )
+        if ( CWeaponNames::DoesSlotHaveAmmo ( uiSlot ) )
         {
             if ( pWeapon )
             {
-                unsigned short usAmmo = 0;
-                unsigned short usAmmoInClip = 0;
+                SWeaponAmmoSync ammo ( pWeapon->ucType, true, true );
+                bitStream.Read ( &ammo );
 
-                bitStream.Read ( usAmmo );
-                bitStream.Read ( usAmmoInClip );
-
-                pWeapon->usAmmo = usAmmo;
-                pWeapon->usAmmoInClip = usAmmoInClip;
+                pWeapon->usAmmo = ammo.data.usTotalAmmo;
+                pWeapon->usAmmoInClip = ammo.data.usAmmoInClip;
             }
         }
         else if ( pWeapon )

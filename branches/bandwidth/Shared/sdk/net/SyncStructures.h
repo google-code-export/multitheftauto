@@ -17,6 +17,7 @@
 #pragma pack(push)
 #pragma pack(1)
 
+// Interface for all sync structures
 struct ISyncStructure
 {
     virtual         ~ISyncStructure () {}
@@ -24,6 +25,13 @@ struct ISyncStructure
     virtual void    Write           ( NetBitStreamInterface& bitStream ) = 0;
 };
 
+
+
+//////////////////////////////////////////
+//                                      //
+//           Player pure-sync           //
+//                                      //
+//////////////////////////////////////////
 struct SPlayerPuresyncFlags : public ISyncStructure
 {
     enum { BITCOUNT = 10 };
@@ -52,6 +60,13 @@ struct SPlayerPuresyncFlags : public ISyncStructure
     } data;
 };
 
+
+
+//////////////////////////////////////////
+//                                      //
+//               Keysync                //
+//                                      //
+//////////////////////////////////////////
 struct SKeysyncFlags : public ISyncStructure
 {
     enum { BITCOUNT = 3 };
@@ -73,6 +88,13 @@ struct SKeysyncFlags : public ISyncStructure
     } data;
 };
 
+
+
+//////////////////////////////////////////
+//                                      //
+//             Weapon sync              //
+//                                      //
+//////////////////////////////////////////
 struct SWeaponSlotSync : public ISyncStructure
 {
     enum { BITCOUNT = 4 };
@@ -90,6 +112,159 @@ struct SWeaponSlotSync : public ISyncStructure
     {
         unsigned int uiSlot : 4;
     } data;
+};
+
+struct IAmmoInClipSync : public virtual ISyncStructure
+{
+    virtual ~IAmmoInClipSync () {}
+    virtual inline unsigned short GetAmmoInClip () const = 0;
+};
+
+#define DECLARE_WEAPON_AMMOINCLIP_STRUCT(weaponName, bitCount) \
+struct S ## weaponName ## AmmoInClipSync : public IAmmoInClipSync \
+{ \
+    S ## weaponName ## AmmoInClipSync ( unsigned short usAmmoInClip ) { data.usAmmoInClip = usAmmoInClip; } \
+    \
+    bool Read ( NetBitStreamInterface& bitStream ) \
+    { \
+        return bitStream.ReadBits ( reinterpret_cast < char* > ( &data ), (bitCount) ); \
+    } \
+    void Write ( NetBitStreamInterface& bitStream ) \
+    { \
+        bitStream.WriteBits ( reinterpret_cast < const char* > ( &data ), (bitCount) ); \
+    } \
+    \
+    inline unsigned short GetAmmoInClip () const { return data.usAmmoInClip; } \
+    \
+private: \
+    struct \
+    { \
+        unsigned short usAmmoInClip : ## bitCount ; \
+    } data; \
+}
+
+// Declare specific weapon ammo in clip sync structures
+//                               wepname,   bitcount
+DECLARE_WEAPON_AMMOINCLIP_STRUCT(Pistol,    6);
+DECLARE_WEAPON_AMMOINCLIP_STRUCT(Silenced,  5);
+DECLARE_WEAPON_AMMOINCLIP_STRUCT(Deagle,    3);
+DECLARE_WEAPON_AMMOINCLIP_STRUCT(Shotgun,   1);
+DECLARE_WEAPON_AMMOINCLIP_STRUCT(Sawnoff,   3);
+DECLARE_WEAPON_AMMOINCLIP_STRUCT(Spas12,    3);
+DECLARE_WEAPON_AMMOINCLIP_STRUCT(Uzi,       7);
+DECLARE_WEAPON_AMMOINCLIP_STRUCT(Mp5,       5);
+DECLARE_WEAPON_AMMOINCLIP_STRUCT(Tec9,      7);
+DECLARE_WEAPON_AMMOINCLIP_STRUCT(Ak47,      5);
+DECLARE_WEAPON_AMMOINCLIP_STRUCT(M4,        6);
+DECLARE_WEAPON_AMMOINCLIP_STRUCT(Rifle,     1);
+DECLARE_WEAPON_AMMOINCLIP_STRUCT(Sniper,    1);
+DECLARE_WEAPON_AMMOINCLIP_STRUCT(RLauncher, 1);
+DECLARE_WEAPON_AMMOINCLIP_STRUCT(RPG,       1);
+DECLARE_WEAPON_AMMOINCLIP_STRUCT(FThrower,  6);
+DECLARE_WEAPON_AMMOINCLIP_STRUCT(Minigun,   9);
+DECLARE_WEAPON_AMMOINCLIP_STRUCT(Grenade,   1);
+DECLARE_WEAPON_AMMOINCLIP_STRUCT(TearGas,   1);
+DECLARE_WEAPON_AMMOINCLIP_STRUCT(Molotov,   1);
+DECLARE_WEAPON_AMMOINCLIP_STRUCT(Satchel,   1);
+DECLARE_WEAPON_AMMOINCLIP_STRUCT(Spraycan,  9);
+DECLARE_WEAPON_AMMOINCLIP_STRUCT(FireExt,   9);
+DECLARE_WEAPON_AMMOINCLIP_STRUCT(Camera,    6);
+
+#undef DECLARE_WEAPON_AMMOINCLIP_STRUCT
+
+struct SWeaponAmmoSync : public ISyncStructure
+{
+    SWeaponAmmoSync ( unsigned char ucWeaponType, bool bSyncTotalAmmo = true, bool bSyncAmmoInClip = true )
+    : m_ucWeaponType ( ucWeaponType ), m_bSyncTotalAmmo ( bSyncTotalAmmo ), m_bSyncAmmoInClip ( bSyncAmmoInClip )
+    {
+    }
+
+    bool Read ( NetBitStreamInterface& bitStream )
+    {
+        bool bStatus = true;
+        if ( m_bSyncTotalAmmo )
+            bStatus = bitStream.ReadCompressed ( data.usTotalAmmo );
+
+        if ( m_bSyncAmmoInClip && bStatus == true )
+        {
+            IAmmoInClipSync* pAmmoInClipSync = GetBestAmmoInClipSyncForWeapon ();
+            if ( pAmmoInClipSync )
+            {
+                bStatus = bitStream.Read ( pAmmoInClipSync );
+                if ( bStatus )
+                    data.usAmmoInClip = pAmmoInClipSync->GetAmmoInClip ();
+                else
+                    data.usAmmoInClip = 0;
+                delete pAmmoInClipSync;
+            }
+            else
+                bStatus = false;
+        }
+
+        return bStatus;
+    }
+
+    void Write ( NetBitStreamInterface& bitStream )
+    {
+        if ( m_bSyncTotalAmmo )
+            bitStream.WriteCompressed ( data.usTotalAmmo );
+        if ( m_bSyncAmmoInClip )
+        {
+            IAmmoInClipSync* pAmmoInClipSync = GetBestAmmoInClipSyncForWeapon ();
+            if ( pAmmoInClipSync )
+            {
+                bitStream.Write ( pAmmoInClipSync );
+                delete pAmmoInClipSync;
+            }
+        }
+    }
+
+    struct
+    {
+        unsigned short usTotalAmmo;
+        unsigned short usAmmoInClip;
+    } data;
+
+private:
+    unsigned char   m_ucWeaponType;
+    bool            m_bSyncTotalAmmo;
+    bool            m_bSyncAmmoInClip;
+
+    IAmmoInClipSync* GetBestAmmoInClipSyncForWeapon ( )
+    {
+        switch ( m_ucWeaponType )
+        {
+
+            case 22: return new SPistolAmmoInClipSync ( data.usAmmoInClip ); break;
+            case 23: return new SSilencedAmmoInClipSync ( data.usAmmoInClip ); break;
+            case 24: return new SDeagleAmmoInClipSync ( data.usAmmoInClip ); break;
+            case 25: return new SShotgunAmmoInClipSync ( data.usAmmoInClip ); break;
+            case 26: return new SSawnoffAmmoInClipSync ( data.usAmmoInClip ); break;
+            case 27: return new SSpas12AmmoInClipSync ( data.usAmmoInClip ); break;
+            case 28: return new SUziAmmoInClipSync ( data.usAmmoInClip ); break;
+            case 29: return new SMp5AmmoInClipSync ( data.usAmmoInClip ); break;
+            case 32: return new STec9AmmoInClipSync ( data.usAmmoInClip ); break;
+            case 30: return new SAk47AmmoInClipSync ( data.usAmmoInClip ); break;
+            case 31: return new SM4AmmoInClipSync ( data.usAmmoInClip ); break;
+            case 33: return new SRifleAmmoInClipSync ( data.usAmmoInClip ); break;
+            case 34: return new SSniperAmmoInClipSync ( data.usAmmoInClip ); break;
+            case 35: return new SRLauncherAmmoInClipSync ( data.usAmmoInClip ); break;
+            case 36: return new SRPGAmmoInClipSync ( data.usAmmoInClip ); break;
+            case 37: return new SFThrowerAmmoInClipSync ( data.usAmmoInClip ); break;
+            case 38: return new SMinigunAmmoInClipSync ( data.usAmmoInClip ); break;
+            case 16: return new SGrenadeAmmoInClipSync ( data.usAmmoInClip ); break;
+            case 17: return new STearGasAmmoInClipSync ( data.usAmmoInClip ); break;
+            case 18: return new SMolotovAmmoInClipSync ( data.usAmmoInClip ); break;
+            case 39: return new SSatchelAmmoInClipSync ( data.usAmmoInClip ); break;
+            case 41: return new SSpraycanAmmoInClipSync ( data.usAmmoInClip ); break;
+            case 42: return new SFireExtAmmoInClipSync ( data.usAmmoInClip ); break;
+            case 43: return new SCameraAmmoInClipSync ( data.usAmmoInClip ); break;
+            case 0: case 1: case 2: case 3: case 4: case 5: case 6: case 7: case 8: case 9: case 15: default:
+                // Melee
+                return NULL;
+                break;
+        }
+    }
 };
 
 #pragma pack(pop)

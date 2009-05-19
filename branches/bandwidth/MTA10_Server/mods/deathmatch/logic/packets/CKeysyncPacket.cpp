@@ -55,12 +55,12 @@ bool CKeysyncPacket::Read ( NetBitStreamInterface& BitStream )
                 pSourcePlayer->SetWeaponSlot ( uiSlot );
 
                 // Did he have a weapon?
-                if ( uiSlot != 0 && uiSlot != 1 && uiSlot != 10 && uiSlot != 11 )
+                if ( CWeaponNames::DoesSlotHaveAmmo ( uiSlot ) )
                 {
                     // And ammo in clip
-                    unsigned short usAmmoInClip;
-                    BitStream.Read ( usAmmoInClip );
-                    pSourcePlayer->SetWeaponAmmoInClip ( usAmmoInClip );
+                    SWeaponAmmoSync ammo ( pSourcePlayer->GetWeaponType (), false, true );
+                    BitStream.Read ( &ammo );
+                    pSourcePlayer->SetWeaponAmmoInClip ( ammo.data.usAmmoInClip );
 
 				    // Read out the aim directions
 				    float fArmX, fArmY;
@@ -162,11 +162,15 @@ bool CKeysyncPacket::Write ( NetBitStreamInterface& BitStream ) const
             slot.data.uiSlot = uiSlot;
             BitStream.Write ( &slot );
 
-            if ( uiSlot != 0 && uiSlot != 1 && uiSlot != 10 && uiSlot != 11 )
+            if ( CWeaponNames::DoesSlotHaveAmmo ( uiSlot ) )
             {
-                // Write his ammo in clip and aim directions
-                BitStream.Write ( pSourcePlayer->GetWeaponAmmoInClip () );
-				BitStream.Write ( pSourcePlayer->GetAimDirectionX () );
+                // Write his ammo in clip
+                SWeaponAmmoSync ammo ( pSourcePlayer->GetWeaponType (), false, true );
+                ammo.data.usAmmoInClip = pSourcePlayer->GetWeaponAmmoInClip ();
+                BitStream.Write ( &ammo );
+
+                // Write aim directions
+                BitStream.Write ( pSourcePlayer->GetAimDirectionX () );
 				BitStream.Write ( pSourcePlayer->GetAimDirectionY () );
 
                 // Source vector if sniper
@@ -183,6 +187,11 @@ bool CKeysyncPacket::Write ( NetBitStreamInterface& BitStream ) const
 
                 // Write the driveby aim directoin
                 BitStream.Write ( pSourcePlayer->GetDriveByDirection () );
+            }
+            else
+            {
+                pSourcePlayer->SetWeaponAmmoInClip ( 1 );
+                pSourcePlayer->SetWeaponTotalAmmo ( 1 );
             }
         }
 

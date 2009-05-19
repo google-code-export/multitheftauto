@@ -493,7 +493,7 @@ void CNetAPI::ReadKeysync ( CClientPlayer* pPlayer, NetBitStreamInterface& BitSt
         BitStream.Read ( &slot );
         unsigned int uiSlot = slot.data.uiSlot;
 
-        if ( uiSlot != 0 && uiSlot != 1 && uiSlot != 10 && uiSlot != 11 )
+        if ( CWeaponNames::DoesSlotHaveAmmo ( uiSlot ) )
         {
             CWeapon* pWeapon = pPlayer->GetWeapon ( static_cast < eWeaponSlot > ( uiSlot ) );
             unsigned char ucCurrentWeaponType = 0;
@@ -509,8 +509,9 @@ void CNetAPI::ReadKeysync ( CClientPlayer* pPlayer, NetBitStreamInterface& BitSt
             }
 
             // Read out the weapon ammo
-            unsigned short usWeaponAmmo = 0;
-            BitStream.Read ( usWeaponAmmo );
+            SWeaponAmmoSync ammo ( ucCurrentWeaponType, false, true );
+            BitStream.Read ( &ammo );
+            unsigned short usWeaponAmmo = ammo.data.usAmmoInClip;
 
             // Valid current weapon id? Add it to the change weapon queue
             if ( CClientPickupManager::IsValidWeaponID ( ucCurrentWeaponType ) )
@@ -658,11 +659,12 @@ void CNetAPI::WriteKeysync ( CClientPed* pPlayerModel, NetBitStreamInterface& Bi
             slot.data.uiSlot = uiSlot;
             BitStream.Write ( &slot );
 
-            if ( uiSlot != 0 && uiSlot != 1 && uiSlot != 10 && uiSlot != 11 )
+            if ( CWeaponNames::DoesSlotHaveAmmo ( uiSlot ) )
             {
                  // Write the clip ammo
-                unsigned short usAmmoInClip = static_cast < unsigned short > ( pPlayerWeapon->GetAmmoInClip () );
-                BitStream.Write ( usAmmoInClip );
+                SWeaponAmmoSync ammo ( pPlayerWeapon->GetType (), false, true );
+                ammo.data.usAmmoInClip = pPlayerWeapon->GetAmmoInClip ();
+                BitStream.Write ( &ammo );
 
                 // Grab his aim directions and sync them if he's not using an akimbo
 				CShotSyncData* pShotsyncData = g_pMultiplayer->GetLocalShotSyncData ();
@@ -800,7 +802,7 @@ void CNetAPI::ReadPlayerPuresync ( CClientPlayer* pPlayer, NetBitStreamInterface
 
         unsigned int uiSlot = slot.data.uiSlot;
 
-        if ( uiSlot != 0 && uiSlot != 1 && uiSlot != 10 && uiSlot != 11 )
+        if ( CWeaponNames::DoesSlotHaveAmmo ( uiSlot ) )
         {
             CWeapon* pWeapon = pPlayer->GetWeapon ( static_cast < eWeaponSlot > ( uiSlot ) );
             unsigned char ucCurrentWeapon = 0;
@@ -816,8 +818,9 @@ void CNetAPI::ReadPlayerPuresync ( CClientPlayer* pPlayer, NetBitStreamInterface
             }
 
             // Read out the weapon ammo
-            unsigned short usWeaponAmmo;
-            BitStream.Read ( usWeaponAmmo );
+            SWeaponAmmoSync ammo ( ucCurrentWeapon, false, true );
+            BitStream.Read ( &ammo );
+            unsigned short usWeaponAmmo = ammo.data.usAmmoInClip;
 
             // Valid current weapon id?
             if ( CClientPickupManager::IsValidWeaponID ( ucCurrentWeapon ) )
@@ -993,13 +996,13 @@ void CNetAPI::WritePlayerPuresync ( CClientPed* pPlayerModel, NetBitStreamInterf
         slot.data.uiSlot = uiSlot;
         BitStream.Write ( &slot );
 
-        if ( uiSlot != 0 && uiSlot != 1 && uiSlot != 10 && uiSlot != 11 )
+        if ( CWeaponNames::DoesSlotHaveAmmo ( uiSlot ) )
         {
             // Write the ammo states
-            unsigned short usAmmoInClip = static_cast < unsigned short > ( pPlayerWeapon->GetAmmoInClip () );
-            BitStream.Write ( usAmmoInClip );
-            unsigned short usTotalAmmo = static_cast < unsigned short > ( pPlayerWeapon->GetAmmoTotal () );
-            BitStream.Write ( usTotalAmmo );
+            SWeaponAmmoSync ammo ( pPlayerWeapon->GetType (), true, true );
+            ammo.data.usAmmoInClip = pPlayerWeapon->GetAmmoInClip ();
+            ammo.data.usTotalAmmo = pPlayerWeapon->GetAmmoTotal ();
+            BitStream.Write ( &ammo );
 
 			CShotSyncData* pShotsyncData = g_pMultiplayer->GetLocalShotSyncData ();
 			BitStream.Write ( pShotsyncData->m_fArmDirectionX );

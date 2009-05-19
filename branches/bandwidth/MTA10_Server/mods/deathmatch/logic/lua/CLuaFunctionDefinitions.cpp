@@ -1061,7 +1061,7 @@ int CLuaFunctionDefinitions::SetPlayerAmmo ( lua_State* luaVM )
             if ( iArgument2 == LUA_TSTRING || iArgument2 == LUA_TNUMBER )
             ucSlot = static_cast < unsigned char > ( lua_tonumber ( luaVM, 3 ) );
             int iArgument4 = lua_type ( luaVM, 4 );
-            unsigned short usAmmoInClip = NULL;
+            unsigned short usAmmoInClip = 0;
             if ( iArgument4 == LUA_TNUMBER || iArgument4 == LUA_TSTRING )
             {
                 usAmmoInClip = static_cast < unsigned short > ( lua_tonumber ( luaVM, 4 ) );
@@ -3134,7 +3134,7 @@ int CLuaFunctionDefinitions::SetWeaponAmmo ( lua_State* luaVM )
         CElement* pElement = lua_toelement ( luaVM, 1 );
         unsigned char ucWeaponID = static_cast < unsigned char > ( lua_tonumber ( luaVM, 2 ) );
         unsigned short usAmmo = static_cast < unsigned short > ( lua_tonumber ( luaVM, 3 ) );
-        unsigned short usAmmoInClip = NULL;
+        unsigned short usAmmoInClip = 0;
         if ( iArgument4 == LUA_TNUMBER || iArgument4 == LUA_TSTRING )
         {
             usAmmoInClip = static_cast < unsigned short > ( lua_tonumber ( luaVM, 4 ) );

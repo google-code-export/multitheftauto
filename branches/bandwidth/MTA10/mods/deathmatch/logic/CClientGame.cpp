@@ -1603,10 +1603,12 @@ void CClientGame::UpdatePlayerWeapons ( void )
                 slot.data.uiSlot = uiSlot;
                 BitStream.Write ( &slot );
 
-                if ( uiSlot != 0 && uiSlot != 1 && uiSlot != 10 && uiSlot != 11 )
+                if ( CWeaponNames::DoesSlotHaveAmmo ( uiSlot ) )
                 {
-                    BitStream.Write ( static_cast < unsigned short > ( pWeapon->GetAmmoTotal () ) );
-                    BitStream.Write ( static_cast < unsigned short > ( pWeapon->GetAmmoInClip () ) );
+                    SWeaponAmmoSync ammo ( pWeapon->GetType (), true, true );
+                    ammo.data.usAmmoInClip = pWeapon->GetAmmoInClip ();
+                    ammo.data.usTotalAmmo = pWeapon->GetAmmoTotal ();
+                    BitStream.Write ( &ammo );
                 }
             }
             else
