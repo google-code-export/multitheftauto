@@ -935,7 +935,7 @@ void CNetAPI::WritePlayerPuresync ( CClientPlayer* pPlayerModel, NetBitStreamInt
     flags.data.bAkimboTargetUp  = ( g_pMultiplayer->GetAkimboTargetUp () == true );
     flags.data.bIsOnFire        = ( pPlayerModel->IsOnFire () == true );
     flags.data.bHasAWeapon      = ( pPlayerWeapon != NULL );
-    flags.data.bSyncingVelocity = ( !flags.data.bIsOnGround || ( pPlayerModel->GetPlayerSyncCount () & 4 ) == 4 );
+    flags.data.bSyncingVelocity = ( !flags.data.bIsOnGround || ( pPlayerModel->GetPlayerSyncCount () % 4 ) == 0 );
 
     if ( pPlayerWeapon->GetSlot () > 15 )
         flags.data.bHasAWeapon = false;
