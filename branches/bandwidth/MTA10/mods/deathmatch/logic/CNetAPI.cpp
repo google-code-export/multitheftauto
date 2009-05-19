@@ -1565,79 +1565,43 @@ void CNetAPI::WriteSmallKeysync ( const CControllerState& ControllerState, const
 
 bool CNetAPI::ReadFullKeysync ( CControllerState& ControllerState, NetBitStreamInterface& BitStream )
 {
-    // Read out the byte with keysyncs
-    unsigned char ucKeys;
-    if ( !BitStream.Read ( ucKeys ) )
-    {
+    // Read the key sync
+    SFullKeysyncSync keys;
+    if ( !BitStream.Read ( &keys ) )
         return false;
-    }
 
     // Put the result into the controllerstate
-    if ( ( ucKeys & 0x01 ) ? true:false )
-        ControllerState.LeftShoulder1 = 255;
-    else
-        ControllerState.LeftShoulder1 = 0;
+    ControllerState.LeftShoulder1   = 255 * keys.data.bLeftShoulder1;
+    ControllerState.RightShoulder1  = 255 * keys.data.bRightShoulder1;
+    ControllerState.ButtonSquare    = 255 * keys.data.bButtonSquare;
+    ControllerState.ButtonCross     = 255 * keys.data.bButtonCross;
+    ControllerState.ButtonCircle    = 255 * keys.data.bButtonCircle;
+    ControllerState.ButtonTriangle  = 255 * keys.data.bButtonTriangle;
+    ControllerState.ShockButtonL    = 255 * keys.data.bShockButtonL;
+    ControllerState.m_bPedWalk      = 255 * keys.data.bPedWalk;
 
-    if ( ( ucKeys & 0x02 ) ? true:false )
-        ControllerState.RightShoulder1 = 255;
-    else
-        ControllerState.RightShoulder1 = 0;
-
-    if ( ( ucKeys & 0x04 ) ? true:false )
-        ControllerState.ButtonSquare = 255;
-    else
-        ControllerState.ButtonSquare = 0;
-
-    if ( ( ucKeys & 0x08 ) ? true:false )
-        ControllerState.ButtonCross = 255;
-    else
-        ControllerState.ButtonCross = 0;
-
-    if ( ( ucKeys & 0x10 ) ? true:false )
-        ControllerState.ButtonCircle = 255;
-    else
-        ControllerState.ButtonCircle = 0;
-
-    if ( ( ucKeys & 0x20 ) ? true:false )
-        ControllerState.ButtonTriangle = 255;
-    else
-        ControllerState.ButtonTriangle = 0;
-
-    if ( ( ucKeys & 0x40 ) ? true:false )
-        ControllerState.ShockButtonL = 255;
-    else
-        ControllerState.ShockButtonL = 0;
-
-    if ( ( ucKeys & 0x80 ) ? true:false )
-        ControllerState.m_bPedWalk = 255;
-    else
-        ControllerState.m_bPedWalk = 0;
-
-    // Apply leftstick X and Y
-    return ( BitStream.Read ( ControllerState.LeftStickX ) &&
-	         BitStream.Read ( ControllerState.LeftStickY ) );
+    ControllerState.LeftStickX      = keys.data.cLeftStickX;
+    ControllerState.LeftStickY      = keys.data.cLeftStickY;
 }
 
 
 void CNetAPI::WriteFullKeysync ( const CControllerState& ControllerState, NetBitStreamInterface& BitStream )
 {
     // Put the controllerstate bools into a key byte
-    unsigned char ucKeys = 0;
-    ucKeys |= ( ControllerState.LeftShoulder1 ? true:false ) ? 1:0;
-    ucKeys |= ( ControllerState.RightShoulder1 ? true:false ) << 1;
-    ucKeys |= ( ControllerState.ButtonSquare ? true:false ) << 2;
-    ucKeys |= ( ControllerState.ButtonCross ? true:false ) << 3;
-    ucKeys |= ( ControllerState.ButtonCircle ? true:false ) << 4;
-    ucKeys |= ( ControllerState.ButtonTriangle ? true:false ) << 5;
-    ucKeys |= ( ControllerState.ShockButtonL ? true:false ) << 6;
-    ucKeys |= ( ControllerState.m_bPedWalk ? true:false ) << 7;
+    SFullKeysyncSync keys;
+    keys.data.bLeftShoulder1    = ( ControllerState.LeftShoulder1 != 0 );
+    keys.data.bRightShoulder1   = ( ControllerState.RightShoulder1 != 0 );
+    keys.data.bButtonSquare     = ( ControllerState.ButtonSquare != 0 );
+    keys.data.bButtonCross      = ( ControllerState.ButtonCross != 0 );
+    keys.data.bButtonCircle     = ( ControllerState.ButtonCircle != 0 );
+    keys.data.bButtonTriangle   = ( ControllerState.ButtonTriangle != 0 );
+    keys.data.bShockButtonL     = ( ControllerState.ShockButtonL != 0 );
+    keys.data.bPedWalk          = ( ControllerState.m_bPedWalk != 0 );
+    keys.data.cLeftStickX       = static_cast < char > ( ControllerState.LeftStickX );
+    keys.data.cLeftStickY       = static_cast < char > ( ControllerState.LeftStickY );
 
     // Write it
-    BitStream.Write ( ucKeys );
-
-    // Write the left stick X and Y
-	BitStream.Write ( ControllerState.LeftStickX );
-	BitStream.Write ( ControllerState.LeftStickY );
+    BitStream.Write ( &keys );
 }
 
 

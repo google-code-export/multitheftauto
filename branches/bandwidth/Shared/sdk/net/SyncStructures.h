@@ -90,6 +90,34 @@ struct SKeysyncFlags : public ISyncStructure
     } data;
 };
 
+struct SFullKeysyncSync : public ISyncStructure
+{
+    enum { BITCOUNT = 24 };
+
+    bool Read ( NetBitStreamInterface& bitStream )
+    {
+        return bitStream.ReadBits ( reinterpret_cast < char* > ( &data ), BITCOUNT );
+    }
+    void Write ( NetBitStreamInterface& bitStream )
+    {
+        bitStream.WriteBits ( reinterpret_cast < const char* > ( &data ), BITCOUNT );
+    }
+
+    struct
+    {
+        bool bLeftShoulder1 : 1;
+        bool bRightShoulder1 : 1;
+        bool bButtonSquare : 1;
+        bool bButtonCross : 1;
+        bool bButtonCircle : 1;
+        bool bButtonTriangle : 1;
+        bool bShockButtonL : 1;
+        bool bPedWalk : 1;
+        char cLeftStickX;
+        char cLeftStickY;
+    } data;
+};
+
 
 
 //////////////////////////////////////////
