@@ -35,7 +35,7 @@ struct ISyncStructure
 //////////////////////////////////////////
 struct SPlayerPuresyncFlags : public ISyncStructure
 {
-    enum { BITCOUNT = 10 };
+    enum { BITCOUNT = 11 };
 
     bool Read ( NetBitStreamInterface& bitStream )
     {
@@ -58,6 +58,7 @@ struct SPlayerPuresyncFlags : public ISyncStructure
         bool bAkimboTargetUp : 1;
         bool bIsOnFire : 1;
         bool bHasAWeapon : 1;
+        bool bSyncingVelocity : 1;
     } data;
 };
 

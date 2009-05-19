@@ -83,7 +83,9 @@ CPlayer::CPlayer ( CPlayerManager* pPlayerManager, class CScriptDebugging* pScri
     m_ucNametagB = 0xFF;
     m_bNametagShowing = true;        
 
-    m_ucBlurLevel = 36; // Default    
+    m_ucBlurLevel = 36; // Default
+
+    m_bSyncingVelocity = false;
 
     // Add us to the manager
     pPlayerManager->AddToList ( this );

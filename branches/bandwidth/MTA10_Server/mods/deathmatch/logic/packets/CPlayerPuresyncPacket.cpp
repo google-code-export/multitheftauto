@@ -100,10 +100,13 @@ bool CPlayerPuresyncPacket::Read ( NetBitStreamInterface& BitStream )
         pSourcePlayer->SetRotation ( fRotation );
 
         // Move speed vector
-        BitStream.Read ( vecTemp.fX );
-        BitStream.Read ( vecTemp.fY );
-        BitStream.Read ( vecTemp.fZ );
-        pSourcePlayer->SetVelocity ( vecTemp );
+        if ( flags.data.bSyncingVelocity )
+        {
+            BitStream.Read ( vecTemp.fX );
+            BitStream.Read ( vecTemp.fZ );
+            BitStream.Read ( vecTemp.fY );
+            pSourcePlayer->SetVelocity ( vecTemp );
+        }
 
         // Health ( stored with damage )
         unsigned char ucHealth;
@@ -259,13 +262,12 @@ bool CPlayerPuresyncPacket::Write ( NetBitStreamInterface& BitStream ) const
         flags.data.bAkimboTargetUp  = ( pSourcePlayer->IsAkimboArmUp () == true );
         flags.data.bIsOnFire        = ( pSourcePlayer->IsOnFire () == true );
         flags.data.bHasAWeapon      = ( ucWeaponSlot != 0 );
+        flags.data.bSyncingVelocity = ( !flags.data.bIsOnGround || pSourcePlayer->IsSyncingVelocity () );
 
         CVector vecPosition = pSourcePlayer->GetPosition ();
         if ( pContactElement )
             pSourcePlayer->GetContactPosition ( vecPosition );
         float fRotation = pSourcePlayer->GetRotation ();
-        CVector vecVelocity;
-        pSourcePlayer->GetVelocity ( vecVelocity );
         unsigned char ucHealth = static_cast < unsigned char > ( pSourcePlayer->GetHealth () * 1.25f );
         unsigned char ucArmor = static_cast < unsigned char > ( pSourcePlayer->GetArmor () * 1.25f );
         float fCameraRotation = pSourcePlayer->GetCameraRotation ();
@@ -275,7 +277,7 @@ bool CPlayerPuresyncPacket::Write ( NetBitStreamInterface& BitStream ) const
         // Write the time context
         BitStream.Write ( pSourcePlayer->GetSyncTimeContext () );
 
-        BitStream.Write ( usLatency );
+        BitStream.WriteCompressed ( usLatency );
         WriteFullKeysync ( ControllerState, BitStream );   
 /*
         // Figure out what to send
@@ -312,9 +314,17 @@ bool CPlayerPuresyncPacket::Write ( NetBitStreamInterface& BitStream ) const
         BitStream.Write ( vecPosition.fZ ); 
 
         BitStream.Write ( fRotation );       
-        BitStream.Write ( vecVelocity.fX );
-        BitStream.Write ( vecVelocity.fY );
-        BitStream.Write ( vecVelocity.fZ );            
+
+        if ( flags.data.bSyncingVelocity )
+        {
+            CVector vecVelocity;
+            pSourcePlayer->GetVelocity ( vecVelocity );
+
+            BitStream.Write ( vecVelocity.fX );
+            BitStream.Write ( vecVelocity.fZ );
+            BitStream.Write ( vecVelocity.fY );
+        }
+
 	    BitStream.Write ( ucHealth );
         BitStream.Write ( ucArmor );
         BitStream.Write ( fCameraRotation );

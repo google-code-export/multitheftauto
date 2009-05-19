@@ -198,6 +198,9 @@ public:
     void                                        ClearSyncTime               ( CPlayer& Player );
     void                                        ClearSyncTimes              ( void );    
 
+    inline void                                 SetSyncingVelocity          ( bool bSyncing )               { m_bSyncingVelocity = bSyncing; }
+    inline bool                                 IsSyncingVelocity           ( void ) const                  { return m_bSyncingVelocity; }
+
 private:
     void                                        WriteCameraModePacket       ( void );
     void                                        WriteCameraPositionPacket   ( void );
@@ -276,6 +279,7 @@ private:
 
     std::list < sPlayerSyncData* >              m_SyncTimes;
 
+    bool                                        m_bSyncingVelocity;
 };
 
 #endif

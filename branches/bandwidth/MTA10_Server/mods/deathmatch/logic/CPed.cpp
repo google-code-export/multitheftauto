@@ -71,6 +71,8 @@ CPed::CPed ( CPedManager* pPedManager, CElement* pParent, CXMLNode* pNode, unsig
     m_ulVehicleActionStartTime = 0;
     m_pJackingVehicle = NULL;
 
+    m_vecVelocity.fX = m_vecVelocity.fY = m_vecVelocity.fZ = 0.0f;
+
     m_pSyncer = NULL;
 
     // Add us to the Ped manager

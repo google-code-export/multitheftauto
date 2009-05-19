@@ -728,7 +728,7 @@ void CNetAPI::ReadPlayerPuresync ( CClientPlayer* pPlayer, NetBitStreamInterface
 
     // Read out the time it took for the packet to go from the remote client to the server and to us
     unsigned short usLatency;
-    BitStream.Read ( usLatency );
+    BitStream.ReadCompressed ( usLatency );
     pPlayer->SetLatency ( usLatency + g_pNet->GetPing () );
 
     // Read out the keysync data
@@ -771,10 +771,14 @@ void CNetAPI::ReadPlayerPuresync ( CClientPlayer* pPlayer, NetBitStreamInterface
     BitStream.Read ( fRotation );
 
     // Move speed vector
-    CVector vecMoveSpeed;
-    BitStream.Read ( vecMoveSpeed.fX );
-    BitStream.Read ( vecMoveSpeed.fY );
-    BitStream.Read ( vecMoveSpeed.fZ );    
+    if ( flags.data.bSyncingVelocity )
+    {
+        CVector vecMoveSpeed;
+        BitStream.Read ( vecMoveSpeed.fX );
+        BitStream.Read ( vecMoveSpeed.fZ );
+        BitStream.Read ( vecMoveSpeed.fY );
+        pPlayer->SetMoveSpeed ( vecMoveSpeed );
+    }
 
     // Health
     unsigned char ucHealth;
@@ -889,7 +893,6 @@ void CNetAPI::ReadPlayerPuresync ( CClientPlayer* pPlayer, NetBitStreamInterface
     }
 
     // Set move speed, controller state and camera rotation + duck state
-    pPlayer->SetMoveSpeed ( vecMoveSpeed );
     pPlayer->SetControllerState ( ControllerState );
     pPlayer->SetCameraRotation ( fCameraRotation );
     pPlayer->Duck ( flags.data.bIsDucked );
@@ -903,7 +906,7 @@ void CNetAPI::ReadPlayerPuresync ( CClientPlayer* pPlayer, NetBitStreamInterface
 }
 
 
-void CNetAPI::WritePlayerPuresync ( CClientPed* pPlayerModel, NetBitStreamInterface& BitStream )
+void CNetAPI::WritePlayerPuresync ( CClientPlayer* pPlayerModel, NetBitStreamInterface& BitStream )
 {
     // Write our sync context.
     BitStream.Write ( pPlayerModel->GetSyncTimeContext () );
@@ -932,6 +935,7 @@ void CNetAPI::WritePlayerPuresync ( CClientPed* pPlayerModel, NetBitStreamInterf
     flags.data.bAkimboTargetUp  = ( g_pMultiplayer->GetAkimboTargetUp () == true );
     flags.data.bIsOnFire        = ( pPlayerModel->IsOnFire () == true );
     flags.data.bHasAWeapon      = ( pPlayerWeapon != NULL );
+    flags.data.bSyncingVelocity = ( !flags.data.bIsOnGround || ( pPlayerModel->GetPlayerSyncCount () & 4 ) == 4 );
 
     if ( pPlayerWeapon->GetSlot () > 15 )
         flags.data.bHasAWeapon = false;
@@ -950,7 +954,7 @@ void CNetAPI::WritePlayerPuresync ( CClientPed* pPlayerModel, NetBitStreamInterf
 
         CVector vecOrigin;
         pContactEntity->GetPosition ( vecOrigin );
-        vecPosition -= vecOrigin;        
+        vecPosition -= vecOrigin;
     }
 
     BitStream.Write ( vecPosition.fX );
@@ -962,12 +966,14 @@ void CNetAPI::WritePlayerPuresync ( CClientPed* pPlayerModel, NetBitStreamInterf
     BitStream.Write ( fCurrentRotation );
 
     // Move speed vector
-    CVector vecMoveSpeed;
-    pPlayerModel->GetMoveSpeed ( vecMoveSpeed );
-
-    BitStream.Write ( vecMoveSpeed.fX );
-    BitStream.Write ( vecMoveSpeed.fY );
-    BitStream.Write ( vecMoveSpeed.fZ );
+    if ( flags.data.bSyncingVelocity )
+    {
+        CVector vecMoveSpeed;
+        pPlayerModel->GetMoveSpeed ( vecMoveSpeed );
+        BitStream.Write ( vecMoveSpeed.fX );
+        BitStream.Write ( vecMoveSpeed.fZ );
+        BitStream.Write ( vecMoveSpeed.fY );
+    }
 
     // Health (scaled from 0.0f-100.0f to 0-250 to save three bytes)
     float fHealth = pPlayerModel->GetHealth ();
@@ -1031,6 +1037,9 @@ void CNetAPI::WritePlayerPuresync ( CClientPed* pPlayerModel, NetBitStreamInterf
 
     // Write the sent position to the interpolator
     AddInterpolation ( vecActualPosition );
+
+    // Increment the puresync count
+    pPlayerModel->IncrementPlayerSync ();
 }
 
 
