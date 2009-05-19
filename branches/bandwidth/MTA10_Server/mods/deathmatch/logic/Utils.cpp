@@ -726,6 +726,8 @@ bool ReadFullKeysync ( CControllerState& ControllerState, NetBitStreamInterface&
 
     ControllerState.LeftStickX      = keys.data.cLeftStickX;
     ControllerState.LeftStickY      = keys.data.cLeftStickY;
+
+    return true;
 }
 
 

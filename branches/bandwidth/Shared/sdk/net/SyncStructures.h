@@ -144,6 +144,25 @@ struct SWeaponSlotSync : public ISyncStructure
     } data;
 };
 
+struct SWeaponTypeSync : public ISyncStructure
+{
+    enum { BITCOUNT = 6 };
+
+    bool Read ( NetBitStreamInterface& bitStream )
+    {
+        return bitStream.ReadBits ( reinterpret_cast < char* > ( &data ), BITCOUNT );
+    }
+    void Write ( NetBitStreamInterface& bitStream )
+    {
+        bitStream.WriteBits ( reinterpret_cast < const char* > ( &data ), BITCOUNT );
+    }
+
+    struct
+    {
+        unsigned int uiWeaponType : 6;
+    } data;
+};
+
 struct IAmmoInClipSync : public virtual ISyncStructure
 {
     virtual ~IAmmoInClipSync () {}
@@ -343,5 +362,46 @@ struct SWeaponAimSync : public ISyncStructure
 private:
     float   m_fWeaponRange;
 };
+
+
+
+//////////////////////////////////////////
+//                                      //
+//                Others                //
+//                                      //
+//////////////////////////////////////////
+struct SBodypartSync : public ISyncStructure
+{
+    enum { BITCOUNT = 3 };
+
+    bool Read ( NetBitStreamInterface& bitStream )
+    {
+        bool bStatus = bitStream.ReadBits ( reinterpret_cast < char* > ( &privateData ), BITCOUNT );
+        if ( bStatus )
+            data.uiBodypart = privateData.uiBodypart + 3;
+        else
+            data.uiBodypart = 0;
+        return bStatus;
+    }
+    void Write ( NetBitStreamInterface& bitStream )
+    {
+        // Bodyparts go from 3 to 9, so substracting 3 from the value
+        // and then restoring it will save 1 bit.
+        privateData.uiBodypart = data.uiBodypart - 3;
+        bitStream.WriteBits ( reinterpret_cast < const char* > ( &privateData ), BITCOUNT );
+    }
+
+    struct
+    {
+        unsigned int uiBodypart;
+    } data;
+
+private:
+    struct
+    {
+        unsigned int uiBodypart : 3;
+    } privateData;
+};
+
 
 #pragma pack(pop)

@@ -175,19 +175,20 @@ bool CPlayerPuresyncPacket::Read ( NetBitStreamInterface& BitStream )
         }
 
         // Read out damage info if changed
-        ElementID DamagerID;
-        BitStream.ReadCompressed ( DamagerID );
+        if ( BitStream.ReadBit () == true )
+        {
+            ElementID DamagerID;
+            BitStream.ReadCompressed ( DamagerID );
         
-        // If it's different, carry on reading
-        if ( DamagerID != RESERVED_ELEMENT_ID )
-        {            
             CElement* pElement = CElementIDs::GetElement ( DamagerID );
 
-            unsigned char ucWeapon, ucBodyPart;
-            BitStream.Read ( ucWeapon );
-            BitStream.Read ( ucBodyPart );
+            SWeaponTypeSync weaponType;
+            BitStream.Read ( &weaponType );
 
-            pSourcePlayer->SetDamageInfo ( pElement, ucWeapon, ucBodyPart );
+            SBodypartSync bodyPart;
+            BitStream.Read ( &bodyPart );
+
+            pSourcePlayer->SetDamageInfo ( pElement, weaponType.data.uiWeaponType, bodyPart.data.uiBodypart );
         }
 
         float fHealth = static_cast < float > ( ucHealth ) / 1.25f;

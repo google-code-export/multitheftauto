@@ -1028,12 +1028,21 @@ void CNetAPI::WritePlayerPuresync ( CClientPlayer* pPlayerModel, NetBitStreamInt
 
         DamagerID = g_pClientGame->GetDamagerID ();
     }
-    BitStream.WriteCompressed ( DamagerID );
     if ( DamagerID != RESERVED_ELEMENT_ID )
     {
-        BitStream.Write ( g_pClientGame->GetDamageWeapon () );
-        BitStream.Write ( g_pClientGame->GetDamageBodyPiece () );
+        BitStream.WriteBit ( true );
+        BitStream.WriteCompressed ( DamagerID );
+        
+        SWeaponTypeSync weaponType;
+        weaponType.data.uiWeaponType = g_pClientGame->GetDamageWeapon ();
+        BitStream.Write ( &weaponType );
+
+        SBodypartSync bodypart;
+        bodypart.data.uiBodypart = g_pClientGame->GetDamageBodyPiece ();
+        BitStream.Write ( &bodypart );
     }    
+    else
+        BitStream.WriteBit ( false );
 
     // Write the sent position to the interpolator
     AddInterpolation ( vecActualPosition );
@@ -1582,6 +1591,8 @@ bool CNetAPI::ReadFullKeysync ( CControllerState& ControllerState, NetBitStreamI
 
     ControllerState.LeftStickX      = keys.data.cLeftStickX;
     ControllerState.LeftStickY      = keys.data.cLeftStickY;
+
+    return true;
 }
 
 
