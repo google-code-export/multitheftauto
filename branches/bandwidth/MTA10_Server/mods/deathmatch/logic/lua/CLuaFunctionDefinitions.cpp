@@ -10759,17 +10759,17 @@ int CLuaFunctionDefinitions::Md5 ( lua_State* luaVM )
 
 int CLuaFunctionDefinitions::GetPacketInfo ( lua_State* luaVM )
 {
-    unsigned long ulBytes [ 256 ];
+    unsigned long ulBits [ 256 ];
     unsigned long ulCount [ 256 ];
-    g_pNetServer->GetPacketLogData ( ulBytes, ulCount );
+    g_pNetServer->GetPacketLogData ( ulBits, ulCount );
     lua_createtable ( luaVM, 256, 1 );
 
     for ( unsigned int i = 0; i < 256; ++i )
     {
         lua_createtable ( luaVM, 0, 2 );
 
-        lua_pushstring ( luaVM, "bytes" );
-        lua_pushnumber ( luaVM, ulBytes [ i ] );
+        lua_pushstring ( luaVM, "bits" );
+        lua_pushnumber ( luaVM, ulBits [ i ] );
         lua_rawset ( luaVM, -3 );
 
         lua_pushstring ( luaVM, "count" );
