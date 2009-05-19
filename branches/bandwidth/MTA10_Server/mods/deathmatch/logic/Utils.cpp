@@ -724,8 +724,8 @@ bool ReadFullKeysync ( CControllerState& ControllerState, NetBitStreamInterface&
     ControllerState.ShockButtonL    = keys.data.bShockButtonL;
     ControllerState.m_bPedWalk      = keys.data.bPedWalk;
 
-    ControllerState.LeftStickX      = static_cast < short > ( keys.data.cLeftStickX );
-    ControllerState.LeftStickY      = static_cast < short > ( keys.data.cLeftStickY );
+    ControllerState.LeftStickX      = keys.data.sLeftStickX;
+    ControllerState.LeftStickY      = keys.data.sLeftStickY;
 
     return true;
 }
@@ -743,8 +743,8 @@ void WriteFullKeysync ( const CControllerState& ControllerState, NetBitStreamInt
     keys.data.bButtonTriangle   = ( ControllerState.ButtonTriangle != 0 );
     keys.data.bShockButtonL     = ( ControllerState.ShockButtonL != 0 );
     keys.data.bPedWalk          = ( ControllerState.m_bPedWalk != 0 );
-    keys.data.cLeftStickX       = static_cast < char > ( ControllerState.LeftStickX );
-    keys.data.cLeftStickY       = static_cast < char > ( ControllerState.LeftStickY );
+    keys.data.sLeftStickX       = ControllerState.LeftStickX;
+    keys.data.sLeftStickY       = ControllerState.LeftStickY;
 
     // Write it
     BitStream.Write ( &keys );

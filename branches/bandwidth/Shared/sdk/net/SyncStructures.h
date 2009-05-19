@@ -92,15 +92,34 @@ struct SKeysyncFlags : public ISyncStructure
 
 struct SFullKeysyncSync : public ISyncStructure
 {
-    enum { BITCOUNT = 24 };
-
     bool Read ( NetBitStreamInterface& bitStream )
     {
-        return bitStream.ReadBits ( reinterpret_cast < char* > ( &data ), BITCOUNT );
+        bool bState = bitStream.ReadBits ( reinterpret_cast < char* > ( &data ), 8 );
+        if ( bState )
+        {
+            char ucLeftStickX;
+            bState = bitStream.Read ( ucLeftStickX );
+            if ( bState )
+            {
+                data.sLeftStickX = static_cast < short > ( ((float)ucLeftStickX * 255.0f/256.0f) - 128.0f );
+                unsigned char ucLeftStickY;
+                bState = bitStream.Read ( ucLeftStickY );
+                if ( bState )
+                {
+                    data.sLeftStickY = static_cast < short > ( ((float)ucLeftStickY * 255.0f/256.0f) - 128.0f );
+                }
+            }
+        }
+
+        return bState;
     }
     void Write ( NetBitStreamInterface& bitStream )
     {
-        bitStream.WriteBits ( reinterpret_cast < const char* > ( &data ), BITCOUNT );
+        bitStream.WriteBits ( reinterpret_cast < const char* > ( &data ), 8 );
+        unsigned char ucLeftStickX = static_cast < unsigned char > ( ((float)data.sLeftStickX + 128.0f) * 255/256.0f );
+        bitStream.Write ( ucLeftStickX );
+        unsigned char ucLeftStickY = static_cast < unsigned char > ( ((float)data.sLeftStickX + 128.0f) * 255/256.0f );
+        bitStream.Write ( ucLeftStickY );
     }
 
     struct
@@ -113,8 +132,8 @@ struct SFullKeysyncSync : public ISyncStructure
         bool bButtonTriangle : 1;
         bool bShockButtonL : 1;
         bool bPedWalk : 1;
-        char cLeftStickX;
-        char cLeftStickY;
+        short sLeftStickX;
+        short sLeftStickY;
     } data;
 };
 
