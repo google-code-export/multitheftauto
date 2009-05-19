@@ -12,6 +12,7 @@
 
 #pragma once
 
+#include <CVector.h>
 #include <net/bitstream.h>
 
 #pragma pack(push)
@@ -265,6 +266,53 @@ private:
                 break;
         }
     }
+};
+
+struct SWeaponAimSync : public ISyncStructure
+{
+    SWeaponAimSync ( float fWeaponRange = 0.0f ) : m_fWeaponRange ( fWeaponRange ) {}
+
+    bool Read ( NetBitStreamInterface& bitStream )
+    {
+        bool bStatus = true;
+        CVector vecDirection;
+
+        if (( bStatus = bitStream.Read ( data.vecOrigin.fX ) ))
+            if (( bStatus = bitStream.Read ( data.vecOrigin.fY ) ))
+                if (( bStatus = bitStream.Read ( data.vecOrigin.fZ ) ))
+                    bStatus = bitStream.ReadNormVector ( vecDirection.fX, vecDirection.fZ, vecDirection.fY );
+
+        if ( bStatus )
+            data.vecTarget = data.vecOrigin + ( vecDirection * m_fWeaponRange );
+        else
+            data.vecOrigin = data.vecTarget = CVector ( );
+
+        return bStatus;
+    }
+
+    void Write ( NetBitStreamInterface& bitStream )
+    {
+        // Write the origin of the bullets
+        bitStream.Write ( data.vecOrigin.fX );
+        bitStream.Write ( data.vecOrigin.fY );
+        bitStream.Write ( data.vecOrigin.fZ );
+
+        // Get the direction of the bullets
+        CVector vecDirection = data.vecTarget - data.vecOrigin;
+        vecDirection.Normalize ();
+
+        // Write the normalized vector
+        bitStream.WriteNormVector ( vecDirection.fX, vecDirection.fZ, vecDirection.fY );
+    }
+
+    struct
+    {
+        CVector vecOrigin;
+        CVector vecTarget;
+    } data;
+
+private:
+    float   m_fWeaponRange;
 };
 
 #pragma pack(pop)

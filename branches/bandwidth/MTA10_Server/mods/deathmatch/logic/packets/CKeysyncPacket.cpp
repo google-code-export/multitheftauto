@@ -133,7 +133,7 @@ bool CKeysyncPacket::Write ( NetBitStreamInterface& BitStream ) const
 
         // Write the source player id
         ElementID PlayerID = pSourcePlayer->GetID ();
-        BitStream.Write ( PlayerID );
+        BitStream.WriteCompressed ( PlayerID );
 
         // Write his ping divided with 2 plus a small number so the client can find out when this packet was sent
         unsigned short usLatency = pSourcePlayer->GetPing ();

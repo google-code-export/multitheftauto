@@ -57,7 +57,7 @@ bool CPlayerPuresyncPacket::Read ( NetBitStreamInterface& BitStream )
         if ( flags.data.bHasContact )
         {            
             ElementID Temp;
-            BitStream.Read ( Temp );
+            BitStream.ReadCompressed ( Temp );
             pContactElement = CElementIDs::GetElement ( Temp );
         }        
         CElement * pPreviousContactElement = pSourcePlayer->GetContactElement ();        
@@ -149,17 +149,14 @@ bool CPlayerPuresyncPacket::Read ( NetBitStreamInterface& BitStream )
                 // Set the arm directions and whether or not arms are up
                 pSourcePlayer->SetAimDirections ( fArmX, fArmY );
 
-                // Source vector
-                BitStream.Read ( vecTemp.fX );
-                BitStream.Read ( vecTemp.fY );
-                BitStream.Read ( vecTemp.fZ );
-                pSourcePlayer->SetSniperSourceVector ( vecTemp );
-
-                // Target vector
-                BitStream.Read ( vecTemp.fX );
-                BitStream.Read ( vecTemp.fY );
-                BitStream.Read ( vecTemp.fZ );
-                pSourcePlayer->SetTargettingVector ( vecTemp );
+                // Read the aim data only if he's shooting or aiming
+                if ( ControllerState.RightShoulder1 || ControllerState.ButtonCircle )
+                {
+                    SWeaponAimSync sync ( pSourcePlayer->GetWeaponRange () );
+                    BitStream.Read ( &sync );
+                    pSourcePlayer->SetSniperSourceVector ( sync.data.vecOrigin );
+                    pSourcePlayer->SetTargettingVector ( sync.data.vecTarget );
+                }
             }
             else
             {
@@ -176,7 +173,7 @@ bool CPlayerPuresyncPacket::Read ( NetBitStreamInterface& BitStream )
 
         // Read out damage info if changed
         ElementID DamagerID;
-        BitStream.Read ( DamagerID );
+        BitStream.ReadCompressed ( DamagerID );
         
         // If it's different, carry on reading
         if ( DamagerID != RESERVED_ELEMENT_ID )
@@ -273,7 +270,7 @@ bool CPlayerPuresyncPacket::Write ( NetBitStreamInterface& BitStream ) const
         unsigned char ucArmor = static_cast < unsigned char > ( pSourcePlayer->GetArmor () * 1.25f );
         float fCameraRotation = pSourcePlayer->GetCameraRotation ();
 
-        BitStream.Write ( PlayerID );
+        BitStream.WriteCompressed ( PlayerID );
 
         // Write the time context
         BitStream.Write ( pSourcePlayer->GetSyncTimeContext () );
@@ -308,7 +305,7 @@ bool CPlayerPuresyncPacket::Write ( NetBitStreamInterface& BitStream ) const
         BitStream.Write ( &flags );
         
         if ( pContactElement )
-            BitStream.Write ( pContactElement->GetID () );            
+            BitStream.WriteCompressed ( pContactElement->GetID () );            
 
         BitStream.Write ( vecPosition.fX );
         BitStream.Write ( vecPosition.fY );
@@ -335,9 +332,6 @@ bool CPlayerPuresyncPacket::Write ( NetBitStreamInterface& BitStream ) const
                 float fAimDirectionX = pSourcePlayer->GetAimDirectionX ();
                 float fAimDirectionY = pSourcePlayer->GetAimDirectionY ();
 			    bool bArmUp = pSourcePlayer->IsAkimboArmUp ();
-                CVector vecSniperSource = pSourcePlayer->GetSniperSourceVector ();
-                CVector vecTargetting;
-                pSourcePlayer->GetTargettingVector ( vecTargetting );
 /*
             // Figure out what to send
             SPlayerPuresyncWeaponSentHeader sent;
@@ -365,12 +359,14 @@ bool CPlayerPuresyncPacket::Write ( NetBitStreamInterface& BitStream ) const
 			    BitStream.Write ( fAimDirectionX );
 			    BitStream.Write ( fAimDirectionY );
 
-                BitStream.Write ( vecSniperSource.fX );
-                BitStream.Write ( vecSniperSource.fY );
-                BitStream.Write ( vecSniperSource.fZ );
-                BitStream.Write ( vecTargetting.fX );
-                BitStream.Write ( vecTargetting.fY );
-                BitStream.Write ( vecTargetting.fZ );
+                // Write the aim data only if he's aiming or shooting
+                if ( ControllerState.RightShoulder1 || ControllerState.ButtonCircle )
+                {
+                    SWeaponAimSync aim ( 0.0f );
+                    aim.data.vecOrigin = pSourcePlayer->GetSniperSourceVector ();
+                    pSourcePlayer->GetTargettingVector ( aim.data.vecTarget );
+                    BitStream.Write ( &aim );
+                }
             }
         }
 

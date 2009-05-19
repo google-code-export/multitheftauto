@@ -2413,6 +2413,7 @@ void CClientGame::DrawPlayerDetails ( CClientPlayer* pPlayer )
     bool bIsDucked = pPlayer->IsDucked ();
     bool bWearingGoggles = pPlayer->IsWearingGoggles ();
     bool bInVehicle = pPlayer->GetOccupiedVehicle () != NULL;
+    float fWeaponRange = 0.0f;
 
     unsigned char ucWeapon = 0;
     unsigned char ucWeaponState = 0;
@@ -2423,6 +2424,7 @@ void CClientGame::DrawPlayerDetails ( CClientPlayer* pPlayer )
         ucWeapon = static_cast < unsigned char > ( pWeapon->GetType () );
         ucWeaponState = static_cast < unsigned char > ( pWeapon->GetState () );
         usWeaponAmmo = static_cast < unsigned short > ( pWeapon->GetAmmoInClip () );
+        fWeaponRange = pWeapon->GetInfo ()->GetWeaponRange ();
     }
 
     float fAimX, fAimY;
@@ -2462,6 +2464,7 @@ void CClientGame::DrawPlayerDetails ( CClientPlayer* pPlayer )
                         "Weapon: %u\n"
                         "Weapon state: %u\n"
                         "Weapon ammo: %u\n"
+                        "Weapon range: %f\n"
                         "Aim: %f %f\n"
                         "Aim source: %f %f %f\n"
                         "Aim target: %f %f %f\n"
@@ -2486,6 +2489,7 @@ void CClientGame::DrawPlayerDetails ( CClientPlayer* pPlayer )
                         ucWeapon,
                         ucWeaponState,
                         usWeaponAmmo,
+                        fWeaponRange,
                         fAimX, fAimY,
                         vecAimSource.fX, vecAimSource.fY, vecAimSource.fZ,
                         vecAimTarget.fX, vecAimTarget.fY, vecAimTarget.fZ,

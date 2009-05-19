@@ -47,7 +47,7 @@ bool CNetAPI::ProcessPacket ( unsigned char bytePacketID, NetBitStreamInterface&
         {
             // Read out the player ID
             ElementID PlayerID;
-            if ( BitStream.Read ( PlayerID ) )
+            if ( BitStream.ReadCompressed ( PlayerID ) )
             {
                 // Grab the player
                 CClientPlayer* pPlayer = m_pPlayerManager->Get ( PlayerID );
@@ -88,7 +88,7 @@ bool CNetAPI::ProcessPacket ( unsigned char bytePacketID, NetBitStreamInterface&
         {
             // Read out the player ID
             ElementID PlayerID;
-            if ( BitStream.Read ( PlayerID ) )
+            if ( BitStream.ReadCompressed ( PlayerID ) )
             {
                 // Grab the player
                 CClientPlayer* pPlayer = m_pPlayerManager->Get ( PlayerID );
@@ -748,7 +748,7 @@ void CNetAPI::ReadPlayerPuresync ( CClientPlayer* pPlayer, NetBitStreamInterface
     if ( flags.data.bHasContact )
     {
         ElementID Temp;
-        BitStream.Read ( Temp );
+        BitStream.ReadCompressed ( Temp );
         pContactEntity = CElementIDs::GetElement ( Temp );
     }
         
@@ -806,9 +806,11 @@ void CNetAPI::ReadPlayerPuresync ( CClientPlayer* pPlayer, NetBitStreamInterface
         {
             CWeapon* pWeapon = pPlayer->GetWeapon ( static_cast < eWeaponSlot > ( uiSlot ) );
             unsigned char ucCurrentWeapon = 0;
+            float fWeaponRange = 0.01f;
             if ( pWeapon )
             {
                 ucCurrentWeapon = pWeapon->GetType ();
+                fWeaponRange = pWeapon->GetInfo ()->GetWeaponRange ();
             }
 
             // Is the current weapon a goggle (44 or 45) or a camera (43), or a detonator (40), don't apply the fire key
@@ -843,23 +845,17 @@ void CNetAPI::ReadPlayerPuresync ( CClientPlayer* pPlayer, NetBitStreamInterface
 		    BitStream.Read ( fArmX );
 		    BitStream.Read ( fArmY );
 
-            // Read out source vector
-            CVector vecSource;
-            BitStream.Read ( vecSource.fX );
-            BitStream.Read ( vecSource.fY );
-            BitStream.Read ( vecSource.fZ );
-
-            // Read out the target vector and set it
-            CVector vecTemp;
-            BitStream.Read ( vecTemp.fX );
-            BitStream.Read ( vecTemp.fY );
-            BitStream.Read ( vecTemp.fZ );
-
             // Interpolate the aiming
             pPlayer->SetAimInterpolated ( TICK_RATE, fArmX, fArmY, flags.data.bAkimboTargetUp, 0 );
 
-            // Interpolate the source/target vectors
-            pPlayer->SetTargetTarget ( TICK_RATE, vecSource, vecTemp );
+            // Read the aim data only if he's shooting or aiming
+            if ( ControllerState.RightShoulder1 || ControllerState.ButtonCircle )
+            {
+                SWeaponAimSync aim ( fWeaponRange );
+                BitStream.Read ( &aim );
+                // Interpolate the source/target vectors
+                pPlayer->SetTargetTarget ( TICK_RATE, aim.data.vecOrigin, aim.data.vecTarget );
+            }
         }
         else
         {
@@ -950,7 +946,7 @@ void CNetAPI::WritePlayerPuresync ( CClientPed* pPlayerModel, NetBitStreamInterf
     // If the player is in contact with a object/vehicle, make that the origin    
     if ( bInContact )
     {
-        BitStream.Write ( pContactEntity->GetID () );
+        BitStream.WriteCompressed ( pContactEntity->GetID () );
 
         CVector vecOrigin;
         pContactEntity->GetPosition ( vecOrigin );
@@ -1008,20 +1004,13 @@ void CNetAPI::WritePlayerPuresync ( CClientPed* pPlayerModel, NetBitStreamInterf
 			BitStream.Write ( pShotsyncData->m_fArmDirectionX );
 			BitStream.Write ( pShotsyncData->m_fArmDirectionY );
 
-            // Grab the shot origin and target.
-            CVector vecOrigin, vecTarget;
-
-            pPlayerModel->GetShotData ( &vecOrigin, &vecTarget );
-
-            // Write the source vector
-            BitStream.Write ( vecOrigin.fX );
-            BitStream.Write ( vecOrigin.fY );
-            BitStream.Write ( vecOrigin.fZ );
-
-            // Write the gun's target vector
-            BitStream.Write ( vecTarget.fX );
-            BitStream.Write ( vecTarget.fY );
-            BitStream.Write ( vecTarget.fZ );
+            // Write the aim data only if he's aiming or shooting
+            if ( ControllerState.RightShoulder1 || ControllerState.ButtonCircle )
+            {
+                SWeaponAimSync aim ( 0.0f );
+                pPlayerModel->GetShotData ( &(aim.data.vecOrigin), &(aim.data.vecTarget) );
+                BitStream.Write ( &aim );
+            }
         }
     }
 
@@ -1033,7 +1022,7 @@ void CNetAPI::WritePlayerPuresync ( CClientPed* pPlayerModel, NetBitStreamInterf
 
         DamagerID = g_pClientGame->GetDamagerID ();
     }
-    BitStream.Write ( DamagerID );
+    BitStream.WriteCompressed ( DamagerID );
     if ( DamagerID != RESERVED_ELEMENT_ID )
     {
         BitStream.Write ( g_pClientGame->GetDamageWeapon () );

@@ -126,6 +126,7 @@ public:
     void                                        SetWeaponAmmoInClip         ( unsigned short uscAmmoInClip, unsigned char ucSlot = 0xFF );
     unsigned short                              GetWeaponTotalAmmo          ( unsigned char ucSlot = 0xFF );
     void                                        SetWeaponTotalAmmo          ( unsigned short usTotalAmmo, unsigned char ucSlot = 0xFF );
+    float                                       GetWeaponRange              ( unsigned char ucSlot = 0xFF );
 
     float                                       GetMaxHealth                ( void );
     inline float                                GetHealth                   ( void )                            { return m_fHealth; }
