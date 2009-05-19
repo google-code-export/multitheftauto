@@ -118,7 +118,7 @@ struct SFullKeysyncSync : public ISyncStructure
         bitStream.WriteBits ( reinterpret_cast < const char* > ( &data ), 8 );
         char cLeftStickX = static_cast < char > ( (float)data.sLeftStickX * 127.0f/128.0f );
         bitStream.Write ( cLeftStickX );
-        char cLeftStickY = static_cast < char > ( (float)data.sLeftStickX * 127.0f/128.0f );
+        char cLeftStickY = static_cast < char > ( (float)data.sLeftStickY * 127.0f/128.0f );
         bitStream.Write ( cLeftStickY );
     }
 
