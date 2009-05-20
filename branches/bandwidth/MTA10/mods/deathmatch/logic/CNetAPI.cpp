@@ -580,7 +580,7 @@ void CNetAPI::ReadKeysync ( CClientPlayer* pPlayer, NetBitStreamInterface& BitSt
         }
         else
         {
-            pPlayer->SetCurrentWeaponSlot ( static_cast < eWeaponSlot > ( 0 ) );
+            pPlayer->SetCurrentWeaponSlot ( WEAPONSLOT_TYPE_UNARMED );
         }
     }
 
@@ -869,7 +869,7 @@ void CNetAPI::ReadPlayerPuresync ( CClientPlayer* pPlayer, NetBitStreamInterface
     else
     {
         // Make him empty-handed
-        pPlayer->SetCurrentWeaponSlot ( static_cast < eWeaponSlot > ( 0 ) );
+        pPlayer->SetCurrentWeaponSlot ( WEAPONSLOT_TYPE_UNARMED );
     }
 
      // null out the crouch bit or it'll conflict with the crouched syncing
@@ -1255,7 +1255,7 @@ void CNetAPI::ReadVehiclePuresync ( CClientPlayer* pPlayer, CClientVehicle* pVeh
     else
     {
         // Make him empty-handed
-        pPlayer->SetCurrentWeaponSlot ( static_cast < eWeaponSlot > ( 0 ) );
+        pPlayer->SetCurrentWeaponSlot ( WEAPONSLOT_TYPE_UNARMED );
     }
 
     // Read out vehicle specific data if he's the driver

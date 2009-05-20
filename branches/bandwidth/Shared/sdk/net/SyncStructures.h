@@ -92,6 +92,9 @@ struct SKeysyncFlags : public ISyncStructure
 
 struct SFullKeysyncSync : public ISyncStructure
 {
+    // Stick values vary from -128 to 128, but char range is from -128 to 127, so we stretch
+    // the stick value to the range from -127 to 127 to make it fit in a char (byte) and save
+    // one byte of bandwidth per stick.
     bool Read ( NetBitStreamInterface& bitStream )
     {
         bool bState = bitStream.ReadBits ( reinterpret_cast < char* > ( &data ), 8 );

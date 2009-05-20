@@ -2705,7 +2705,7 @@ void CClientGame::UpdateMimics ( void )
                 }
                 else
                 {
-                    pMimic->SetCurrentWeaponSlot ( static_cast < eWeaponSlot > ( 0 ) );
+                    pMimic->SetCurrentWeaponSlot ( WEAPONSLOT_TYPE_UNARMED );
                 }
 
                 CClientVehicle* pMimicVehicle = pMimic->GetOccupiedVehicle ();
