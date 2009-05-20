@@ -151,11 +151,9 @@ struct SSmallKeysyncSync : public ISyncStructure
         if ( ( bState = bitStream.ReadBits ( reinterpret_cast < char* > ( &data ), 10 ) ) )
         {
             if ( data.bLeftStickXChanged && ( bState = bitStream.Read ( cLeftStickX ) ) )
-            {
                 data.sLeftStickX = static_cast < short > ( (float)cLeftStickX * 128.0f/127.0f );
-                if ( data.bLeftStickYChanged && ( bState = bitStream.Read ( cLeftStickY ) ) )
+            if ( bState && data.bLeftStickYChanged && ( bState = bitStream.Read ( cLeftStickY ) ) )
                     data.sLeftStickY = static_cast < short > ( (float)cLeftStickY * 128.0f/127.0f );
-            }
         }
 
         return bState;
