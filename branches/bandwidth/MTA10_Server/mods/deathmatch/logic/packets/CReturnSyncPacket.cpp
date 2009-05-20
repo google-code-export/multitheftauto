@@ -29,11 +29,7 @@ bool CReturnSyncPacket::Write ( NetBitStreamInterface& BitStream ) const
         CVehicle* pVehicle = pSourcePlayer->GetOccupiedVehicle ();
 
         // Flags
-        unsigned char ucFlags = 0;
-        ucFlags |= ( pVehicle != NULL ) ? 1:0;
-        
-        // Write the flags
-        BitStream.Write ( ucFlags );
+        BitStream.WriteBit ( pVehicle != NULL );
 
         // In a vehicle?
         if ( pVehicle )

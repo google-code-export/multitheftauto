@@ -104,12 +104,8 @@ bool CNetAPI::ProcessPacket ( unsigned char bytePacketID, NetBitStreamInterface&
         
         case PACKET_ID_RETURN_SYNC:
         {
-            // Flags
-            unsigned char ucFlags;
-            BitStream.Read ( ucFlags );
-
             // Grab the in vehicle flag
-            bool bInVehicle = ucFlags & 0x01;
+            bool bInVehicle = BitStream.ReadBit ();
 
             // Are we in a vehicle?
             if ( bInVehicle )
