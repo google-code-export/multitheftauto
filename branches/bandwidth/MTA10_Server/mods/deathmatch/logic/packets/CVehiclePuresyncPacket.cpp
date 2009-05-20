@@ -354,7 +354,7 @@ bool CVehiclePuresyncPacket::Write ( NetBitStreamInterface& BitStream ) const
 
             // Write his ping divided with 2 plus a small number so the client can find out when this packet was sent
             unsigned short usLatency = pSourcePlayer->GetPing ();
-            BitStream.Write ( usLatency );
+            BitStream.WriteCompressed ( usLatency );
 
             // Write the keysync data
             CControllerState ControllerState = pSourcePlayer->GetPad ()->GetCurrentControllerState ();

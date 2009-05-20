@@ -3534,7 +3534,7 @@ void CPacketHandler::Packet_ExplosionSync ( NetBitStreamInterface& bitStream )
     CVector vecPosition;
     unsigned char ucType;
     if ( bitStream.Read ( CreatorID ) &&
-         bitStream.Read ( usLatency ) &&
+         bitStream.ReadCompressed ( usLatency ) &&
          bitStream.Read ( OriginID ) &&
          bitStream.Read ( vecPosition.fX ) &&
          bitStream.Read ( vecPosition.fY ) &&
@@ -3620,7 +3620,7 @@ void CPacketHandler::Packet_FireSync ( NetBitStreamInterface& bitStream )
     CVector vecPosition;
     float fSize;
     if ( bitStream.Read ( Creator ) &&
-         bitStream.Read ( usLatency ) &&
+         bitStream.ReadCompressed ( usLatency ) &&
          bitStream.Read ( vecPosition.fX ) &&
          bitStream.Read ( vecPosition.fY ) &&
          bitStream.Read ( vecPosition.fZ ) &&
@@ -3649,7 +3649,7 @@ void CPacketHandler::Packet_ProjectileSync ( NetBitStreamInterface& bitStream )
     CVector vecOrigin;
     unsigned char ucWeaponType;
     if ( bitStream.Read ( CreatorID ) &&
-         bitStream.Read ( usLatency ) &&
+         bitStream.ReadCompressed ( usLatency ) &&
          bitStream.Read ( OriginID ) &&         
          bitStream.Read ( vecOrigin.fX ) &&
          bitStream.Read ( vecOrigin.fY ) &&
@@ -4094,7 +4094,7 @@ void CPacketHandler::Packet_DetonateSatchels ( NetBitStreamInterface& bitStream 
     unsigned short usLatency;
 
     if ( bitStream.Read ( Player ) &&
-         bitStream.Read ( usLatency ) )
+         bitStream.ReadCompressed ( usLatency ) )
     {
         // Grab the player
         if ( Player != INVALID_ELEMENT_ID )

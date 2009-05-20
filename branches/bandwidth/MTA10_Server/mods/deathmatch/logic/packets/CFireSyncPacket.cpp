@@ -44,7 +44,7 @@ bool CFireSyncPacket::Write ( NetBitStreamInterface& BitStream ) const
         BitStream.Write ( ID );
 
         unsigned short usLatency = static_cast < CPlayer * > ( m_pSourceElement )->GetPing ();
-        BitStream.Write ( usLatency );
+        BitStream.WriteCompressed ( usLatency );
     }
     else
     {

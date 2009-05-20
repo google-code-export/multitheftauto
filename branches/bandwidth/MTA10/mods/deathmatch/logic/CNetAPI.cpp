@@ -462,7 +462,7 @@ void CNetAPI::ReadKeysync ( CClientPlayer* pPlayer, NetBitStreamInterface& BitSt
 {
     // Read out the time it took for the packet to go from the remote client to the server and to us
     unsigned short usLatency;
-    BitStream.Read ( usLatency );
+    BitStream.ReadCompressed ( usLatency );
     pPlayer->SetLatency ( usLatency + g_pNet->GetPing () );
 
     // Grab the old controller state
@@ -1053,7 +1053,7 @@ void CNetAPI::ReadVehiclePuresync ( CClientPlayer* pPlayer, CClientVehicle* pVeh
 
     // Read out the time it took for the packet to go from the remote client to the server and to us
     unsigned short usLatency;
-    BitStream.Read ( usLatency );
+    BitStream.ReadCompressed ( usLatency );
     pPlayer->SetLatency ( usLatency + g_pNet->GetPing () );
 
     // Read out the keysync
