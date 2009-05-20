@@ -71,19 +71,11 @@ bool CKeysyncPacket::Read ( NetBitStreamInterface& BitStream )
 				    pSourcePlayer->SetAimDirections ( fArmX, fArmY );
                     pSourcePlayer->SetAkimboArmUp ( flags.data.bAkimboTargetUp );
 
-                    // Source vector
-                    CVector vecTemp;
-                    BitStream.Read ( vecTemp.fX );
-                    BitStream.Read ( vecTemp.fY );
-                    BitStream.Read ( vecTemp.fZ );
-                    pSourcePlayer->SetSniperSourceVector ( vecTemp );
-
-                    // Read out the weapon target vector
-                    CVector vecTarget;
-                    BitStream.Read ( vecTarget.fX );
-                    BitStream.Read ( vecTarget.fY );
-                    BitStream.Read ( vecTarget.fZ );
-                    pSourcePlayer->SetTargettingVector ( vecTarget );
+                    // Read the aim data
+                    SWeaponAimSync aim;
+                    BitStream.Read ( &aim );
+                    pSourcePlayer->SetSniperSourceVector ( aim.data.vecOrigin );
+                    pSourcePlayer->SetTargettingVector ( aim.data.vecTarget );
 
                     // Read out the driveby direction
                     unsigned char ucDriveByDirection;
@@ -173,17 +165,11 @@ bool CKeysyncPacket::Write ( NetBitStreamInterface& BitStream ) const
                 BitStream.Write ( pSourcePlayer->GetAimDirectionX () );
 				BitStream.Write ( pSourcePlayer->GetAimDirectionY () );
 
-                // Source vector if sniper
-                CVector vecTemp = pSourcePlayer->GetSniperSourceVector ();
-                BitStream.Write ( vecTemp.fX );
-                BitStream.Write ( vecTemp.fY );
-                BitStream.Write ( vecTemp.fZ );
-
-                // Write his current target vector
-                pSourcePlayer->GetTargettingVector ( vecTemp );
-                BitStream.Write ( vecTemp.fX );
-                BitStream.Write ( vecTemp.fY );
-                BitStream.Write ( vecTemp.fZ );
+                // Write the weapon aim data
+                SWeaponAimSync aim;
+                aim.data.vecOrigin = pSourcePlayer->GetSniperSourceVector ();
+                pSourcePlayer->GetTargettingVector ( aim.data.vecTarget );
+                BitStream.Write ( &aim );
 
                 // Write the driveby aim directoin
                 BitStream.Write ( pSourcePlayer->GetDriveByDirection () );

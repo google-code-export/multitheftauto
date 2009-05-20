@@ -544,16 +544,9 @@ void CNetAPI::ReadKeysync ( CClientPlayer* pPlayer, NetBitStreamInterface& BitSt
 			BitStream.Read ( fArmX );
 			BitStream.Read ( fArmY );
 
-            CVector vecSource;
-            BitStream.Read ( vecSource.fX );
-            BitStream.Read ( vecSource.fY );
-            BitStream.Read ( vecSource.fZ );
-
-            // Read out the target vector and set it
-            CVector vecTemp;
-            BitStream.Read ( vecTemp.fX );
-            BitStream.Read ( vecTemp.fY );
-            BitStream.Read ( vecTemp.fZ );
+            // Read the weapon aim data
+            SWeaponAimSync aim;
+            BitStream.Read ( &aim );
 
             // Read out the driveby direction
             unsigned char ucDriveByAim;
@@ -562,11 +555,11 @@ void CNetAPI::ReadKeysync ( CClientPlayer* pPlayer, NetBitStreamInterface& BitSt
             // Set the aim data (immediately if in vehicle, otherwize delayed/interpolated)
             if ( pVehicle )
             {
-                pPlayer->SetAimingData ( TICK_RATE, vecTemp, fArmX, fArmY, ucDriveByAim, &vecSource, false );
+                pPlayer->SetAimingData ( TICK_RATE, aim.data.vecTarget, fArmX, fArmY, ucDriveByAim, &(aim.data.vecOrigin), false );
             }
             else
             {
-                pPlayer->SetTargetTarget ( TICK_RATE, vecSource, vecTemp );
+                pPlayer->SetTargetTarget ( TICK_RATE, aim.data.vecOrigin, aim.data.vecTarget );
                 pPlayer->SetAimInterpolated ( TICK_RATE, fArmX, fArmY, flags.data.bAkimboTargetUp, ucDriveByAim );
             }
         }
