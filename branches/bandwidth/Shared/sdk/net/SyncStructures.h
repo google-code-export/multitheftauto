@@ -97,20 +97,17 @@ struct SFullKeysyncSync : public ISyncStructure
     // one byte of bandwidth per stick.
     bool Read ( NetBitStreamInterface& bitStream )
     {
-        bool bState = bitStream.ReadBits ( reinterpret_cast < char* > ( &data ), 8 );
-        if ( bState )
+        bool bState;
+        char cLeftStickX;
+        char cLeftStickY;
+
+        if ( ( bState = bitStream.ReadBits ( reinterpret_cast < char* > ( &data ), 8 ) ) )
         {
-            char cLeftStickX;
-            bState = bitStream.Read ( cLeftStickX );
-            if ( bState )
+            if ( ( bState = bitStream.Read ( cLeftStickX ) ) )
             {
                 data.sLeftStickX = static_cast < short > ( (float)cLeftStickX * 128.0f/127.0f );
-                char cLeftStickY;
-                bState = bitStream.Read ( cLeftStickY );
-                if ( bState )
-                {
+                if ( ( bState = bitStream.Read ( cLeftStickY ) ) )
                     data.sLeftStickY = static_cast < short > ( (float)cLeftStickY * 128.0f/127.0f );
-                }
             }
         }
 
@@ -135,6 +132,61 @@ struct SFullKeysyncSync : public ISyncStructure
         bool bButtonTriangle : 1;
         bool bShockButtonL : 1;
         bool bPedWalk : 1;
+        short sLeftStickX;
+        short sLeftStickY;
+    } data;
+};
+
+struct SSmallKeysyncSync : public ISyncStructure
+{
+    // Stick values vary from -128 to 128, but char range is from -128 to 127, so we stretch
+    // the stick value to the range from -127 to 127 to make it fit in a char (byte) and save
+    // one byte of bandwidth per stick.
+    bool Read ( NetBitStreamInterface& bitStream )
+    {
+        bool bState;
+        char cLeftStickX;
+        char cLeftStickY;
+
+        if ( ( bState = bitStream.ReadBits ( reinterpret_cast < char* > ( &data ), 10 ) ) )
+        {
+            if ( data.bLeftStickXChanged && ( bState = bitStream.Read ( cLeftStickX ) ) )
+            {
+                data.sLeftStickX = static_cast < short > ( (float)cLeftStickX * 128.0f/127.0f );
+                if ( data.bLeftStickYChanged && ( bState = bitStream.Read ( cLeftStickY ) ) )
+                    data.sLeftStickY = static_cast < short > ( (float)cLeftStickY * 128.0f/127.0f );
+            }
+        }
+
+        return bState;
+    }
+    void Write ( NetBitStreamInterface& bitStream )
+    {
+        bitStream.WriteBits ( reinterpret_cast < const char* > ( &data ), 10 );
+        if ( data.bLeftStickXChanged )
+        {
+            char cLeftStickX = static_cast < char > ( (float)data.sLeftStickX * 127.0f/128.0f );
+            bitStream.Write ( cLeftStickX );
+        }
+        if ( data.bLeftStickYChanged )
+        {
+            char cLeftStickY = static_cast < char > ( (float)data.sLeftStickY * 127.0f/128.0f );
+            bitStream.Write ( cLeftStickY );
+        }
+    }
+
+    struct
+    {
+        bool bLeftShoulder1 : 1;
+        bool bRightShoulder1 : 1;
+        bool bButtonSquare : 1;
+        bool bButtonCross : 1;
+        bool bButtonCircle : 1;
+        bool bButtonTriangle : 1;
+        bool bShockButtonL : 1;
+        bool bPedWalk : 1;
+        bool bLeftStickXChanged : 1;
+        bool bLeftStickYChanged : 1;
         short sLeftStickX;
         short sLeftStickY;
     } data;

@@ -1520,11 +1520,15 @@ void CGame::Packet_PlayerPuresync ( CPlayerPuresyncPacket& Packet )
     CPlayer* pPlayer = Packet.GetSourcePlayer ();
     if ( pPlayer && pPlayer->IsJoined () )
     {
+        pPlayer->IncrementPuresync ();
+
         // Ignore this packet if he should be in a vehicle
         if ( !pPlayer->GetOccupiedVehicle () )
         {
             // Send a returnsync packet to the player that sent it
-            pPlayer->Send ( CReturnSyncPacket ( pPlayer ) );
+            // Only every 4 packets.
+            if ( ( pPlayer->GetPuresyncCount () % 4 ) == 0 )
+                pPlayer->Send ( CReturnSyncPacket ( pPlayer ) );
 
             // Grab current time
             unsigned long ulTimeNow = GetTime ();

@@ -85,7 +85,9 @@ CPlayer::CPlayer ( CPlayerManager* pPlayerManager, class CScriptDebugging* pScri
 
     m_ucBlurLevel = 36; // Default
 
+    // Sync stuff
     m_bSyncingVelocity = false;
+    m_uiPuresyncPackets = 0;
 
     // Add us to the manager
     pPlayerManager->AddToList ( this );
