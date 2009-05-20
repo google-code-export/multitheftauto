@@ -107,5 +107,11 @@ bool CMapInfoPacket::Write ( NetBitStreamInterface& BitStream ) const
         BitStream.Write( (unsigned char)m_pbGarageStates[i] );
     }
 
+    unsigned char ucFunBugs = 0;
+    ucFunBugs |= g_pGame->IsGlitchEnabled(CGame::GLITCH_QUICKRELOAD) ? 1:0;
+    ucFunBugs |= g_pGame->IsGlitchEnabled(CGame::GLITCH_FASTFIRE) ? 1:0;
+    ucFunBugs |= g_pGame->IsGlitchEnabled(CGame::GLITCH_FASTMOVE) ? 1:0;
+    BitStream.Write ( ucFunBugs );
+
     return true;
 }

@@ -106,15 +106,10 @@ CClientGame::CClientGame ( bool bLocalPlay )
     m_bIsPlayingBack = false;
     m_bFirstPlaybackFrame = false;
 
-    //Setup game glitch defaults ( false = disabled )
+    //Setup game glitch defaults ( false = disabled ).  Remember to update these serverside if you alter them!
     m_Glitches [ GLITCH_QUICKRELOAD ] = false;
     m_Glitches [ GLITCH_FASTFIRE ] = false;
     m_Glitches [ GLITCH_FASTMOVE ] = false;
-
-    //Glitch names (for Lua interface)
-    m_GlitchNames["quickreload"] = GLITCH_QUICKRELOAD;
-    m_GlitchNames["fastfire"] = GLITCH_FASTFIRE;
-    m_GlitchNames["fastmove"] = GLITCH_FASTMOVE;
 
     #ifdef MTA_VOICE
     m_pVoice = VoiceCreate();
@@ -3319,16 +3314,18 @@ bool CClientGame::DamageHandler ( CPed* pDamagePed, CEventDamage * pEvent )
                     return false;            
                 }
                 else {
-                    pDamagedPed->CallEvent ( "onClientPedWasted", Arguments, true );
-                    // Grab our death animation
-                    pEvent->ComputeDeathAnim ( pDamagePed, true );
-                    AssocGroupId animGroup = pEvent->GetAnimGroup ();
-                    AnimationId animID = pEvent->GetAnimId ();
-                    m_DamagerID = INVALID_ELEMENT_ID;
-                    if (pInflictingEntity)
-                        m_DamagerID = pInflictingEntity->GetID ();
-                    // Check if we're dead
-                    SendPedWastedPacket ( pDamagedPed, m_DamagerID, m_ucDamageWeapon, m_ucDamageBodyPiece, animGroup, animID );                
+                    if (pDamagedPed->IsLocalEntity() == false) {
+                        pDamagedPed->CallEvent ( "onClientPedWasted", Arguments, true );
+                        // Grab our death animation
+                        pEvent->ComputeDeathAnim ( pDamagePed, true );
+                        AssocGroupId animGroup = pEvent->GetAnimGroup ();
+                        AnimationId animID = pEvent->GetAnimId ();
+                        m_DamagerID = INVALID_ELEMENT_ID;
+                        if (pInflictingEntity)
+                            m_DamagerID = pInflictingEntity->GetID ();
+                        // Check if we're dead
+                        SendPedWastedPacket ( pDamagedPed, m_DamagerID, m_ucDamageWeapon, m_ucDamageBodyPiece, animGroup, animID );
+                    }
                 }
             }
         }
@@ -3991,6 +3988,10 @@ void CClientGame::SendPedWastedPacket( CClientPed* Ped, ElementID damagerID, uns
             pBitStream->Write ( animGroup );
             pBitStream->Write ( animID );
 
+            pBitStream->Write ( damagerID );
+            pBitStream->Write ( ucWeapon );
+            pBitStream->Write ( ucBodyPiece );
+
             // Write the position we died in
             CVector vecPosition;
             Ped->GetPosition ( vecPosition );
@@ -4378,19 +4379,7 @@ bool CClientGame::SetGlitchEnabled ( char cGlitch, bool bEnabled )
     return false;
 }
 
-bool CClientGame::SetGlitchEnabled ( std::string strGlitch, bool bEnabled )
-{
-    char cGlitch = m_GlitchNames[strGlitch];
-    return SetGlitchEnabled(cGlitch, bEnabled);
-}
-
 bool CClientGame::IsGlitchEnabled ( char cGlitch )
 {
     return m_Glitches[cGlitch] || false;
-}
-
-bool CClientGame::IsGlitchEnabled ( std::string strGlitch )
-{
-    char cGlitch = m_GlitchNames[strGlitch];
-    return IsGlitchEnabled(cGlitch);
 }

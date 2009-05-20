@@ -4699,6 +4699,7 @@ CMarker* CStaticFunctionDefinitions::CreateMarker ( CResource* pResource, const 
             // Make him visible to the given element
             if ( pVisibleTo )
             {
+                pMarker->RemoveVisibleToReference ( m_pMapManager->GetRootElement() );
                 pMarker->AddVisibleToReference ( pVisibleTo );
             }
 
@@ -4897,6 +4898,7 @@ CBlip* CStaticFunctionDefinitions::CreateBlip ( CResource* pResource, const CVec
             // Make him visible to the given element
             if ( pVisibleTo )
             {
+                pBlip->RemoveVisibleToReference ( m_pMapManager->GetRootElement() );
                 pBlip->AddVisibleToReference ( pVisibleTo );
             }
 
@@ -4926,8 +4928,12 @@ CBlip* CStaticFunctionDefinitions::CreateBlipAttachedTo ( CResource* pResource, 
             pBlip->SetColor ( ucRed, ucGreen, ucBlue, ucAlpha );
             pBlip->m_sOrdering = sOrdering;
 
-            // Set his visible to to the root
-            pBlip->AddVisibleToReference ( pVisibleTo );
+            // Set his visible to element
+            if ( pVisibleTo )
+            {
+                pBlip->RemoveVisibleToReference ( m_pMapManager->GetRootElement() );
+                pBlip->AddVisibleToReference ( pVisibleTo );
+            }
             pBlip->AttachTo ( pElement );
 
             // Tell everyone about it
@@ -5247,6 +5253,7 @@ CRadarArea* CStaticFunctionDefinitions::CreateRadarArea ( CResource* pResource, 
         // Make him visible to the root
         if ( pVisibleTo )
         {
+            pRadarArea->RemoveVisibleToReference ( m_pMapManager->GetRootElement() );
             pRadarArea->AddVisibleToReference ( pVisibleTo );
         }
 
@@ -6768,6 +6775,36 @@ bool CStaticFunctionDefinitions::ResetSkyGradient ( void )
     m_pPlayerManager->BroadcastOnlyJoined ( CLuaPacket ( RESET_SKY_GRADIENT, *BitStream.pBitStream ) );
     return true;
 }
+
+bool CStaticFunctionDefinitions::SetGlitchEnabled ( std::string strGlitchName, bool bEnabled )
+{
+    if ( g_pGame->IsGlitch ( strGlitchName ) )
+    {
+        if ( g_pGame->IsGlitchEnabled ( strGlitchName ) != bEnabled )
+        {
+            CBitStream BitStream;
+            BitStream.pBitStream->Write ( g_pGame->GetGlitchIndex(strGlitchName) );
+            BitStream.pBitStream->Write ( bEnabled );
+            m_pPlayerManager->BroadcastOnlyJoined ( CLuaPacket ( SET_GLITCH_ENABLED, *BitStream.pBitStream ) );
+            
+            g_pGame->SetGlitchEnabled ( strGlitchName, bEnabled );
+            return true;
+        }
+    }
+
+    return false;
+}
+
+bool CStaticFunctionDefinitions::IsGlitchEnabled ( std::string strGlitchName, bool& bEnabled )
+{
+    if ( g_pGame->IsGlitch ( strGlitchName ) )
+    {
+        bEnabled = g_pGame->IsGlitchEnabled ( strGlitchName );
+        return true;
+    }
+    return false;
+}
+
 
 
 CElement* CStaticFunctionDefinitions::GetRootElement ( void )

@@ -1911,6 +1911,11 @@ void CPacketHandler::Packet_MapInfo ( NetBitStreamInterface& bitStream )
             pGarage->SetOpen ( (ucGarageState == 1) );
         }
     }
+    unsigned char ucFunBugs;
+    bitStream.Read ( ucFunBugs );
+    g_pClientGame->m_Glitches[CClientGame::GLITCH_QUICKRELOAD] = ( ucFunBugs & 0x01 ) ? true:false;
+    g_pClientGame->m_Glitches[CClientGame::GLITCH_FASTFIRE] = ( ucFunBugs & 0x02 ) ? true:false;
+    g_pClientGame->m_Glitches[CClientGame::GLITCH_FASTMOVE] = ( ucFunBugs & 0x03 ) ? true:false;
 }
 
 

@@ -42,7 +42,7 @@ CVehicle::CVehicle ( CVehicleManager* pVehicleManager, CElement* pParent, CXMLNo
     m_ucOverrideLights = 0;
     m_pTowedVehicle = NULL;
     m_pTowedByVehicle = NULL;
-    m_ucPaintjob = 0xFF;
+    m_ucPaintjob = 3;
 	m_ucMaxPassengersOverride = VEHICLE_PASSENGERS_UNDEFINED;
 
     m_bRespawnInfoChanged = false;
@@ -598,10 +598,6 @@ void CVehicle::GenerateRegPlate ( void )
 void CVehicle::SetPaintjob ( unsigned char ucPaintjob )
 {
     m_ucPaintjob = ucPaintjob;
-    m_Color.SetColor1 ( 1 );
-    m_Color.SetColor2 ( 1 );
-    m_Color.SetColor3 ( 1 );
-    m_Color.SetColor4 ( 1 );
 }
 
 
