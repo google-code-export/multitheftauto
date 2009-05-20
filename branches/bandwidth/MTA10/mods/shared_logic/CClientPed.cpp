@@ -766,14 +766,14 @@ void CClientPed::AddKeysync ( unsigned long ulDelay, const CControllerState& Con
 }
 
 
-void CClientPed::AddChangeWeapon ( unsigned long ulDelay, unsigned char ucWeaponID, unsigned short usWeaponAmmo )
+void CClientPed::AddChangeWeapon ( unsigned long ulDelay, eWeaponSlot slot, unsigned short usWeaponAmmo )
 {
     if ( !m_bIsLocalPlayer )
     {
         SDelayedSyncData* pData = new SDelayedSyncData;
         pData->ulTime = CClientTime::GetTime () + ulDelay;
         pData->ucType = DELAYEDSYNC_CHANGEWEAPON;
-        pData->ucWeaponID = ucWeaponID;
+        pData->slot = slot;
         pData->usWeaponAmmo = usWeaponAmmo;
 
         m_SyncBuffer.push_back ( pData );
@@ -2642,17 +2642,21 @@ void CClientPed::UpdateKeysync ( void )
                         }
                         case DELAYEDSYNC_CHANGEWEAPON:
                         {
-                            if ( pData->ucWeaponID > 0 )
+                            if ( pData->slot > WEAPONSLOT_TYPE_UNARMED )
                             {
                                 // Grab the current weapon the player has
                                 CWeapon* pPlayerWeapon = GetWeapon ();
-                                eWeaponType eCurrentWeapon = static_cast < eWeaponType > ( pData->ucWeaponID );
-                                if ( ( pPlayerWeapon && pPlayerWeapon->GetType () != eCurrentWeapon ) || !pPlayerWeapon || GetRealOccupiedVehicle () )
+                                eWeaponSlot eCurrentSlot = pData->slot;
+                                if ( !pPlayerWeapon || pPlayerWeapon->GetSlot () != eCurrentSlot || GetRealOccupiedVehicle () )
                                 {
-                                    pPlayerWeapon = GiveWeapon ( eCurrentWeapon, pData->usWeaponAmmo );
-                                    if ( pPlayerWeapon )
+                                    CWeapon* pSlotWeapon = GetWeapon ( eCurrentSlot );
+                                    if ( pSlotWeapon )
                                     {
-                                        pPlayerWeapon->SetAsCurrentWeapon ();
+                                        pPlayerWeapon = GiveWeapon ( pSlotWeapon->GetType (), pData->usWeaponAmmo );
+                                        if ( pPlayerWeapon )
+                                        {
+                                            pPlayerWeapon->SetAsCurrentWeapon ();
+                                        }
                                     }
                                 }
 
@@ -2666,7 +2670,7 @@ void CClientPed::UpdateKeysync ( void )
                             }
                             else
                             {
-                                SetCurrentWeaponSlot ( static_cast < eWeaponSlot > ( 0 ) );
+                                SetCurrentWeaponSlot ( WEAPONSLOT_TYPE_UNARMED );
                             }
                             break;
                         }

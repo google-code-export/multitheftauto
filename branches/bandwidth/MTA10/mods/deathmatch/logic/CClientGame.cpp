@@ -2559,12 +2559,14 @@ void CClientGame::UpdateMimics ( void )
         unsigned char ucWeaponType = 0;
         unsigned char ucWeaponState = 0;
         unsigned long ulWeaponAmmoInClip = 0;
+        eWeaponSlot weaponSlot = WEAPONSLOT_TYPE_UNARMED;
 
         CWeapon* pPlayerWeapon = m_pLocalPlayer->GetWeapon ( m_pLocalPlayer->GetCurrentWeaponSlot () );
         if ( pPlayerWeapon )
         {
             ucWeaponType = static_cast < unsigned char > ( pPlayerWeapon->GetType () );
             ucWeaponState = static_cast < unsigned char > ( pPlayerWeapon->GetState () );
+            weaponSlot = pPlayerWeapon->GetSlot ();
             ulWeaponAmmoInClip = pPlayerWeapon->GetAmmoInClip ();
         }
 
@@ -2676,7 +2678,7 @@ void CClientGame::UpdateMimics ( void )
                         pMimic->SetAimInterpolated ( TICK_RATE, fAimX, fAimY, bAkimboUp, cVehicleAimDirection );
                         pMimic->SetTargetTarget ( TICK_RATE, vecOrigin, vecTarget );                                
 
-                        pMimic->AddChangeWeapon ( TICK_RATE, ucWeaponType, (unsigned char) ulWeaponAmmoInClip );
+                        pMimic->AddChangeWeapon ( TICK_RATE, weaponSlot, (unsigned char) ulWeaponAmmoInClip );
                     }
                     else
                     {

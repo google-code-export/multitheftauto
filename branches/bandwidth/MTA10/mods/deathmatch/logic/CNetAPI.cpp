@@ -522,7 +522,7 @@ void CNetAPI::ReadKeysync ( CClientPlayer* pPlayer, NetBitStreamInterface& BitSt
                 }
                 else
                 {
-                    pPlayer->AddChangeWeapon ( TICK_RATE, ucCurrentWeaponType, usWeaponAmmo );
+                    pPlayer->AddChangeWeapon ( TICK_RATE, static_cast < eWeaponSlot > ( uiSlot ), usWeaponAmmo );
                 }
             }
             else
@@ -533,7 +533,7 @@ void CNetAPI::ReadKeysync ( CClientPlayer* pPlayer, NetBitStreamInterface& BitSt
                 }
                 else
                 {
-                    pPlayer->AddChangeWeapon ( TICK_RATE, 0, 0 );
+                    pPlayer->AddChangeWeapon ( TICK_RATE, WEAPONSLOT_TYPE_UNARMED, 1 );
                 }
             }
 
@@ -831,11 +831,11 @@ void CNetAPI::ReadPlayerPuresync ( CClientPlayer* pPlayer, NetBitStreamInterface
             // Valid current weapon id?
             if ( CClientPickupManager::IsValidWeaponID ( ucCurrentWeapon ) )
             {
-                pPlayer->AddChangeWeapon ( TICK_RATE, ucCurrentWeapon, usWeaponAmmo );
+                pPlayer->AddChangeWeapon ( TICK_RATE, static_cast < eWeaponSlot > ( uiSlot ), usWeaponAmmo );
             }
             else
             {
-                pPlayer->AddChangeWeapon ( TICK_RATE, 0, 0 );
+                pPlayer->AddChangeWeapon ( TICK_RATE, WEAPONSLOT_TYPE_UNARMED, 0 );
             }
 
     		// Make sure that if he doesn't have an akimbo weapon his hands up state is false
