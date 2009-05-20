@@ -426,4 +426,48 @@ private:
 };
 
 
+struct SVelocitySync : public ISyncStructure
+{
+    bool Read ( NetBitStreamInterface& bitStream )
+    {
+        if ( !bitStream.ReadBit () )
+        {
+            data.vecVelocity.fX = data.vecVelocity.fY = data.vecVelocity.fZ = 0.0f;
+            return true;
+        }
+        else
+        {
+            float fModule;
+            if ( bitStream.Read ( fModule ) )
+            {
+                if ( bitStream.ReadNormVector ( data.vecVelocity.fX, data.vecVelocity.fY, data.vecVelocity.fZ ) )
+                {
+                    data.vecVelocity = data.vecVelocity * fModule;
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    void Write ( NetBitStreamInterface& bitStream )
+    {
+        float fModulus = data.vecVelocity.Normalize ();
+        if ( fModulus == 0.0f )
+            bitStream.WriteBit ( false );
+        else
+        {
+            bitStream.WriteBit ( true );
+            bitStream.Write ( fModulus );
+            bitStream.WriteNormVector ( data.vecVelocity.fX, data.vecVelocity.fY, data.vecVelocity.fZ );
+        }
+    }
+
+    struct
+    {
+        CVector vecVelocity;
+    } data;
+};
+
+
 #pragma pack(pop)

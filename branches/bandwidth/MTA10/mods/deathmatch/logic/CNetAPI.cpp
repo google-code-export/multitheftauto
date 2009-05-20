@@ -769,11 +769,9 @@ void CNetAPI::ReadPlayerPuresync ( CClientPlayer* pPlayer, NetBitStreamInterface
     // Move speed vector
     if ( flags.data.bSyncingVelocity )
     {
-        CVector vecMoveSpeed;
-        BitStream.Read ( vecMoveSpeed.fX );
-        BitStream.Read ( vecMoveSpeed.fZ );
-        BitStream.Read ( vecMoveSpeed.fY );
-        pPlayer->SetMoveSpeed ( vecMoveSpeed );
+        SVelocitySync velocity;
+        if ( BitStream.Read ( &velocity ) )
+            pPlayer->SetMoveSpeed ( velocity.data.vecVelocity );
     }
 
     // Health
@@ -964,11 +962,9 @@ void CNetAPI::WritePlayerPuresync ( CClientPlayer* pPlayerModel, NetBitStreamInt
     // Move speed vector
     if ( flags.data.bSyncingVelocity )
     {
-        CVector vecMoveSpeed;
-        pPlayerModel->GetMoveSpeed ( vecMoveSpeed );
-        BitStream.Write ( vecMoveSpeed.fX );
-        BitStream.Write ( vecMoveSpeed.fZ );
-        BitStream.Write ( vecMoveSpeed.fY );
+        SVelocitySync velocity;
+        pPlayerModel->GetMoveSpeed ( velocity.data.vecVelocity );
+        BitStream.Write ( &velocity );
     }
 
     // Health (scaled from 0.0f-100.0f to 0-250 to save three bytes)

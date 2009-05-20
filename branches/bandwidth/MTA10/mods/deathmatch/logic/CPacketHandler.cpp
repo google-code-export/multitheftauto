@@ -1045,8 +1045,8 @@ void CPacketHandler::Packet_PlayerPings ( NetBitStreamInterface& bitStream )
             // Read out the data
             ElementID PlayerID;
             unsigned short usPing;
-            if ( bitStream.Read ( PlayerID ) &&
-                 bitStream.Read ( usPing ) )
+            if ( bitStream.ReadCompressed ( PlayerID ) &&
+                 bitStream.ReadCompressed ( usPing ) )
             {
                 // Grab the player
                 CClientPlayer* pPlayer = g_pClientGame->m_pPlayerManager->Get ( PlayerID );

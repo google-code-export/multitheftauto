@@ -102,10 +102,9 @@ bool CPlayerPuresyncPacket::Read ( NetBitStreamInterface& BitStream )
         // Move speed vector
         if ( flags.data.bSyncingVelocity )
         {
-            BitStream.Read ( vecTemp.fX );
-            BitStream.Read ( vecTemp.fZ );
-            BitStream.Read ( vecTemp.fY );
-            pSourcePlayer->SetVelocity ( vecTemp );
+            SVelocitySync velocity;
+            if ( BitStream.Read ( &velocity ) )
+                pSourcePlayer->SetVelocity ( velocity.data.vecVelocity );
         }
 
         // Health ( stored with damage )
@@ -318,12 +317,9 @@ bool CPlayerPuresyncPacket::Write ( NetBitStreamInterface& BitStream ) const
 
         if ( flags.data.bSyncingVelocity )
         {
-            CVector vecVelocity;
-            pSourcePlayer->GetVelocity ( vecVelocity );
-
-            BitStream.Write ( vecVelocity.fX );
-            BitStream.Write ( vecVelocity.fZ );
-            BitStream.Write ( vecVelocity.fY );
+            SVelocitySync velocity;
+            pSourcePlayer->GetVelocity ( velocity.data.vecVelocity );
+            BitStream.Write ( &velocity );
         }
 
 	    BitStream.Write ( ucHealth );

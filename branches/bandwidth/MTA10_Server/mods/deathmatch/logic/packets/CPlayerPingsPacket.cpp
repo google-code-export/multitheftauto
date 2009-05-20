@@ -38,10 +38,10 @@ bool CPlayerPingsPacket::Write ( NetBitStreamInterface& BitStream ) const
 
             // Player ID
             ElementID PlayerID = (*iter)->GetID ();
-            BitStream.Write ( PlayerID );
+            BitStream.WriteCompressed ( PlayerID );
 
             // Write the ping
-            BitStream.Write ( usPing );
+            BitStream.WriteCompressed ( usPing );
         }
 
         return true;
