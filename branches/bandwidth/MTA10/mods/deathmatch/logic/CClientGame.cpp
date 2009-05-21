@@ -10,7 +10,7 @@
 *               Oliver Brown <>
 *               Jax <>
 *               Kevin Whiteside <kevuwk@gmail.com>
-*               Cecill Etheredge <ibjsf@gmx.net>
+*               Cecill Etheredge <ijsf@gmx.net>
 *               Chris McArthur <>
 *               Derek Abdine <>
 *               Stanislav Bobrov <lil_toady@hotmail.com>

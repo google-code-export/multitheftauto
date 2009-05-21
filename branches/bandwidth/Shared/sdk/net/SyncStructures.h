@@ -238,23 +238,23 @@ struct SWeaponTypeSync : public ISyncStructure
 struct SAmmoInClipSync : public virtual ISyncStructure
 {
 private:
-    unsigned char usBitCount;
+    unsigned char m_usBitCount;
 
 public:	
     SAmmoInClipSync ( unsigned short usAmmoInClip, unsigned char usBitCount = 16 )
     {
         data.usAmmoInClip = usAmmoInClip;
-        this->usBitCount = usBitCount;
+        m_usBitCount = usBitCount;
     }
 
     bool Read ( NetBitStreamInterface& bitStream )
     {
-        return bitStream.ReadBits ( reinterpret_cast < char* > ( &data ), usBitCount );
+        return bitStream.ReadBits ( reinterpret_cast < char* > ( &data ), m_usBitCount );
     }
 
     void Write ( NetBitStreamInterface& bitStream )
     {
-        bitStream.WriteBits ( reinterpret_cast < const char* > ( &data ), usBitCount );
+        bitStream.WriteBits ( reinterpret_cast < const char* > ( &data ), m_usBitCount );
     }
     
     unsigned short GetAmmoInClip () const
@@ -283,9 +283,10 @@ struct SWeaponAmmoSync : public ISyncStructure
 
         if ( m_bSyncAmmoInClip && bStatus == true )
         {
-            if ( ! IsMeleeWeapon () )
+            unsigned int usBitCount = GetAmmoInClipSyncBitCount ();
+            if ( usBitCount != 0 )
             {
-                SAmmoInClipSync ammoInClipSync = SAmmoInClipSync( data.usAmmoInClip, GetAmmoInClipSyncBitCount () );
+                SAmmoInClipSync ammoInClipSync = SAmmoInClipSync( data.usAmmoInClip, usBitCount );
                 bStatus = bitStream.Read ( &ammoInClipSync );
                 if ( bStatus )
                     data.usAmmoInClip = ammoInClipSync.GetAmmoInClip ();
@@ -305,9 +306,10 @@ struct SWeaponAmmoSync : public ISyncStructure
             bitStream.WriteCompressed ( data.usTotalAmmo );
         if ( m_bSyncAmmoInClip )
         {
-            if ( ! IsMeleeWeapon () )
+            unsigned int usBitCount = GetAmmoInClipSyncBitCount ();
+            if ( usBitCount != 0 )
             {
-                SAmmoInClipSync ammoInClipSync = SAmmoInClipSync( data.usAmmoInClip, GetAmmoInClipSyncBitCount () );
+                SAmmoInClipSync ammoInClipSync = SAmmoInClipSync( data.usAmmoInClip, usBitCount );
                 bitStream.Write ( &ammoInClipSync );
             }
         }
@@ -323,40 +325,6 @@ private:
     unsigned char   m_ucWeaponType;
     bool            m_bSyncTotalAmmo;
     bool            m_bSyncAmmoInClip;
-
-    bool IsMeleeWeapon ( )
-    {
-        switch ( m_ucWeaponType )
-        {
-            case 22:
-            case 23:
-            case 24:
-            case 25:
-            case 26:
-            case 27:
-            case 28:
-            case 29:
-            case 32:
-            case 30:
-            case 31:
-            case 33:
-            case 34:
-            case 35:
-            case 36:
-            case 37:
-            case 38:
-            case 16:
-            case 17:
-            case 18:
-            case 39:
-            case 41:
-            case 42:
-            case 43:
-                return false;
-            default:
-                return true;
-        }
-    }
 
     unsigned int GetAmmoInClipSyncBitCount ( )
     {
