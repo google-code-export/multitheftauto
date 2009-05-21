@@ -15,6 +15,7 @@
 *****************************************************************************/
 
 #include "StdInc.h"
+#include "net/SyncStructures.h"
 
 #ifdef WIN32
     LONGLONG	g_lTimeCounts = 0;

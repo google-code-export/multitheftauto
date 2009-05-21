@@ -11,6 +11,7 @@
 *****************************************************************************/
 
 #include "StdInc.h"
+#include "net/SyncStructures.h"
 
 CRPCFunctions * g_pRPCFunctions = NULL;
 extern CGame * g_pGame;

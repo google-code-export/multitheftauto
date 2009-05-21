@@ -14,6 +14,7 @@
 *****************************************************************************/
 
 #include "StdInc.h"
+#include "net/SyncStructures.h"
 
 CKeysyncPacket::CKeysyncPacket ( CPlayer * pPlayer )
 {

@@ -33,7 +33,7 @@
 #include "CVector.h"
 #include "SharedUtil.h"
 #include "SString.h"
-#include "net/SyncStructures.h"
+//#include "net/SyncStructures.h"
 
 // Packet includes
 #include "net/Packets.h"

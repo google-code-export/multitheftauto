@@ -19,6 +19,7 @@
 *****************************************************************************/
 
 #include <StdInc.h>
+#include <net/SyncStructures.h>
 
 extern CClientGame* g_pClientGame;
 

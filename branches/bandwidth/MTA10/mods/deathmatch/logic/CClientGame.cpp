@@ -10,7 +10,7 @@
 *               Oliver Brown <>
 *               Jax <>
 *               Kevin Whiteside <kevuwk@gmail.com>
-*               Cecill Etheredge <ijsf@gmx.net>
+*               Cecill Etheredge <ibjsf@gmx.net>
 *               Chris McArthur <>
 *               Derek Abdine <>
 *               Stanislav Bobrov <lil_toady@hotmail.com>
@@ -21,6 +21,7 @@
 *****************************************************************************/
 
 #include "StdInc.h"
+#include <net/SyncStructures.h>
 
 using SharedUtil::CalcMTASAPath;
 using std::list;
