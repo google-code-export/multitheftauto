@@ -1540,7 +1540,7 @@ bool CStaticFunctionDefinitions::SetPedRotation ( CClientEntity& Entity, float f
         float fRadians = ConvertDegreesToRadians ( fRotation );
         Ped.SetCurrentRotation ( fRadians );
         if ( !IS_PLAYER ( &Entity ) )
-            Ped.SetCameraRotation ( fRadians );
+            Ped.SetCameraRotation ( -fRadians );
         return true;
     }
 
@@ -1709,6 +1709,31 @@ bool CStaticFunctionDefinitions::SetPedCameraRotation ( CClientEntity & Entity, 
     }
     return false;
 }
+
+
+bool CStaticFunctionDefinitions::SetPedAimTarget ( CClientEntity & Entity, CVector & vecTarget )
+{
+    RUN_CHILDREN SetPedAimTarget ( **iter, vecTarget );
+    if ( IS_PED ( &Entity ) )
+    {
+        CClientPed& Ped = static_cast < CClientPed& > ( Entity );
+
+        CVector vecOrigin;
+        Ped.GetPosition ( vecOrigin );
+
+        // Arm direction
+        float fArmX = atan2 ( vecTarget.fX - vecOrigin.fX, vecTarget.fY - vecOrigin.fY ),
+              fArmY = -atan2 ( vecTarget.fZ - vecOrigin.fZ, DistanceBetweenPoints2D ( vecTarget, vecOrigin ) );
+
+        // TODO: use gun muzzle for origin
+        Ped.SetTargetTarget ( TICK_RATE, vecOrigin, vecTarget );
+        Ped.SetAim ( fArmX, fArmY, 0 );
+
+        return true;
+    }
+    return false;
+}
+
 
 bool CStaticFunctionDefinitions::SetPedOnFire ( CClientEntity & Entity, bool bOnFire )
 {
