@@ -106,4 +106,20 @@ public:
     virtual int         GetNumberOfBitsUsed         ( void ) const = 0;
     virtual int         GetNumberOfBytesUsed        ( void ) const = 0;
     virtual int         GetNumberOfUnreadBits       ( void ) const = 0;
+
+    // Helper template methods that are not actually part 
+    // of the interface but get inline compiled.
+
+    template < typename T >
+    inline void         WriteBits                   ( T * input, unsigned int numbits )
+    {
+        WriteBits ( reinterpret_cast < const char * > ( input ), numbits );
+    }
+
+    template < typename T >
+    inline bool         ReadBits                    ( T * output, unsigned int numbits )
+    {
+        return ReadBits ( reinterpret_cast < char * > ( output ), numbits );
+    }
+
 };

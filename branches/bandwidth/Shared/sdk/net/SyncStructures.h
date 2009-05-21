@@ -39,11 +39,11 @@ struct SPlayerPuresyncFlags : public ISyncStructure
 
     bool Read ( NetBitStreamInterface& bitStream )
     {
-        return bitStream.ReadBits ( reinterpret_cast < char* > ( &data ), BITCOUNT );
+        return bitStream.ReadBits ( &data, BITCOUNT );
     }
     void Write ( NetBitStreamInterface& bitStream )
     {
-        bitStream.WriteBits ( reinterpret_cast < const char* > ( &data ), BITCOUNT );
+        bitStream.WriteBits ( &data, BITCOUNT );
     }
 
     struct
@@ -75,11 +75,11 @@ struct SKeysyncFlags : public ISyncStructure
 
     bool Read ( NetBitStreamInterface& bitStream )
     {
-        return bitStream.ReadBits ( reinterpret_cast < char* > ( &data ), BITCOUNT );
+        return bitStream.ReadBits ( &data, BITCOUNT );
     }
     void Write ( NetBitStreamInterface& bitStream )
     {
-        bitStream.WriteBits ( reinterpret_cast < const char* > ( &data ), BITCOUNT );
+        bitStream.WriteBits ( &data, BITCOUNT );
     }
 
     struct
@@ -101,7 +101,7 @@ struct SFullKeysyncSync : public ISyncStructure
         char cLeftStickX;
         char cLeftStickY;
 
-        if ( ( bState = bitStream.ReadBits ( reinterpret_cast < char* > ( &data ), 8 ) ) )
+        if ( ( bState = bitStream.ReadBits ( &data, 8 ) ) )
         {
             if ( ( bState = bitStream.Read ( cLeftStickX ) ) )
             {
@@ -115,7 +115,7 @@ struct SFullKeysyncSync : public ISyncStructure
     }
     void Write ( NetBitStreamInterface& bitStream )
     {
-        bitStream.WriteBits ( reinterpret_cast < const char* > ( &data ), 8 );
+        bitStream.WriteBits ( &data, 8 );
         char cLeftStickX = static_cast < char > ( (float)data.sLeftStickX * 127.0f/128.0f );
         bitStream.Write ( cLeftStickX );
         char cLeftStickY = static_cast < char > ( (float)data.sLeftStickY * 127.0f/128.0f );
@@ -148,7 +148,7 @@ struct SSmallKeysyncSync : public ISyncStructure
         char cLeftStickX;
         char cLeftStickY;
 
-        if ( ( bState = bitStream.ReadBits ( reinterpret_cast < char* > ( &data ), 10 ) ) )
+        if ( ( bState = bitStream.ReadBits ( &data, 10 ) ) )
         {
             if ( data.bLeftStickXChanged && ( bState = bitStream.Read ( cLeftStickX ) ) )
                 data.sLeftStickX = static_cast < short > ( (float)cLeftStickX * 128.0f/127.0f );
@@ -160,7 +160,7 @@ struct SSmallKeysyncSync : public ISyncStructure
     }
     void Write ( NetBitStreamInterface& bitStream )
     {
-        bitStream.WriteBits ( reinterpret_cast < const char* > ( &data ), 10 );
+        bitStream.WriteBits ( &data, 10 );
         if ( data.bLeftStickXChanged )
         {
             char cLeftStickX = static_cast < char > ( (float)data.sLeftStickX * 127.0f/128.0f );
@@ -203,11 +203,11 @@ struct SWeaponSlotSync : public ISyncStructure
 
     bool Read ( NetBitStreamInterface& bitStream )
     {
-        return bitStream.ReadBits ( reinterpret_cast < char* > ( &data ), BITCOUNT );
+        return bitStream.ReadBits ( &data, BITCOUNT );
     }
     void Write ( NetBitStreamInterface& bitStream )
     {
-        bitStream.WriteBits ( reinterpret_cast < const char* > ( &data ), BITCOUNT );
+        bitStream.WriteBits ( &data, BITCOUNT );
     }
 
     struct
@@ -222,11 +222,11 @@ struct SWeaponTypeSync : public ISyncStructure
 
     bool Read ( NetBitStreamInterface& bitStream )
     {
-        return bitStream.ReadBits ( reinterpret_cast < char* > ( &data ), BITCOUNT );
+        return bitStream.ReadBits ( &data, BITCOUNT );
     }
     void Write ( NetBitStreamInterface& bitStream )
     {
-        bitStream.WriteBits ( reinterpret_cast < const char* > ( &data ), BITCOUNT );
+        bitStream.WriteBits ( &data, BITCOUNT );
     }
 
     struct
@@ -249,12 +249,12 @@ public:
 
     bool Read ( NetBitStreamInterface& bitStream )
     {
-        return bitStream.ReadBits ( reinterpret_cast < char* > ( &data ), m_usBitCount );
+        return bitStream.ReadBits ( &data, m_usBitCount );
     }
 
     void Write ( NetBitStreamInterface& bitStream )
     {
-        bitStream.WriteBits ( reinterpret_cast < const char* > ( &data ), m_usBitCount );
+        bitStream.WriteBits ( &data, m_usBitCount );
     }
     
     unsigned short GetAmmoInClip () const
@@ -420,7 +420,7 @@ struct SBodypartSync : public ISyncStructure
 
     bool Read ( NetBitStreamInterface& bitStream )
     {
-        bool bStatus = bitStream.ReadBits ( reinterpret_cast < char* > ( &privateData ), BITCOUNT );
+        bool bStatus = bitStream.ReadBits ( &privateData, BITCOUNT );
         if ( bStatus )
             data.uiBodypart = privateData.uiBodypart + 3;
         else
@@ -432,7 +432,7 @@ struct SBodypartSync : public ISyncStructure
         // Bodyparts go from 3 to 9, so substracting 3 from the value
         // and then restoring it will save 1 bit.
         privateData.uiBodypart = data.uiBodypart - 3;
-        bitStream.WriteBits ( reinterpret_cast < const char* > ( &privateData ), BITCOUNT );
+        bitStream.WriteBits ( &privateData, BITCOUNT );
     }
 
     struct
