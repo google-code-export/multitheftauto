@@ -72,7 +72,7 @@ bool CKeysyncPacket::Read ( NetBitStreamInterface& BitStream )
                     pSourcePlayer->SetAkimboArmUp ( flags.data.bAkimboTargetUp );
 
                     // Read the aim data
-                    SWeaponAimSync aim;
+                    SWeaponAimSync aim ( pSourcePlayer->GetWeaponRange () );
                     BitStream.Read ( &aim );
                     pSourcePlayer->SetSniperSourceVector ( aim.data.vecOrigin );
                     pSourcePlayer->SetTargettingVector ( aim.data.vecTarget );
@@ -166,7 +166,7 @@ bool CKeysyncPacket::Write ( NetBitStreamInterface& BitStream ) const
 				BitStream.Write ( pSourcePlayer->GetAimDirectionY () );
 
                 // Write the weapon aim data
-                SWeaponAimSync aim;
+                SWeaponAimSync aim ( 0.0f );
                 aim.data.vecOrigin = pSourcePlayer->GetSniperSourceVector ();
                 pSourcePlayer->GetTargettingVector ( aim.data.vecTarget );
                 BitStream.Write ( &aim );

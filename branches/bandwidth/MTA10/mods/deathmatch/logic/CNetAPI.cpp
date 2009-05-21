@@ -661,7 +661,7 @@ void CNetAPI::WriteKeysync ( CClientPed* pPlayerModel, NetBitStreamInterface& Bi
 				BitStream.Write ( pShotsyncData->m_fArmDirectionY );
 
                 // Write the aim data
-                SWeaponAimSync aim;
+                SWeaponAimSync aim ( pPlayerWeapon->GetInfo ()->GetWeaponRange () );
                 pPlayerModel->GetShotData ( &aim.data.vecOrigin, &aim.data.vecTarget );
                 BitStream.Write ( &aim );
 
