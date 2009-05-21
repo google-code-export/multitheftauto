@@ -493,9 +493,12 @@ void CNetAPI::ReadKeysync ( CClientPlayer* pPlayer, NetBitStreamInterface& BitSt
         {
             CWeapon* pWeapon = pPlayer->GetWeapon ( static_cast < eWeaponSlot > ( uiSlot ) );
             unsigned char ucCurrentWeaponType = 0;
+            float fWeaponRange = 1.6f;
+
             if ( pWeapon )
             {
                 ucCurrentWeaponType = pWeapon->GetType ();
+                fWeaponRange = pWeapon->GetInfo ()->GetWeaponRange ();
             }
 
             // Is the current weapon a goggle (44 or 45) or a camera (43), detonator (40), don't apply the fire key
@@ -545,7 +548,7 @@ void CNetAPI::ReadKeysync ( CClientPlayer* pPlayer, NetBitStreamInterface& BitSt
 			BitStream.Read ( fArmY );
 
             // Read the weapon aim data
-            SWeaponAimSync aim;
+            SWeaponAimSync aim ( fWeaponRange );
             BitStream.Read ( &aim );
 
             // Read out the driveby direction
