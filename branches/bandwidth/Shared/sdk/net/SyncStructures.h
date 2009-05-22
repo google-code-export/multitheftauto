@@ -190,6 +190,37 @@ struct SSmallKeysyncSync : public ISyncStructure
     } data;
 };
 
+struct SVehicleSpecific : public ISyncStructure
+{
+    bool Read ( NetBitStreamInterface& bitStream )
+    {
+        short sHorizontal, sVertical;
+        if ( bitStream.Read ( sHorizontal ) && bitStream.Read ( sVertical ) )
+        {
+            data.fTurretX = static_cast < float > ( sHorizontal ) / 182.0f;
+            data.fTurretY = static_cast < float > ( sVertical ) / 182.0f;
+
+            return true;
+        }
+        return false;
+    }
+    void Write ( NetBitStreamInterface& bitStream )
+    {
+        // Convert to shorts to save 4 bytes (multiply for precision)
+        short sHorizontal = static_cast < short > ( data.fTurretX * 182.0f ),
+              sVertical = static_cast < short > ( data.fTurretY * 182.0f );
+
+        bitStream.Write ( sHorizontal );
+        bitStream.Write ( sVertical );
+    }
+
+    struct
+    {
+        float fTurretX;
+        float fTurretY;
+    } data;
+};
+
 
 
 //////////////////////////////////////////

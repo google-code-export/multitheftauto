@@ -209,10 +209,12 @@ void CKeysyncPacket::ReadVehicleSpecific ( CVehicle* pVehicle, NetBitStreamInter
     if ( CVehicleManager::HasTurret ( usModel ) )
     {
         // Read out the turret position
-        float fHorizontal;
-        float fVertical;
-        BitStream.Read ( fHorizontal );
-        BitStream.Read ( fVertical );
+        short sHorizontal, sVertical;
+        BitStream.Read ( sHorizontal );
+        BitStream.Read ( sVertical );
+
+        float fHorizontal = static_cast < float > ( sHorizontal ) / 182.0f,
+              fVertical = static_cast < float > ( sVertical ) / 182.0f;
         
         // Set it
         pVehicle->SetTurretPosition ( fHorizontal, fVertical );
@@ -227,12 +229,15 @@ void CKeysyncPacket::WriteVehicleSpecific ( CVehicle* pVehicle, NetBitStreamInte
     if ( CVehicleManager::HasTurret ( usModel ) )
     {
         // Grab the turret position
-        float fHorizontal;
-        float fVertical;
+        float fHorizontal, fVertical;
         pVehicle->GetTurretPosition ( fHorizontal, fVertical );
 
+        // Convert to shorts to save 4 bytes (multiply for precision)
+        short sHorizontal = static_cast < short > ( fHorizontal * 182.0f ),
+              sVertical = static_cast < short > ( fVertical * 182.0f );
+
         // Write it
-        BitStream.Write ( fHorizontal );
-        BitStream.Write ( fVertical );
+        BitStream.Write ( sHorizontal );
+        BitStream.Write ( sVertical );
     }
 }

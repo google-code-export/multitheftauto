@@ -464,13 +464,15 @@ void CVehiclePuresyncPacket::ReadVehicleSpecific ( CVehicle* pVehicle, NetBitStr
     if ( CVehicleManager::HasTurret ( usModel ) ) 
     {
         // Read out the turret position
-        float fTurretX;
-        float fTurretY;
-        BitStream.Read ( fTurretX );
-        BitStream.Read ( fTurretY );
+        short sHorizontal, sVertical;
+        BitStream.Read ( sHorizontal );
+        BitStream.Read ( sVertical );
+
+        float fHorizontal = static_cast < float > ( sHorizontal ) / 182.0f,
+              fVertical = static_cast < float > ( sVertical ) / 182.0f;
 
         // Set the data
-        pVehicle->SetTurretPosition ( fTurretX, fTurretY );
+        pVehicle->SetTurretPosition ( fHorizontal, fVertical );
     }
 
     // Adjustable property value
@@ -492,13 +494,16 @@ void CVehiclePuresyncPacket::WriteVehicleSpecific ( CVehicle* pVehicle, NetBitSt
     if ( CVehicleManager::HasTurret ( usModel ) )
     {
         // Grab the turret position
-        float fHorizontal;
-        float fVertical;
+        float fHorizontal, fVertical;
         pVehicle->GetTurretPosition ( fHorizontal, fVertical );
 
+        // Convert to shorts to save 4 bytes (multiply for precision)
+        short sHorizontal = static_cast < short > ( fHorizontal * 182.0f ),
+              sVertical = static_cast < short > ( fVertical * 182.0f );
+
         // Write it
-        BitStream.Write ( fHorizontal );
-        BitStream.Write ( fVertical );
+        BitStream.Write ( sHorizontal );
+        BitStream.Write ( sVertical );
     }
 
     // Adjustable property value

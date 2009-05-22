@@ -1530,14 +1530,10 @@ void CNetAPI::ReadSmallVehicleSpecific ( CClientVehicle* pVehicle, NetBitStreamI
     int iModelID = pVehicle->GetModel ();
     if ( CClientVehicleManager::HasTurret ( iModelID ) )
     {
-        // Read out the turret position
-        float fHorizontal;
-        float fVertical;
-        BitStream.Read ( fHorizontal );
-        BitStream.Read ( fVertical );
-        
-        // Set it
-        pVehicle->SetTurretRotation ( fHorizontal, fVertical );
+        SVehicleSpecific vehicle;
+        BitStream.Read ( &vehicle );
+
+        pVehicle->SetTurretRotation ( vehicle.data.fTurretX, vehicle.data.fTurretY );
     }
 }
 
@@ -1548,14 +1544,10 @@ void CNetAPI::WriteSmallVehicleSpecific ( CClientVehicle* pVehicle, NetBitStream
     int iModelID = pVehicle->GetModel ();
     if ( CClientVehicleManager::HasTurret ( iModelID ) )
     {
-        // Grab the turret position
-        float fHorizontal;
-        float fVertical;
-        pVehicle->GetTurretRotation ( fHorizontal, fVertical );
+        SVehicleSpecific vehicle;
+        pVehicle->GetTurretRotation ( vehicle.data.fTurretX, vehicle.data.fTurretY );
 
-        // Write it
-        BitStream.Write ( fHorizontal );
-        BitStream.Write ( fVertical );
+        BitStream.Write ( &vehicle );
     }
 }
 
@@ -1566,14 +1558,10 @@ void CNetAPI::ReadFullVehicleSpecific ( CClientVehicle* pVehicle, NetBitStreamIn
     int iModelID = pVehicle->GetModel ();
     if ( CClientVehicleManager::HasTurret ( iModelID ) )
     {
-        // Read out the turret position
-        float fHorizontal;
-        float fVertical;
-        BitStream.Read ( fHorizontal );
-        BitStream.Read ( fVertical );
-        
-        // Set it
-        pVehicle->SetTurretRotation ( fHorizontal, fVertical );
+        SVehicleSpecific vehicle;
+        BitStream.Read ( &vehicle );
+
+        pVehicle->SetTurretRotation ( vehicle.data.fTurretX, vehicle.data.fTurretY );
     }
 
     // Adjustable property
@@ -1595,13 +1583,10 @@ void CNetAPI::WriteFullVehicleSpecific ( CClientVehicle* pVehicle, NetBitStreamI
     if ( CClientVehicleManager::HasTurret ( iModelID ) )
     {
         // Grab the turret position
-        float fHorizontal;
-        float fVertical;
-        pVehicle->GetTurretRotation ( fHorizontal, fVertical );
+        SVehicleSpecific vehicle;
+        pVehicle->GetTurretRotation ( vehicle.data.fTurretX, vehicle.data.fTurretY );
 
-        // Write it
-        BitStream.Write ( fHorizontal );
-        BitStream.Write ( fVertical );
+        BitStream.Write ( &vehicle );
     }
 
     // Adjustable property
