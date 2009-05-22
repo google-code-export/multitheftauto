@@ -544,9 +544,11 @@ void CNetAPI::ReadKeysync ( CClientPlayer* pPlayer, NetBitStreamInterface& BitSt
 			}
 
             // Read out the aim directions
-            float fArmX, fArmY;
-			BitStream.Read ( fArmX );
-			BitStream.Read ( fArmY );
+            char cArmX, cArmY;
+			BitStream.Read ( cArmX );
+			BitStream.Read ( cArmY );
+            float fArmX = ConvertDegreesToRadians ( static_cast < float > ( cArmX ) ),
+                  fArmY = ConvertDegreesToRadians ( static_cast < float > ( cArmY ) );
 
             // Read the weapon aim data
             SWeaponAimSync aim ( fWeaponRange );
@@ -661,8 +663,10 @@ void CNetAPI::WriteKeysync ( CClientPed* pPlayerModel, NetBitStreamInterface& Bi
 
                 // Grab his aim directions and sync them if he's not using an akimbo
 				CShotSyncData* pShotsyncData = g_pMultiplayer->GetLocalShotSyncData ();
-				BitStream.Write ( pShotsyncData->m_fArmDirectionX );
-				BitStream.Write ( pShotsyncData->m_fArmDirectionY );
+                char cArmX = static_cast < char > ( ConvertRadiansToDegrees ( pShotsyncData->m_fArmDirectionX ) ),
+                     cArmY = static_cast < char > ( ConvertRadiansToDegrees ( pShotsyncData->m_fArmDirectionY ) );
+				BitStream.Write ( cArmX );
+				BitStream.Write ( cArmY );
 
                 // Write the aim data
                 SWeaponAimSync aim ( pPlayerWeapon->GetInfo ()->GetWeaponRange () );
@@ -828,9 +832,11 @@ void CNetAPI::ReadPlayerPuresync ( CClientPlayer* pPlayer, NetBitStreamInterface
 		    }
 
             // Read out the aim directions
-            float fArmX, fArmY;
-		    BitStream.Read ( fArmX );
-		    BitStream.Read ( fArmY );
+            char cArmX, cArmY;
+			BitStream.Read ( cArmX );
+			BitStream.Read ( cArmY );
+            float fArmX = ConvertDegreesToRadians ( static_cast < float > ( cArmX ) ),
+                  fArmY = ConvertDegreesToRadians ( static_cast < float > ( cArmY ) );
 
             // Interpolate the aiming
             pPlayer->SetAimInterpolated ( TICK_RATE, fArmX, fArmY, flags.data.bAkimboTargetUp, 0 );
@@ -988,8 +994,10 @@ void CNetAPI::WritePlayerPuresync ( CClientPlayer* pPlayerModel, NetBitStreamInt
             BitStream.Write ( &ammo );
 
 			CShotSyncData* pShotsyncData = g_pMultiplayer->GetLocalShotSyncData ();
-			BitStream.Write ( pShotsyncData->m_fArmDirectionX );
-			BitStream.Write ( pShotsyncData->m_fArmDirectionY );
+            char cArmX = static_cast < char > ( ConvertRadiansToDegrees ( pShotsyncData->m_fArmDirectionX ) ),
+                 cArmY = static_cast < char > ( ConvertRadiansToDegrees ( pShotsyncData->m_fArmDirectionY ) );
+			BitStream.Write ( cArmX );
+			BitStream.Write ( cArmY );
 
             // Write the aim data only if he's aiming or shooting
             if ( ControllerState.RightShoulder1 || ControllerState.ButtonCircle )
@@ -1210,9 +1218,11 @@ void CNetAPI::ReadVehiclePuresync ( CClientPlayer* pPlayer, CClientVehicle* pVeh
         }
 
         // Read out the aim directions
-        float fArmX, fArmY;
-        BitStream.Read ( fArmX );
-        BitStream.Read ( fArmY );
+        char cArmX, cArmY;
+		BitStream.Read ( cArmX );
+		BitStream.Read ( cArmY );
+        float fArmX = ConvertDegreesToRadians ( static_cast < float > ( cArmX ) ),
+              fArmY = ConvertDegreesToRadians ( static_cast < float > ( cArmY ) );
 
         // Read out the origin vector
         CVector vecOrigin;
@@ -1379,9 +1389,11 @@ void CNetAPI::WriteVehiclePuresync ( CClientPed* pPlayerModel, CClientVehicle* p
             BitStream.Write ( usAmmoInClip );
 
             // Grab his aim directions and sync them
-            CShotSyncData* pShotsyncData = g_pMultiplayer->GetLocalShotSyncData ();
-            BitStream.Write ( pShotsyncData->m_fArmDirectionX );
-            BitStream.Write ( pShotsyncData->m_fArmDirectionY );
+			CShotSyncData* pShotsyncData = g_pMultiplayer->GetLocalShotSyncData ();
+            char cArmX = static_cast < char > ( ConvertRadiansToDegrees ( pShotsyncData->m_fArmDirectionX ) ),
+                 cArmY = static_cast < char > ( ConvertRadiansToDegrees ( pShotsyncData->m_fArmDirectionY ) );
+			BitStream.Write ( cArmX );
+			BitStream.Write ( cArmY );
 
             CVector vecOrigin, vecTarget;
             pPlayerModel->GetShotData ( &vecOrigin, &vecTarget );  

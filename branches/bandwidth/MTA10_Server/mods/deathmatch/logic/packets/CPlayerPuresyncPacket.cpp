@@ -145,12 +145,12 @@ bool CPlayerPuresyncPacket::Read ( NetBitStreamInterface& BitStream )
                 pSourcePlayer->SetWeaponTotalAmmo ( ammo.data.usTotalAmmo );
 
                 // Read out the aim directions
-                float fArmX, fArmY;
-                BitStream.Read ( fArmX );
-                BitStream.Read ( fArmY );
+                char cArmX, cArmY;
+			    BitStream.Read ( cArmX );
+			    BitStream.Read ( cArmY );
 
                 // Set the arm directions and whether or not arms are up
-                pSourcePlayer->SetAimDirections ( fArmX, fArmY );
+                pSourcePlayer->SetAimDirections ( cArmX, cArmY );
 
                 // Read the aim data only if he's shooting or aiming
                 if ( ControllerState.RightShoulder1 || ControllerState.ButtonCircle )
@@ -337,8 +337,9 @@ bool CPlayerPuresyncPacket::Write ( NetBitStreamInterface& BitStream ) const
             if ( CWeaponNames::DoesSlotHaveAmmo ( uiSlot ) )
             {
                 unsigned short usWeaponAmmoInClip = pSourcePlayer->GetWeaponAmmoInClip ();
-                float fAimDirectionX = pSourcePlayer->GetAimDirectionX ();
-                float fAimDirectionY = pSourcePlayer->GetAimDirectionY ();
+                char cArmX = pSourcePlayer->GetAimDirectionX (),
+                     cArmY = pSourcePlayer->GetAimDirectionY ();
+
 			    bool bArmUp = pSourcePlayer->IsAkimboArmUp ();
 /*
             // Figure out what to send
@@ -364,8 +365,8 @@ bool CPlayerPuresyncPacket::Write ( NetBitStreamInterface& BitStream ) const
                 ammo.data.usAmmoInClip = usWeaponAmmoInClip;
                 BitStream.Write ( &ammo );
 
-			    BitStream.Write ( fAimDirectionX );
-			    BitStream.Write ( fAimDirectionY );
+			    BitStream.Write ( cArmX );
+			    BitStream.Write ( cArmY );
 
                 // Write the aim data only if he's aiming or shooting
                 if ( ControllerState.RightShoulder1 || ControllerState.ButtonCircle )

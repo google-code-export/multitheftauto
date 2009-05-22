@@ -288,10 +288,10 @@ bool CVehiclePuresyncPacket::Read ( NetBitStreamInterface& BitStream )
                 pSourcePlayer->SetWeaponAmmoInClip ( usAmmoInClip );
 
                 // Read out the aim directions
-                float fArmX, fArmY;
-                BitStream.Read ( fArmX );
-                BitStream.Read ( fArmY );
-                pSourcePlayer->SetAimDirections ( fArmX, fArmY );
+                char cArmX, cArmY;
+			    BitStream.Read ( cArmX );
+			    BitStream.Read ( cArmY );
+                pSourcePlayer->SetAimDirections ( cArmX, cArmY );
 
                 // Source vector
                 BitStream.Read ( vecTemp.fX );
@@ -423,8 +423,8 @@ bool CVehiclePuresyncPacket::Write ( NetBitStreamInterface& BitStream ) const
                 BitStream.Write ( pSourcePlayer->GetWeaponAmmoInClip () );
 
                 // Write the aim directions
-                BitStream.Write ( pSourcePlayer->GetAimDirectionX () );
-                BitStream.Write ( pSourcePlayer->GetAimDirectionY () );
+			    BitStream.Write ( pSourcePlayer->GetAimDirectionX () );
+			    BitStream.Write ( pSourcePlayer->GetAimDirectionY () );
 
                  // Source vector
                 vecTemp = pSourcePlayer->GetSniperSourceVector ();

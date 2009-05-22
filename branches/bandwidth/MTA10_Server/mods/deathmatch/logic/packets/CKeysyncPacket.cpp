@@ -64,12 +64,12 @@ bool CKeysyncPacket::Read ( NetBitStreamInterface& BitStream )
                     pSourcePlayer->SetWeaponAmmoInClip ( ammo.data.usAmmoInClip );
 
 				    // Read out the aim directions
-				    float fArmX, fArmY;
-				    BitStream.Read ( fArmX );
-				    BitStream.Read ( fArmY );
+                    char cArmX, cArmY;
+			        BitStream.Read ( cArmX );
+			        BitStream.Read ( cArmY );
 
 				    // Set the arm directions and whether or not arms are up
-				    pSourcePlayer->SetAimDirections ( fArmX, fArmY );
+				    pSourcePlayer->SetAimDirections ( cArmX, cArmY );
                     pSourcePlayer->SetAkimboArmUp ( flags.data.bAkimboTargetUp );
 
                     // Read the aim data
@@ -163,8 +163,8 @@ bool CKeysyncPacket::Write ( NetBitStreamInterface& BitStream ) const
                 BitStream.Write ( &ammo );
 
                 // Write aim directions
-                BitStream.Write ( pSourcePlayer->GetAimDirectionX () );
-				BitStream.Write ( pSourcePlayer->GetAimDirectionY () );
+			    BitStream.Write ( pSourcePlayer->GetAimDirectionX () );
+			    BitStream.Write ( pSourcePlayer->GetAimDirectionY () );
 
                 // Write the weapon aim data
                 SWeaponAimSync aim ( 0.0f );
