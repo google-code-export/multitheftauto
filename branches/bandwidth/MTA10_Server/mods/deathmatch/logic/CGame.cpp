@@ -108,8 +108,6 @@ CGame::CGame ( void )
 	m_usFPS = 0;
 	m_usFrames = 0;
 	m_ulLastFPSTime = 0;
-    m_ulNextPingTime = 0;
-    m_LastPingPlayer = INVALID_ELEMENT_ID;
     m_szCurrentFileName = NULL;
     m_pConsoleClient = NULL;
     m_bIsFinished = false;     
@@ -325,9 +323,6 @@ void CGame::DoPulse ( void )
     m_pBanManager->DoPulse ();
     m_pAccountManager->DoPulse ();
 
-    // Eventually send pings...
-    SendPings ();
-
     // Pulse ASE
     if ( m_pASE )
     {
@@ -539,9 +534,6 @@ bool CGame::Start ( int iArgumentCount, char* szArguments [] )
                            m_pMainConfig );
                            
     m_pPlayerManager->SetScriptDebugging ( m_pScriptDebugging );
-
-    m_ulNextPingTime = 0;
-    m_LastPingPlayer = INVALID_ELEMENT_ID;
 
     // Set our console control handler
     #ifdef WIN32
@@ -1178,50 +1170,6 @@ void CGame::AddBuiltInEvents ( void )
 	// Ban events
 	m_Events.AddEvent ( "onBan", "ip", NULL, false );
 	m_Events.AddEvent ( "onUnban", "ip", NULL, false );
-}
-
-
-void CGame::SendPings ( void )
-{
-    #define SEND_PING_CYCLE_RATE 3000
-
-    // Time to send pings?
-    unsigned int uiPlayerCount = m_pPlayerManager->Count ();
-    unsigned long ulCurrentTime = GetTime ();
-    if ( uiPlayerCount > 0 && ulCurrentTime >= m_ulNextPingTime )
-    {
-        // Grab the next player id
-        CPlayer* pSendPlayer = m_pPlayerManager->GetAfter ( m_LastPingPlayer );
-        if ( pSendPlayer )
-        {
-            // Set this player as the last player we sent the pings to
-            m_LastPingPlayer = pSendPlayer->GetID ();
-
-            // Make sure he's joined
-            if ( pSendPlayer->IsJoined () )
-            {
-                // Create the ping packet and add all players to it
-                CPlayerPingsPacket PingsPacket;
-                CPlayer* pPlayer;
-                list < CPlayer* > ::const_iterator iter = m_pPlayerManager->IterBegin ();
-                for ( ; iter != m_pPlayerManager->IterEnd (); iter++ )
-                {
-                    // Add him if he's joined
-                    pPlayer = *iter;
-                    if ( pPlayer->IsJoined () )
-                    {
-                        PingsPacket.AddPlayer ( pPlayer );
-                    }
-                }
-
-                // Send the packet
-                pSendPlayer->Send ( PingsPacket );
-            }
-        }
-
-        // Calculate when to send the next ping
-        m_ulNextPingTime = ulCurrentTime + SEND_PING_CYCLE_RATE / uiPlayerCount;
-    }
 }
 
 

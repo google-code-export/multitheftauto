@@ -946,10 +946,6 @@
 						>
 					</File>
 					<File
-						RelativePath=".\logic\packets\CPlayerPingsPacket.cpp"
-						>
-					</File>
-					<File
 						RelativePath=".\logic\packets\CPlayerPuresyncPacket.cpp"
 						>
 					</File>
@@ -1976,10 +1972,6 @@
 					</File>
 					<File
 						RelativePath=".\logic\packets\CPlayerListPacket.h"
-						>
-					</File>
-					<File
-						RelativePath=".\logic\packets\CPlayerPingsPacket.h"
 						>
 					</File>
 					<File
