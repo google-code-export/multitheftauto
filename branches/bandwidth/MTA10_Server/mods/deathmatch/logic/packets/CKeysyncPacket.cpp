@@ -123,10 +123,6 @@ bool CKeysyncPacket::Write ( NetBitStreamInterface& BitStream ) const
         ElementID PlayerID = pSourcePlayer->GetID ();
         BitStream.WriteCompressed ( PlayerID );
 
-        // Write his ping divided with 2 plus a small number so the client can find out when this packet was sent
-        unsigned short usLatency = pSourcePlayer->GetPing ();
-        BitStream.WriteCompressed ( usLatency );
-
         // Write the keysync data
         const CControllerState& ControllerState = pSourcePlayer->GetPad ()->GetCurrentControllerState ();
         const CControllerState& LastControllerState = pSourcePlayer->GetPad ()->GetLastControllerState ();

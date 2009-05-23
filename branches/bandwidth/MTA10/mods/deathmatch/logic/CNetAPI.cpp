@@ -461,11 +461,6 @@ bool CNetAPI::IsCameraSyncNeeded ()
 
 void CNetAPI::ReadKeysync ( CClientPlayer* pPlayer, NetBitStreamInterface& BitStream )
 {
-    // Read out the time it took for the packet to go from the remote client to the server and to us
-    unsigned short usLatency;
-    BitStream.ReadCompressed ( usLatency );
-    pPlayer->SetLatency ( usLatency + g_pNet->GetPing () );
-
     // Grab the old controller state
     CControllerState LastControllerState;
     pPlayer->GetLastControllerState ( LastControllerState );
