@@ -63,11 +63,6 @@ bool CKeysyncPacket::Read ( NetBitStreamInterface& BitStream )
                     BitStream.Read ( &ammo );
                     pSourcePlayer->SetWeaponAmmoInClip ( ammo.data.usAmmoInClip );
 
-				    // Read out the aim directions
-                    char cArmX, cArmY;
-			        BitStream.Read ( cArmX );
-			        BitStream.Read ( cArmY );
-
                     // Read the aim data
                     SWeaponAimSync aim ( pSourcePlayer->GetWeaponRange () );
                     BitStream.Read ( &aim );
