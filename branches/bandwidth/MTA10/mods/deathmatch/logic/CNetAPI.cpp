@@ -543,13 +543,6 @@ void CNetAPI::ReadKeysync ( CClientPlayer* pPlayer, NetBitStreamInterface& BitSt
                 flags.data.bAkimboTargetUp = false;
 			}
 
-            // Read out the aim directions
-            char cArmX, cArmY;
-			BitStream.Read ( cArmX );
-			BitStream.Read ( cArmY );
-            float fArmX = ConvertDegreesToRadians ( static_cast < float > ( cArmX ) ),
-                  fArmY = ConvertDegreesToRadians ( static_cast < float > ( cArmY ) );
-
             // Read the weapon aim data
             SWeaponAimSync aim ( fWeaponRange );
             BitStream.Read ( &aim );
@@ -561,12 +554,12 @@ void CNetAPI::ReadKeysync ( CClientPlayer* pPlayer, NetBitStreamInterface& BitSt
             // Set the aim data (immediately if in vehicle, otherwize delayed/interpolated)
             if ( pVehicle )
             {
-                pPlayer->SetAimingData ( TICK_RATE, aim.data.vecTarget, fArmX, fArmY, ucDriveByAim, &(aim.data.vecOrigin), false );
+                pPlayer->SetAimingData ( TICK_RATE, aim.data.vecTarget, aim.data.fArmX, aim.data.fArmY, ucDriveByAim, &(aim.data.vecOrigin), false );
             }
             else
             {
                 pPlayer->SetTargetTarget ( TICK_RATE, aim.data.vecOrigin, aim.data.vecTarget );
-                pPlayer->SetAimInterpolated ( TICK_RATE, fArmX, fArmY, flags.data.bAkimboTargetUp, ucDriveByAim );
+                pPlayer->SetAimInterpolated ( TICK_RATE, aim.data.fArmX, aim.data.fArmY, flags.data.bAkimboTargetUp, ucDriveByAim );
             }
         }
         else if ( uiSlot != 0 )
@@ -661,19 +654,13 @@ void CNetAPI::WriteKeysync ( CClientPed* pPlayerModel, NetBitStreamInterface& Bi
                 ammo.data.usAmmoInClip = pPlayerWeapon->GetAmmoInClip ();
                 BitStream.Write ( &ammo );
 
-                // Grab his aim directions and sync them if he's not using an akimbo
-				CShotSyncData* pShotsyncData = g_pMultiplayer->GetLocalShotSyncData ();
-                char cArmX = static_cast < char > ( ConvertRadiansToDegrees ( pShotsyncData->m_fArmDirectionX ) ),
-                     cArmY = static_cast < char > ( ConvertRadiansToDegrees ( pShotsyncData->m_fArmDirectionY ) );
-				BitStream.Write ( cArmX );
-				BitStream.Write ( cArmY );
-
                 // Write the aim data
                 SWeaponAimSync aim ( pPlayerWeapon->GetInfo ()->GetWeaponRange () );
-                pPlayerModel->GetShotData ( &aim.data.vecOrigin, &aim.data.vecTarget );
+                pPlayerModel->GetShotData ( &aim.data.vecOrigin, &aim.data.vecTarget, NULL, NULL, &aim.data.fArmX, &aim.data.fArmY );
                 BitStream.Write ( &aim );
 
                 // Write the driveby direction
+                CShotSyncData* pShotsyncData = g_pMultiplayer->GetLocalShotSyncData ();
                 BitStream.Write ( pShotsyncData->m_cInVehicleAimDirection );
             }
         }
@@ -832,20 +819,15 @@ void CNetAPI::ReadPlayerPuresync ( CClientPlayer* pPlayer, NetBitStreamInterface
 		    }
 
             // Read out the aim directions
-            char cArmX, cArmY;
-			BitStream.Read ( cArmX );
-			BitStream.Read ( cArmY );
-            float fArmX = ConvertDegreesToRadians ( static_cast < float > ( cArmX ) ),
-                  fArmY = ConvertDegreesToRadians ( static_cast < float > ( cArmY ) );
+            SWeaponAimSync aim ( fWeaponRange, ( ControllerState.RightShoulder1 || ControllerState.ButtonCircle ) );
+            BitStream.Read ( &aim );
 
             // Interpolate the aiming
-            pPlayer->SetAimInterpolated ( TICK_RATE, fArmX, fArmY, flags.data.bAkimboTargetUp, 0 );
+            pPlayer->SetAimInterpolated ( TICK_RATE, aim.data.fArmX, aim.data.fArmY, flags.data.bAkimboTargetUp, 0 );
 
             // Read the aim data only if he's shooting or aiming
-            if ( ControllerState.RightShoulder1 || ControllerState.ButtonCircle )
+            if ( aim.isFull() )
             {
-                SWeaponAimSync aim ( fWeaponRange );
-                BitStream.Read ( &aim );
                 // Interpolate the source/target vectors
                 pPlayer->SetTargetTarget ( TICK_RATE, aim.data.vecOrigin, aim.data.vecTarget );
             }
@@ -993,19 +975,18 @@ void CNetAPI::WritePlayerPuresync ( CClientPlayer* pPlayerModel, NetBitStreamInt
             ammo.data.usTotalAmmo = pPlayerWeapon->GetAmmoTotal ();
             BitStream.Write ( &ammo );
 
-			CShotSyncData* pShotsyncData = g_pMultiplayer->GetLocalShotSyncData ();
-            char cArmX = static_cast < char > ( ConvertRadiansToDegrees ( pShotsyncData->m_fArmDirectionX ) ),
-                 cArmY = static_cast < char > ( ConvertRadiansToDegrees ( pShotsyncData->m_fArmDirectionY ) );
-			BitStream.Write ( cArmX );
-			BitStream.Write ( cArmY );
+            // Sync aim data
+            CShotSyncData* pShotsyncData = g_pMultiplayer->GetLocalShotSyncData ();
+            SWeaponAimSync aim ( 0.0f, ( ControllerState.RightShoulder1 || ControllerState.ButtonCircle ) );
+            aim.data.fArmX = pShotsyncData->m_fArmDirectionX;
+            aim.data.fArmY = pShotsyncData->m_fArmDirectionX;
 
-            // Write the aim data only if he's aiming or shooting
+            // Write the vectors data only if he's aiming or shooting
             if ( ControllerState.RightShoulder1 || ControllerState.ButtonCircle )
             {
-                SWeaponAimSync aim ( 0.0f );
                 pPlayerModel->GetShotData ( &(aim.data.vecOrigin), &(aim.data.vecTarget) );
-                BitStream.Write ( &aim );
             }
+            BitStream.Write ( &aim );
         }
     }
 
@@ -1194,6 +1175,7 @@ void CNetAPI::ReadVehiclePuresync ( CClientPlayer* pPlayer, CClientVehicle* pVeh
         unsigned short usWeaponAmmo;
         BitStream.Read ( usWeaponAmmo );
 
+        float fWeaponRange = 1.6f;
         // Valid current weapon id?
         if ( CClientPickupManager::IsValidWeaponID ( ucCurrentWeapon ) )
         {
@@ -1214,34 +1196,20 @@ void CNetAPI::ReadVehiclePuresync ( CClientPlayer* pPlayer, CClientVehicle* pVeh
             {
                 pPlayerWeapon->SetAmmoTotal ( 9999 );
                 pPlayerWeapon->SetAmmoInClip ( usWeaponAmmo );
+                fWeaponRange = pPlayerWeapon->GetInfo()->GetWeaponRange();
             }
         }
 
-        // Read out the aim directions
-        char cArmX, cArmY;
-		BitStream.Read ( cArmX );
-		BitStream.Read ( cArmY );
-        float fArmX = ConvertDegreesToRadians ( static_cast < float > ( cArmX ) ),
-              fArmY = ConvertDegreesToRadians ( static_cast < float > ( cArmY ) );
-
-        // Read out the origin vector
-        CVector vecOrigin;
-        BitStream.Read ( vecOrigin.fX );
-        BitStream.Read ( vecOrigin.fY );
-        BitStream.Read ( vecOrigin.fZ );
-
-        // Read out the target vector
-        CVector vecTarget;
-        BitStream.Read ( vecTarget.fX );
-        BitStream.Read ( vecTarget.fY );
-        BitStream.Read ( vecTarget.fZ );
+        // Read the weapon aim data
+        SWeaponAimSync aim ( fWeaponRange );
+        BitStream.Read ( &aim );
 
         // Read out the driveby direction
         unsigned char ucDriveByAim;
         BitStream.Read ( ucDriveByAim );
 
         // Set the aiming data
-        pPlayer->SetAimingData ( TICK_RATE, vecTarget, fArmX, fArmY, ucDriveByAim, &vecOrigin, false );
+        pPlayer->SetAimingData ( TICK_RATE, aim.data.vecTarget, aim.data.fArmX, aim.data.fArmY, ucDriveByAim, &aim.data.vecOrigin, false );
     }
     else
     {
@@ -1388,27 +1356,13 @@ void CNetAPI::WriteVehiclePuresync ( CClientPed* pPlayerModel, CClientVehicle* p
             unsigned short usAmmoInClip = static_cast < unsigned short > ( pPlayerWeapon->GetAmmoInClip () );
             BitStream.Write ( usAmmoInClip );
 
-            // Grab his aim directions and sync them
-			CShotSyncData* pShotsyncData = g_pMultiplayer->GetLocalShotSyncData ();
-            char cArmX = static_cast < char > ( ConvertRadiansToDegrees ( pShotsyncData->m_fArmDirectionX ) ),
-                 cArmY = static_cast < char > ( ConvertRadiansToDegrees ( pShotsyncData->m_fArmDirectionY ) );
-			BitStream.Write ( cArmX );
-			BitStream.Write ( cArmY );
-
-            CVector vecOrigin, vecTarget;
-            pPlayerModel->GetShotData ( &vecOrigin, &vecTarget );  
-
-            // Write the gun's origin vector
-            BitStream.Write ( vecOrigin.fX );
-            BitStream.Write ( vecOrigin.fY );
-            BitStream.Write ( vecOrigin.fZ );
-
-            // Write the gun's target vector
-            BitStream.Write ( vecTarget.fX );
-            BitStream.Write ( vecTarget.fY );
-            BitStream.Write ( vecTarget.fZ );
+            // Sync aim data
+            SWeaponAimSync aim ( 0.0f );
+            pPlayerModel->GetShotData ( &aim.data.vecOrigin, &aim.data.vecTarget, NULL, NULL, &aim.data.fArmX, &aim.data.fArmY );
+            BitStream.Write ( &aim );
 
             // Write the driveby direction
+            CShotSyncData* pShotsyncData = g_pMultiplayer->GetLocalShotSyncData ();
             BitStream.Write ( pShotsyncData->m_cInVehicleAimDirection );
         }
     }

@@ -90,9 +90,9 @@ public:
     inline void                                 SetSniperSourceVector       ( const CVector& vecSource )    { m_vecSniperSource = vecSource; };
     inline void                                 GetTargettingVector         ( CVector& vecTarget )          { vecTarget = m_vecTargetting; };
     inline void                                 SetTargettingVector         ( const CVector& vecTarget )    { m_vecTargetting = vecTarget; };
-    inline char                                 GetAimDirectionX            ( void )                        { return m_cAimDirectionX; };
-    inline char                                 GetAimDirectionY            ( void )                        { return m_cAimDirectionY; };
-    inline void                                 SetAimDirections            ( char cX, char cY )            { m_cAimDirectionX = cX; m_cAimDirectionY = cY; };
+    inline float                                GetAimDirectionX            ( void )                        { return m_fAimDirectionX; };
+    inline float                                GetAimDirectionY            ( void )                        { return m_fAimDirectionY; };
+    inline void                                 SetAimDirections            ( float fX, float fY )          { m_fAimDirectionX = fX; m_fAimDirectionY = fY; };
     inline unsigned char                        GetDriveByDirection         ( void )                        { return m_ucDriveByDirection; };
     inline void                                 SetDriveByDirection         ( unsigned char ucDirection )   { m_ucDriveByDirection = ucDirection; };
 	inline bool									IsAkimboArmUp				( void )						{ return m_bAkimboArmUp; };
@@ -226,8 +226,8 @@ private:
     long                                        m_lMoney;    
     CVector                                     m_vecSniperSource;
     CVector                                     m_vecTargetting;
-    char                                        m_cAimDirectionX;
-    char                                        m_cAimDirectionY;
+    float                                       m_fAimDirectionX;
+    float                                       m_fAimDirectionY;
     unsigned char                               m_ucDriveByDirection;   
     
 	bool										m_bAkimboArmUp;

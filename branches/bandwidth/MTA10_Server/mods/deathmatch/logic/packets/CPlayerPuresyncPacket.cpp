@@ -144,19 +144,16 @@ bool CPlayerPuresyncPacket::Read ( NetBitStreamInterface& BitStream )
                 pSourcePlayer->SetWeaponAmmoInClip ( ammo.data.usAmmoInClip );
                 pSourcePlayer->SetWeaponTotalAmmo ( ammo.data.usTotalAmmo );
 
-                // Read out the aim directions
-                char cArmX, cArmY;
-			    BitStream.Read ( cArmX );
-			    BitStream.Read ( cArmY );
+                // Read out the aim data
+                SWeaponAimSync sync ( pSourcePlayer->GetWeaponRange (), ( ControllerState.RightShoulder1 || ControllerState.ButtonCircle ) );
+                BitStream.Read ( &sync );
 
                 // Set the arm directions and whether or not arms are up
-                pSourcePlayer->SetAimDirections ( cArmX, cArmY );
+                pSourcePlayer->SetAimDirections ( sync.data.fArmX, sync.data.fArmY );
 
                 // Read the aim data only if he's shooting or aiming
-                if ( ControllerState.RightShoulder1 || ControllerState.ButtonCircle )
+                if ( sync.isFull() )
                 {
-                    SWeaponAimSync sync ( pSourcePlayer->GetWeaponRange () );
-                    BitStream.Read ( &sync );
                     pSourcePlayer->SetSniperSourceVector ( sync.data.vecOrigin );
                     pSourcePlayer->SetTargettingVector ( sync.data.vecTarget );
                 }
@@ -337,8 +334,6 @@ bool CPlayerPuresyncPacket::Write ( NetBitStreamInterface& BitStream ) const
             if ( CWeaponNames::DoesSlotHaveAmmo ( uiSlot ) )
             {
                 unsigned short usWeaponAmmoInClip = pSourcePlayer->GetWeaponAmmoInClip ();
-                char cArmX = pSourcePlayer->GetAimDirectionX (),
-                     cArmY = pSourcePlayer->GetAimDirectionY ();
 
 			    bool bArmUp = pSourcePlayer->IsAkimboArmUp ();
 /*
@@ -365,17 +360,17 @@ bool CPlayerPuresyncPacket::Write ( NetBitStreamInterface& BitStream ) const
                 ammo.data.usAmmoInClip = usWeaponAmmoInClip;
                 BitStream.Write ( &ammo );
 
-			    BitStream.Write ( cArmX );
-			    BitStream.Write ( cArmY );
+                SWeaponAimSync aim ( 0.0f, ( ControllerState.RightShoulder1 || ControllerState.ButtonCircle ) );
+                aim.data.fArmX = pSourcePlayer->GetAimDirectionX ();
+                aim.data.fArmY = pSourcePlayer->GetAimDirectionY ();
 
                 // Write the aim data only if he's aiming or shooting
-                if ( ControllerState.RightShoulder1 || ControllerState.ButtonCircle )
+                if ( aim.isFull() )
                 {
-                    SWeaponAimSync aim ( 0.0f );
                     aim.data.vecOrigin = pSourcePlayer->GetSniperSourceVector ();
                     pSourcePlayer->GetTargettingVector ( aim.data.vecTarget );
-                    BitStream.Write ( &aim );
                 }
+                BitStream.Write ( &aim );
             }
         }
 

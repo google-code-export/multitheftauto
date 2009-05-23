@@ -194,11 +194,11 @@ struct SVehicleSpecific : public ISyncStructure
 {
     bool Read ( NetBitStreamInterface& bitStream )
     {
-        short sHorizontal, sVertical;
-        if ( bitStream.Read ( sHorizontal ) && bitStream.Read ( sVertical ) )
+        unsigned short usHorizontal, usVertical;
+        if ( bitStream.Read ( usHorizontal ) && bitStream.Read ( usVertical ) )
         {
-            data.fTurretX = static_cast < float > ( sHorizontal ) / 182.0f;
-            data.fTurretY = static_cast < float > ( sVertical ) / 182.0f;
+            data.fTurretX = static_cast < float > ( usHorizontal ) / ( 65535.0f / 360.0f );
+            data.fTurretY = static_cast < float > ( usVertical ) / ( 65535.0f / 360.0f );
 
             return true;
         }
@@ -206,12 +206,12 @@ struct SVehicleSpecific : public ISyncStructure
     }
     void Write ( NetBitStreamInterface& bitStream )
     {
-        // Convert to shorts to save 4 bytes (multiply for precision)
-        short sHorizontal = static_cast < short > ( data.fTurretX * 182.0f ),
-              sVertical = static_cast < short > ( data.fTurretY * 182.0f );
+        // Convert to shorts to save 4 bytes (multiply for precision on how many rounds can fit in a ushort)
+        unsigned short usHorizontal = static_cast < unsigned short > ( data.fTurretX * ( 65535.0f / 360.0f ) ),
+                       usVertical = static_cast < unsigned short > ( data.fTurretY * ( 65535.0f / 360.0f ) );
 
-        bitStream.Write ( sHorizontal );
-        bitStream.Write ( sVertical );
+        bitStream.Write ( usHorizontal );
+        bitStream.Write ( usVertical );
     }
 
     struct
@@ -393,49 +393,76 @@ private:
 
 struct SWeaponAimSync : public ISyncStructure
 {
-    SWeaponAimSync ( float fWeaponRange = 0.0f ) : m_fWeaponRange ( fWeaponRange ) {}
+    SWeaponAimSync ( float fWeaponRange = 0.0f, bool bFull = true ) : m_fWeaponRange ( fWeaponRange ), m_bFull ( bFull ) {}
 
     bool Read ( NetBitStreamInterface& bitStream )
     {
         bool bStatus = true;
         CVector vecDirection;
 
-        if (( bStatus = bitStream.Read ( data.vecOrigin.fX ) ))
-            if (( bStatus = bitStream.Read ( data.vecOrigin.fY ) ))
-                if (( bStatus = bitStream.Read ( data.vecOrigin.fZ ) ))
-                    bStatus = bitStream.ReadNormVector ( vecDirection.fX, vecDirection.fZ, vecDirection.fY );
+        char cArmX, cArmY;
+        if ( bStatus = ( bitStream.Read ( cArmX ) && bitStream.Read ( cArmY ) ) )
+        {
+            data.fArmX = ConvertDegreesToRadians ( static_cast < float > ( cArmX ) );
+            data.fArmY = ConvertDegreesToRadians ( static_cast < float > ( cArmY ) );
+        }
 
-        if ( bStatus )
-            data.vecTarget = data.vecOrigin + ( vecDirection * m_fWeaponRange );
-        else
-            data.vecOrigin = data.vecTarget = CVector ( );
+        if ( m_bFull && bStatus )
+        {
+            if (( bStatus = bitStream.Read ( data.vecOrigin.fX ) ))
+                if (( bStatus = bitStream.Read ( data.vecOrigin.fY ) ))
+                    if (( bStatus = bitStream.Read ( data.vecOrigin.fZ ) ))
+                        bStatus = bitStream.ReadNormVector ( vecDirection.fX, vecDirection.fZ, vecDirection.fY );
+
+            if ( bStatus )
+                data.vecTarget = data.vecOrigin + ( vecDirection * m_fWeaponRange );
+            else
+                data.vecOrigin = data.vecTarget = CVector ( );
+        }
 
         return bStatus;
     }
 
     void Write ( NetBitStreamInterface& bitStream )
     {
-        // Write the origin of the bullets
-        bitStream.Write ( data.vecOrigin.fX );
-        bitStream.Write ( data.vecOrigin.fY );
-        bitStream.Write ( data.vecOrigin.fZ );
+        // Write arm direction
+        char cArmX = static_cast < char > ( ConvertRadiansToDegrees ( data.fArmX ) ),
+             cArmY = static_cast < char > ( ConvertRadiansToDegrees ( data.fArmY ) );
+	    bitStream.Write ( cArmX );
+	    bitStream.Write ( cArmY );
 
-        // Get the direction of the bullets
-        CVector vecDirection = data.vecTarget - data.vecOrigin;
-        vecDirection.Normalize ();
+        if ( m_bFull )
+        {
+            // Write the origin of the bullets
+            bitStream.Write ( data.vecOrigin.fX );
+            bitStream.Write ( data.vecOrigin.fY );
+            bitStream.Write ( data.vecOrigin.fZ );
 
-        // Write the normalized vector
-        bitStream.WriteNormVector ( vecDirection.fX, vecDirection.fZ, vecDirection.fY );
+            // Get the direction of the bullets
+            CVector vecDirection = data.vecTarget - data.vecOrigin;
+            vecDirection.Normalize ();
+
+            // Write the normalized vector
+            bitStream.WriteNormVector ( vecDirection.fX, vecDirection.fZ, vecDirection.fY );
+        }
+    }
+
+    bool isFull ()
+    {
+        return m_bFull;
     }
 
     struct
     {
+        float fArmX;
+        float fArmY;
         CVector vecOrigin;
         CVector vecTarget;
     } data;
 
 private:
     float   m_fWeaponRange;
+    bool    m_bFull;
 };
 
 
