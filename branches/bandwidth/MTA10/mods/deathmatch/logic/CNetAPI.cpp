@@ -107,6 +107,7 @@ bool CNetAPI::ProcessPacket ( unsigned char bytePacketID, NetBitStreamInterface&
         {
             // Grab the in vehicle flag
             bool bInVehicle = BitStream.ReadBit ();
+            SPositionSync position ( false );
 
             // Are we in a vehicle?
             if ( bInVehicle )
@@ -125,10 +126,7 @@ bool CNetAPI::ProcessPacket ( unsigned char bytePacketID, NetBitStreamInterface&
 #endif
 
                 // Read out position
-                CVector vecPosition;
-                BitStream.Read ( vecPosition.fX );
-                BitStream.Read ( vecPosition.fY );
-                BitStream.Read ( vecPosition.fZ );
+                BitStream.Read ( &position );
 
                 // And rotation
                 CVector vecRotationDegrees;
@@ -137,17 +135,14 @@ bool CNetAPI::ProcessPacket ( unsigned char bytePacketID, NetBitStreamInterface&
                 BitStream.Read ( vecRotationDegrees.fZ );
 
                 // Remember that position
-                m_vecLastReturnPosition = vecPosition;
+                m_vecLastReturnPosition = position.data.vecPosition;
                 m_vecLastReturnRotation = vecRotationDegrees;
                 m_bVehicleLastReturn = true;
             }
             else
             {
                 // Read out the position
-                CVector vecPosition;
-                BitStream.Read ( vecPosition.fX );
-                BitStream.Read ( vecPosition.fY );
-                BitStream.Read ( vecPosition.fZ );
+                BitStream.Read ( &position );
                 
                 /* Test code:
                 CClientPlayer* pLocalPlayer = m_pPlayerManager->GetLocalPlayer ();
@@ -161,7 +156,7 @@ bool CNetAPI::ProcessPacket ( unsigned char bytePacketID, NetBitStreamInterface&
                 }*/
 
                 // Remember that position
-                m_vecLastReturnPosition = vecPosition;
+                m_vecLastReturnPosition = position.data.vecPosition;
                 m_vecLastReturnRotation = CVector ( 0.0f, 0.0f, 0.0f );
                 m_bVehicleLastReturn = false;
             }
@@ -724,17 +719,15 @@ void CNetAPI::ReadPlayerPuresync ( CClientPlayer* pPlayer, NetBitStreamInterface
     }
         
     // Player position
-    CVector vecPos;
-    BitStream.Read ( vecPos.fX );
-    BitStream.Read ( vecPos.fY );
-    BitStream.Read ( vecPos.fZ );
+    SPositionSync position ( false );
+    BitStream.Read ( &position );
 
     // If the players in contact with an object/vehicle, make that the origin
     if ( pContactEntity )
     {
         CVector vecTempPos;
         pContactEntity->GetPosition ( vecTempPos );
-        vecPos += vecTempPos;
+        position.data.vecPosition += vecTempPos;
     }
 
     // Player rotation
@@ -846,7 +839,7 @@ void CNetAPI::ReadPlayerPuresync ( CClientPlayer* pPlayer, NetBitStreamInterface
     {
         CVector vecTempPos;
         pContactEntity->GetPosition ( vecTempPos );
-        vecPos -= vecTempPos;
+        position.data.vecPosition -= vecTempPos;
     }
 
     // If the player is working on leaving a vehicle, don't set any target position
@@ -854,7 +847,7 @@ void CNetAPI::ReadPlayerPuresync ( CClientPlayer* pPlayer, NetBitStreamInterface
          pPlayer->GetVehicleInOutState () == VEHICLE_INOUT_GETTING_IN ||
          pPlayer->GetVehicleInOutState () == VEHICLE_INOUT_JACKING )
     {
-        pPlayer->SetTargetPosition ( vecPos, pContactEntity );
+        pPlayer->SetTargetPosition ( position.data.vecPosition, pContactEntity );
         pPlayer->SetTargetRotation ( fRotation );
     }
 
@@ -867,7 +860,7 @@ void CNetAPI::ReadPlayerPuresync ( CClientPlayer* pPlayer, NetBitStreamInterface
 
     // Remember now as the last puresync time
     pPlayer->SetLastPuresyncTime ( CClientTime::GetTime () );
-    pPlayer->SetLastPuresyncPosition ( vecPos );
+    pPlayer->SetLastPuresyncPosition ( position.data.vecPosition );
     pPlayer->IncrementPlayerSync ();
 }
 
@@ -923,9 +916,9 @@ void CNetAPI::WritePlayerPuresync ( CClientPlayer* pPlayerModel, NetBitStreamInt
         vecPosition -= vecOrigin;
     }
 
-    BitStream.Write ( vecPosition.fX );
-    BitStream.Write ( vecPosition.fY );
-    BitStream.Write ( vecPosition.fZ );
+    SPositionSync position ( false );
+    position.data.vecPosition = vecPosition;
+    BitStream.Write ( &position );
 
     // Player rotation
     float fCurrentRotation = pPlayerModel->GetCurrentRotation ();

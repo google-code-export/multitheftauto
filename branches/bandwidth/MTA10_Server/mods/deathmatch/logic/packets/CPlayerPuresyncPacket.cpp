@@ -81,19 +81,19 @@ bool CPlayerPuresyncPacket::Read ( NetBitStreamInterface& BitStream )
         }
 
         // Player position
-        CVector vecTemp;
-        BitStream.Read ( vecTemp.fX );
-        BitStream.Read ( vecTemp.fY );
-        BitStream.Read ( vecTemp.fZ );
+        SPositionSync position ( false );
+        if ( ! BitStream.Read ( &position ) )
+            return false;
+
         if ( pContactElement )
         {
-            pSourcePlayer->SetContactPosition ( vecTemp );
+            pSourcePlayer->SetContactPosition ( position.data.vecPosition );
             
             // Get the true position
             CVector vecTempPos = pContactElement->GetPosition ();
-            vecTemp += vecTempPos;
+            position.data.vecPosition += vecTempPos;
         }
-        pSourcePlayer->SetPosition ( vecTemp );
+        pSourcePlayer->SetPosition ( position.data.vecPosition );
 
         // Player rotation
         float fRotation = 0.0f;
@@ -307,9 +307,9 @@ bool CPlayerPuresyncPacket::Write ( NetBitStreamInterface& BitStream ) const
         if ( pContactElement )
             BitStream.WriteCompressed ( pContactElement->GetID () );            
 
-        BitStream.Write ( vecPosition.fX );
-        BitStream.Write ( vecPosition.fY );
-        BitStream.Write ( vecPosition.fZ ); 
+        SPositionSync position ( false );
+        position.data.vecPosition = vecPosition;
+        BitStream.Write ( &position );
 
         BitStream.Write ( fRotation );       
 

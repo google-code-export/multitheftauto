@@ -2187,6 +2187,10 @@
 					RelativePath=".\utils\CHTTPResponse.h"
 					>
 				</File>
+				<File
+					RelativePath="..\..\..\Shared\sdk\ieee754.h"
+					>
+				</File>
 				<Filter
 					Name="zip"
 					>

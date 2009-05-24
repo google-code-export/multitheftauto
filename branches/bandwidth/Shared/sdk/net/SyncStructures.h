@@ -5,6 +5,7 @@
 *  FILE:        Shared/sdk/net/SyncStructures.h
 *  PURPOSE:     Structures used for syncing stuff through the network.
 *  DEVELOPERS:  Alberto Alonso <rydencillo@gmail.com>
+*               Stanislav Bobrov <lil_toady@hotmail.com>
 *               
 *  Multi Theft Auto is available from http://www.multitheftauto.com/
 *
@@ -14,6 +15,7 @@
 
 #include <CVector.h>
 #include <net/bitstream.h>
+#include <ieee754.h>
 
 #pragma pack(push)
 #pragma pack(1)
@@ -453,6 +455,113 @@ struct SWeaponAimSync : public ISyncStructure
 private:
     float   m_fWeaponRange;
     bool    m_bFull;
+};
+
+
+
+//////////////////////////////////////////
+//                                      //
+//               Position               //
+//                                      //
+//////////////////////////////////////////
+struct SPositionSync : public ISyncStructure
+{
+    SPositionSync ( bool bUseFloats = false ) : m_bUseFloats ( bUseFloats ) {}
+
+    bool Read ( NetBitStreamInterface& bitStream )
+    {
+        if ( m_bUseFloats )
+        {
+            return bitStream.Read ( data.vecPosition.fX ) &&
+                   bitStream.Read ( data.vecPosition.fY ) &&
+                   bitStream.Read ( data.vecPosition.fZ );
+        }
+        else
+        {
+            SFixedPointPosition pos;
+            if ( bitStream.ReadBits ( &pos, 24 ) )
+            {
+                ConvertToFloatingPoint ( pos, data.vecPosition.fX );
+                if ( bitStream.ReadBits ( &pos, 24 ) )
+                {
+                    ConvertToFloatingPoint ( pos, data.vecPosition.fY );
+                    if ( bitStream.ReadBits ( &pos, 24 ) )
+                    {
+                        ConvertToFloatingPoint ( pos, data.vecPosition.fZ );
+
+                        IEEE754_SP x, y, z;
+                        x = data.vecPosition.fX;
+                        y = data.vecPosition.fY;
+                        z = data.vecPosition.fZ;
+                        assert ( !x.isnan () && !y.isnan () && !z.isnan () );
+
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    void Write ( NetBitStreamInterface& bitStream )
+    {
+        if ( m_bUseFloats )
+        {
+            bitStream.Write ( data.vecPosition.fX );
+            bitStream.Write ( data.vecPosition.fY );
+            bitStream.Write ( data.vecPosition.fZ );
+        }
+        else
+        {
+            IEEE754_SP x, y, z;
+            x = data.vecPosition.fX;
+            y = data.vecPosition.fY;
+            z = data.vecPosition.fZ;
+
+            assert ( !x.isnan() && !y.isnan() && !z.isnan() );
+
+            // Make sure that the position coordinates are within the bounds
+            if ( x >= 8192.0f ) x = 8191.999f;
+            else if ( x <= -8193.0f ) x = -8192.999f;
+            if ( y >= 8192.0f ) y = 8191.999f;
+            else if ( y <= -8193.0f ) y = -8192.999f;
+            if ( z >= 8192.0f ) z = 8191.999f;
+            else if ( z <= -8193.0f ) z = -8192.999f;
+
+            // Perform the conversion and write it
+            SFixedPointPosition pos;
+            ConvertToFixedPoint ( x, pos );
+            bitStream.WriteBits ( &pos, 24 );
+            ConvertToFixedPoint ( y, pos );
+            bitStream.WriteBits ( &pos, 24 );
+            ConvertToFixedPoint ( z, pos );
+            bitStream.WriteBits ( &pos, 24 );
+        }
+    }
+
+    struct
+    {
+        CVector vecPosition;
+    } data;
+
+private:
+    bool m_bUseFloats;
+
+    struct SFixedPointPosition
+    {
+        int iValue : 24;
+    };
+
+    void ConvertToFixedPoint ( float fValue, SFixedPointPosition& pos )
+    {
+        pos.iValue = (int)(fValue * 1024.0f);
+    }
+
+    void ConvertToFloatingPoint ( const SFixedPointPosition& pos, float& fValue )
+    {
+        fValue = (float)pos.iValue / 1024.0f;
+    }
 };
 
 
