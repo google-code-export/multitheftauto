@@ -447,11 +447,10 @@ struct SWeaponAimSync : public ISyncStructure
         bool bStatus = true;
         CVector vecDirection;
 
-        char cArmX, cArmY;
-        if ( bStatus = ( bitStream.Read ( cArmX ) && bitStream.Read ( cArmY ) ) )
+        short cArmY;
+        if ( bStatus = bitStream.Read ( cArmY ) )
         {
-            data.fArmX = ConvertDegreesToRadians ( static_cast < float > ( cArmX ) );
-            data.fArmY = ConvertDegreesToRadians ( static_cast < float > ( cArmY ) );
+            data.fArm = ConvertDegreesToRadiansNoWrap ( static_cast < float > ( cArmY ) );
         }
 
         if ( m_bFull && bStatus )
@@ -472,11 +471,9 @@ struct SWeaponAimSync : public ISyncStructure
 
     void Write ( NetBitStreamInterface& bitStream )
     {
-        // Write arm direction
-        char cArmX = static_cast < char > ( ConvertRadiansToDegrees ( data.fArmX ) ),
-             cArmY = static_cast < char > ( ConvertRadiansToDegrees ( data.fArmY ) );
-	    bitStream.Write ( cArmX );
-	    bitStream.Write ( cArmY );
+        // Write arm direction (We only sync one arm, Y axis for on foot sync and X axis for driveby)
+        short cArm = static_cast < short > ( ConvertRadiansToDegreesNoWrap ( data.fArm ) );
+	    bitStream.Write ( cArm );
 
         if ( m_bFull )
         {
@@ -501,8 +498,7 @@ struct SWeaponAimSync : public ISyncStructure
 
     struct
     {
-        float fArmX;
-        float fArmY;
+        float fArm;
         CVector vecOrigin;
         CVector vecTarget;
     } data;

@@ -70,7 +70,7 @@ bool CKeysyncPacket::Read ( NetBitStreamInterface& BitStream )
                     pSourcePlayer->SetTargettingVector ( aim.data.vecTarget );
 
 				    // Set the arm directions and whether or not arms are up
-				    pSourcePlayer->SetAimDirections ( aim.data.fArmX, aim.data.fArmY );
+				    pSourcePlayer->SetAimDirection ( aim.data.fArm );
                     pSourcePlayer->SetAkimboArmUp ( flags.data.bAkimboTargetUp );
 
                     // Read out the driveby direction
@@ -157,8 +157,7 @@ bool CKeysyncPacket::Write ( NetBitStreamInterface& BitStream ) const
                 SWeaponAimSync aim ( 0.0f );
                 aim.data.vecOrigin = pSourcePlayer->GetSniperSourceVector ();
                 pSourcePlayer->GetTargettingVector ( aim.data.vecTarget );
-                aim.data.fArmX = pSourcePlayer->GetAimDirectionX ();
-                aim.data.fArmY = pSourcePlayer->GetAimDirectionY ();
+                aim.data.fArm = pSourcePlayer->GetAimDirection ();
                 BitStream.Write ( &aim );
 
                 // Write the driveby aim directoin

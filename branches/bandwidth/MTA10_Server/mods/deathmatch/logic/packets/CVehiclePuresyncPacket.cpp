@@ -292,7 +292,7 @@ bool CVehiclePuresyncPacket::Read ( NetBitStreamInterface& BitStream )
                 SWeaponAimSync aim ( pSourcePlayer->GetWeaponRange () );
                 BitStream.Read ( &aim );
 
-                pSourcePlayer->SetAimDirections ( aim.data.fArmX, aim.data.fArmY );
+                pSourcePlayer->SetAimDirection ( aim.data.fArm );
                 pSourcePlayer->SetSniperSourceVector ( aim.data.vecOrigin );
                 pSourcePlayer->SetTargettingVector ( aim.data.vecTarget );
 
@@ -417,8 +417,7 @@ bool CVehiclePuresyncPacket::Write ( NetBitStreamInterface& BitStream ) const
                 SWeaponAimSync aim ( 0.0f );
                 aim.data.vecOrigin = pSourcePlayer->GetSniperSourceVector ();
                 pSourcePlayer->GetTargettingVector ( aim.data.vecTarget );
-                aim.data.fArmX = pSourcePlayer->GetAimDirectionX ();
-                aim.data.fArmY = pSourcePlayer->GetAimDirectionY ();
+                aim.data.fArm = pSourcePlayer->GetAimDirection ();
                 BitStream.Write ( &aim );
 
                 // Write the driveby aim directoin

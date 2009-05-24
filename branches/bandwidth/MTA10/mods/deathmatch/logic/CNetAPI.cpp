@@ -544,12 +544,12 @@ void CNetAPI::ReadKeysync ( CClientPlayer* pPlayer, NetBitStreamInterface& BitSt
             // Set the aim data (immediately if in vehicle, otherwize delayed/interpolated)
             if ( pVehicle )
             {
-                pPlayer->SetAimingData ( TICK_RATE, aim.data.vecTarget, aim.data.fArmX, aim.data.fArmY, ucDriveByAim, &(aim.data.vecOrigin), false );
+                pPlayer->SetAimingData ( TICK_RATE, aim.data.vecTarget, aim.data.fArm, 0.0f, ucDriveByAim, &(aim.data.vecOrigin), false );
             }
             else
             {
                 pPlayer->SetTargetTarget ( TICK_RATE, aim.data.vecOrigin, aim.data.vecTarget );
-                pPlayer->SetAimInterpolated ( TICK_RATE, aim.data.fArmX, aim.data.fArmY, flags.data.bAkimboTargetUp, ucDriveByAim );
+                pPlayer->SetAimInterpolated ( TICK_RATE, 0.0f, aim.data.fArm, flags.data.bAkimboTargetUp, ucDriveByAim );
             }
         }
         else if ( uiSlot != 0 )
@@ -609,6 +609,7 @@ void CNetAPI::WriteKeysync ( CClientPed* pPlayerModel, NetBitStreamInterface& Bi
     CControllerState LastControllerState;
     pPlayerModel->GetControllerState ( ControllerState );
     pPlayerModel->GetLastControllerState ( LastControllerState );
+    CClientVehicle* pVehicle = pPlayerModel->GetOccupiedVehicle ();
 
     // Write them to the bitstream
     WriteSmallKeysync ( ControllerState, LastControllerState, BitStream );
@@ -646,7 +647,10 @@ void CNetAPI::WriteKeysync ( CClientPed* pPlayerModel, NetBitStreamInterface& Bi
 
                 // Write the aim data
                 SWeaponAimSync aim ( pPlayerWeapon->GetInfo ()->GetWeaponRange () );
-                pPlayerModel->GetShotData ( &aim.data.vecOrigin, &aim.data.vecTarget, NULL, NULL, &aim.data.fArmX, &aim.data.fArmY );
+                if ( pVehicle )
+                    pPlayerModel->GetShotData ( &aim.data.vecOrigin, &aim.data.vecTarget, NULL, NULL, &aim.data.fArm );
+                else
+                    pPlayerModel->GetShotData ( &aim.data.vecOrigin, &aim.data.vecTarget, NULL, NULL, NULL, &aim.data.fArm );
                 BitStream.Write ( &aim );
 
                 // Write the driveby direction
@@ -660,8 +664,7 @@ void CNetAPI::WriteKeysync ( CClientPed* pPlayerModel, NetBitStreamInterface& Bi
         }
     }
 
-    // Grab the occupied vehicle. Eventually write vehicle specific stuff.
-    CClientVehicle* pVehicle = pPlayerModel->GetOccupiedVehicle ();
+    // Eventually write vehicle specific stuff.
     if ( pVehicle && pPlayerModel->GetOccupiedVehicleSeat () == 0 )
     {
         WriteSmallVehicleSpecific ( pVehicle, BitStream );
@@ -696,6 +699,7 @@ void CNetAPI::ReadPlayerPuresync ( CClientPlayer* pPlayer, NetBitStreamInterface
     unsigned short usLatency;
     BitStream.ReadCompressed ( usLatency );
     pPlayer->SetLatency ( usLatency + g_pNet->GetPing () );
+    pPlayer->SetPing ( usLatency );
 
     // Read out the keysync data
     CControllerState ControllerState;
@@ -811,7 +815,7 @@ void CNetAPI::ReadPlayerPuresync ( CClientPlayer* pPlayer, NetBitStreamInterface
             BitStream.Read ( &aim );
 
             // Interpolate the aiming
-            pPlayer->SetAimInterpolated ( TICK_RATE, aim.data.fArmX, aim.data.fArmY, flags.data.bAkimboTargetUp, 0 );
+            pPlayer->SetAimInterpolated ( TICK_RATE, 0.0f, aim.data.fArm, flags.data.bAkimboTargetUp, 0 );
 
             // Read the aim data only if he's shooting or aiming
             if ( aim.isFull() )
@@ -966,8 +970,7 @@ void CNetAPI::WritePlayerPuresync ( CClientPlayer* pPlayerModel, NetBitStreamInt
             // Sync aim data
             CShotSyncData* pShotsyncData = g_pMultiplayer->GetLocalShotSyncData ();
             SWeaponAimSync aim ( 0.0f, ( ControllerState.RightShoulder1 || ControllerState.ButtonCircle ) );
-            aim.data.fArmX = pShotsyncData->m_fArmDirectionX;
-            aim.data.fArmY = pShotsyncData->m_fArmDirectionY;
+            aim.data.fArm = pShotsyncData->m_fArmDirectionY;
 
             // Write the vectors data only if he's aiming or shooting
             if ( ControllerState.RightShoulder1 || ControllerState.ButtonCircle )
@@ -1029,6 +1032,7 @@ void CNetAPI::ReadVehiclePuresync ( CClientPlayer* pPlayer, CClientVehicle* pVeh
     unsigned short usLatency;
     BitStream.ReadCompressed ( usLatency );
     pPlayer->SetLatency ( usLatency + g_pNet->GetPing () );
+    pPlayer->SetPing ( usLatency );
 
     // Read out the keysync
     CControllerState ControllerState;
@@ -1197,7 +1201,7 @@ void CNetAPI::ReadVehiclePuresync ( CClientPlayer* pPlayer, CClientVehicle* pVeh
         BitStream.Read ( ucDriveByAim );
 
         // Set the aiming data
-        pPlayer->SetAimingData ( TICK_RATE, aim.data.vecTarget, aim.data.fArmX, aim.data.fArmY, ucDriveByAim, &aim.data.vecOrigin, false );
+        pPlayer->SetAimingData ( TICK_RATE, aim.data.vecTarget, aim.data.fArm, 0.0f, ucDriveByAim, &aim.data.vecOrigin, false );
     }
     else
     {
@@ -1346,7 +1350,7 @@ void CNetAPI::WriteVehiclePuresync ( CClientPed* pPlayerModel, CClientVehicle* p
 
             // Sync aim data
             SWeaponAimSync aim ( 0.0f );
-            pPlayerModel->GetShotData ( &aim.data.vecOrigin, &aim.data.vecTarget, NULL, NULL, &aim.data.fArmX, &aim.data.fArmY );
+            pPlayerModel->GetShotData ( &aim.data.vecOrigin, &aim.data.vecTarget, NULL, NULL, &aim.data.fArm );
             BitStream.Write ( &aim );
 
             // Write the driveby direction

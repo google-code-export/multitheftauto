@@ -149,7 +149,7 @@ bool CPlayerPuresyncPacket::Read ( NetBitStreamInterface& BitStream )
                 BitStream.Read ( &sync );
 
                 // Set the arm directions and whether or not arms are up
-                pSourcePlayer->SetAimDirections ( sync.data.fArmX, sync.data.fArmY );
+                pSourcePlayer->SetAimDirection ( sync.data.fArm );
 
                 // Read the aim data only if he's shooting or aiming
                 if ( sync.isFull() )
@@ -361,8 +361,7 @@ bool CPlayerPuresyncPacket::Write ( NetBitStreamInterface& BitStream ) const
                 BitStream.Write ( &ammo );
 
                 SWeaponAimSync aim ( 0.0f, ( ControllerState.RightShoulder1 || ControllerState.ButtonCircle ) );
-                aim.data.fArmX = pSourcePlayer->GetAimDirectionX ();
-                aim.data.fArmY = pSourcePlayer->GetAimDirectionY ();
+                aim.data.fArm = pSourcePlayer->GetAimDirection ();
 
                 // Write the aim data only if he's aiming or shooting
                 if ( aim.isFull() )
