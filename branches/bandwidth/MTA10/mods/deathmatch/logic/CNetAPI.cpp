@@ -967,7 +967,7 @@ void CNetAPI::WritePlayerPuresync ( CClientPlayer* pPlayerModel, NetBitStreamInt
             CShotSyncData* pShotsyncData = g_pMultiplayer->GetLocalShotSyncData ();
             SWeaponAimSync aim ( 0.0f, ( ControllerState.RightShoulder1 || ControllerState.ButtonCircle ) );
             aim.data.fArmX = pShotsyncData->m_fArmDirectionX;
-            aim.data.fArmY = pShotsyncData->m_fArmDirectionX;
+            aim.data.fArmY = pShotsyncData->m_fArmDirectionY;
 
             // Write the vectors data only if he's aiming or shooting
             if ( ControllerState.RightShoulder1 || ControllerState.ButtonCircle )

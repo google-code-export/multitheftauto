@@ -20,6 +20,61 @@
 #pragma pack(push)
 #pragma pack(1)
 
+
+//////////////////////////////////////////
+//                                      //
+//              Data types              //
+//                                      //
+//////////////////////////////////////////
+template < unsigned int integerBits, unsigned int fractionalBits >
+struct SFloatSync : public ISyncStructure
+{
+    bool Read ( NetBitStreamInterface& bitStream )
+    {
+        SFixedPointNumber num;
+        if ( bitStream.ReadBits ( &num, integerBits + fractionalBits ) )
+        {
+            data.fValue = (float)( (double)num.iValue / ( 1 << fractionalBits ) );
+            return true;
+        }
+        return false;
+    }
+
+    void Write ( NetBitStreamInterface& bitStream )
+    {
+        struct
+        {
+            int iMin : integerBits;
+            int iMax : integerBits;
+        } limits;
+        limits.iMax = ( 1 << ( integerBits - 1 ) ) - 1;
+        limits.iMin = limits.iMax + 1;
+
+        IEEE754_DP dValue ( data.fValue );
+        assert ( !dValue.isnan () );
+
+        if ( dValue > limits.iMax ) dValue = (double)limits.iMax;
+        else if ( dValue < limits.iMin ) dValue = (double)limits.iMin;
+
+        SFixedPointNumber num;
+        num.iValue = (int)( dValue * (double)( 1 << fractionalBits ));
+
+        bitStream.WriteBits ( &num, integerBits + fractionalBits );
+    }
+
+    struct
+    {
+        float fValue;
+    } data;
+
+private:
+    struct SFixedPointNumber
+    {
+        int iValue : integerBits + fractionalBits;
+    };
+};
+
+
 //////////////////////////////////////////
 //                                      //
 //           Player pure-sync           //
@@ -478,26 +533,14 @@ struct SPositionSync : public ISyncStructure
         }
         else
         {
-            SFixedPointPosition pos;
-            if ( bitStream.ReadBits ( &pos, 24 ) )
+            SFloatSync < 14, 10 > x, y, z;
+
+            if ( bitStream.Read ( &x ) && bitStream.Read ( &y ) && bitStream.Read ( &z ) )
             {
-                ConvertToFloatingPoint ( pos, data.vecPosition.fX );
-                if ( bitStream.ReadBits ( &pos, 24 ) )
-                {
-                    ConvertToFloatingPoint ( pos, data.vecPosition.fY );
-                    if ( bitStream.ReadBits ( &pos, 24 ) )
-                    {
-                        ConvertToFloatingPoint ( pos, data.vecPosition.fZ );
-
-                        IEEE754_SP x, y, z;
-                        x = data.vecPosition.fX;
-                        y = data.vecPosition.fY;
-                        z = data.vecPosition.fZ;
-                        assert ( !x.isnan () && !y.isnan () && !z.isnan () );
-
-                        return true;
-                    }
-                }
+                data.vecPosition.fX = x.data.fValue;
+                data.vecPosition.fY = y.data.fValue;
+                data.vecPosition.fZ = z.data.fValue;
+                return true;
             }
         }
 
@@ -514,29 +557,14 @@ struct SPositionSync : public ISyncStructure
         }
         else
         {
-            IEEE754_SP x, y, z;
-            x = data.vecPosition.fX;
-            y = data.vecPosition.fY;
-            z = data.vecPosition.fZ;
+            SFloatSync < 14, 10 > x, y, z;
+            x.data.fValue = data.vecPosition.fX;
+            y.data.fValue = data.vecPosition.fY;
+            z.data.fValue = data.vecPosition.fZ;
 
-            assert ( !x.isnan() && !y.isnan() && !z.isnan() );
-
-            // Make sure that the position coordinates are within the bounds
-            if ( x >= 8192.0f ) x = 8191.999f;
-            else if ( x <= -8193.0f ) x = -8192.999f;
-            if ( y >= 8192.0f ) y = 8191.999f;
-            else if ( y <= -8193.0f ) y = -8192.999f;
-            if ( z >= 8192.0f ) z = 8191.999f;
-            else if ( z <= -8193.0f ) z = -8192.999f;
-
-            // Perform the conversion and write it
-            SFixedPointPosition pos;
-            ConvertToFixedPoint ( x, pos );
-            bitStream.WriteBits ( &pos, 24 );
-            ConvertToFixedPoint ( y, pos );
-            bitStream.WriteBits ( &pos, 24 );
-            ConvertToFixedPoint ( z, pos );
-            bitStream.WriteBits ( &pos, 24 );
+            bitStream.Write ( &x );
+            bitStream.Write ( &y );
+            bitStream.Write ( &z );
         }
     }
 
@@ -547,21 +575,6 @@ struct SPositionSync : public ISyncStructure
 
 private:
     bool m_bUseFloats;
-
-    struct SFixedPointPosition
-    {
-        int iValue : 24;
-    };
-
-    void ConvertToFixedPoint ( float fValue, SFixedPointPosition& pos )
-    {
-        pos.iValue = (int)((double)fValue * 1024.0);
-    }
-
-    void ConvertToFloatingPoint ( const SFixedPointPosition& pos, float& fValue )
-    {
-        fValue = (float)((double)pos.iValue / 1024.0);
-    }
 };
 
 
