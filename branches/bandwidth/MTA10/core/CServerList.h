@@ -78,6 +78,11 @@ public:
         Init ();
     }
 
+    ~CServerListItem ( void )
+    {
+        closesocket ( m_Socket );
+    }
+
     static bool         Parse           ( const char* szAddress, in_addr& Address )
     {
         DWORD dwIP = inet_addr ( szAddress );
@@ -105,6 +110,7 @@ public:
     {
         // Initialize variables
         bScanned = false;
+        bSkipped = false;
         bSerials = false;
         m_ulQueryStart = 0;
         
@@ -116,7 +122,7 @@ public:
 
     bool                ParseQuery      ( const char * szBuffer, unsigned int nLength );
     void                Query           ( void );
-    bool                Pulse           ( void );
+    std::string         Pulse           ( void );
 
     in_addr             Address;        // IP-address
     unsigned short      usQueryPort;    // Query port
@@ -127,6 +133,7 @@ public:
     bool                bPassworded;    // Password protected
     bool                bSerials;       // Serial verification on
     bool                bScanned;
+    bool                bSkipped;
 
     std::string         strGame;        // Game name
     std::string         strVersion;     // Game version
@@ -171,6 +178,7 @@ protected:
     bool                                    m_bUpdated;
     int                                     m_iPass;
     unsigned int                            m_nScanned;
+    unsigned int                            m_nSkipped;
     std::list < CServerListItem* >          m_Servers;
     std::string                             m_strStatus;
 };

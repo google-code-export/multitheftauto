@@ -555,12 +555,12 @@ private:
 
     void ConvertToFixedPoint ( float fValue, SFixedPointPosition& pos )
     {
-        pos.iValue = (int)(fValue * 1024.0f);
+        pos.iValue = (int)((double)fValue * 1024.0);
     }
 
     void ConvertToFloatingPoint ( const SFixedPointPosition& pos, float& fValue )
     {
-        fValue = (float)pos.iValue / 1024.0f;
+        fValue = (float)((double)pos.iValue / 1024.0);
     }
 };
 

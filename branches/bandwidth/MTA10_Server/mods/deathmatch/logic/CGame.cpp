@@ -569,10 +569,6 @@ bool CGame::Start ( int iArgumentCount, char* szArguments [] )
     g_pServerInterface->GetModManager ()->GetAbsolutePath ( "registry.db", szBuffer, MAX_PATH );
     m_pRegistry->Load ( szBuffer );
 
-	// Now load the rest of the config
-	if ( !m_pMainConfig->LoadExtended () )
-		return false;
-
     // Load the accounts
     g_pServerInterface->GetModManager ()->GetAbsolutePath ( "accounts.xml", szBuffer, MAX_PATH );
     m_pAccountManager->SetFileName ( szBuffer );
@@ -664,6 +660,10 @@ bool CGame::Start ( int iArgumentCount, char* szArguments [] )
 			delete request;
 		}
     }
+
+	// Now load the rest of the config
+    if ( !m_pMainConfig->LoadExtended () )
+        return false;
 
     // Is the script debug log enabled?
     if ( m_pMainConfig->GetScriptDebugLogEnabled () )
