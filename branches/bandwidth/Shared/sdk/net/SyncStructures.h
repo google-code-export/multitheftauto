@@ -18,16 +18,6 @@
 #pragma pack(push)
 #pragma pack(1)
 
-// Interface for all sync structures
-struct ISyncStructure
-{
-    virtual         ~ISyncStructure () {}
-    virtual bool    Read            ( NetBitStreamInterface& bitStream ) = 0;
-    virtual void    Write           ( NetBitStreamInterface& bitStream ) = 0;
-};
-
-
-
 //////////////////////////////////////////
 //                                      //
 //           Player pure-sync           //
