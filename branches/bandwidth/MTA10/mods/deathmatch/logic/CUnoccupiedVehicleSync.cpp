@@ -310,6 +310,20 @@ bool CUnoccupiedVehicleSync::WriteVehicleInformation ( NetBitStreamInterface* pB
             vehicle.data.bSyncPosition = true;
             pVehicle->m_LastSyncedData->vecPosition = vehicle.data.vecPosition;
         }
+
+        const CVector& vecLastVelocity = pVehicle->m_LastSyncedData->vecMoveSpeed;
+        if ( vecLastVelocity != vehicle.data.vecVelocity &&
+             (
+               fabs ( vehicle.data.vecVelocity.fX ) > FLOAT_EPSILON ||
+               fabs ( vehicle.data.vecVelocity.fY ) > FLOAT_EPSILON ||
+               fabs ( vehicle.data.vecVelocity.fZ ) > FLOAT_EPSILON
+             )
+           )
+        {
+            bSyncVehicle = true;
+            vehicle.data.bSyncVelocity = true;
+            pVehicle->m_LastSyncedData->vecMoveSpeed = vehicle.data.vecVelocity;
+        }
     }
     else
     {
@@ -319,6 +333,13 @@ bool CUnoccupiedVehicleSync::WriteVehicleInformation ( NetBitStreamInterface* pB
             vehicle.data.bSyncPosition = true;
             pVehicle->m_LastSyncedData->vecPosition = vehicle.data.vecPosition;
         }
+
+        if ( pVehicle->m_LastSyncedData->vecMoveSpeed != vehicle.data.vecVelocity )
+        {
+            bSyncVehicle = true;
+            vehicle.data.bSyncVelocity = true;
+            pVehicle->m_LastSyncedData->vecMoveSpeed = vehicle.data.vecVelocity;
+        }
     }
 
     if ( pVehicle->m_LastSyncedData->vecRotation != vehicle.data.vecRotation )
@@ -326,13 +347,6 @@ bool CUnoccupiedVehicleSync::WriteVehicleInformation ( NetBitStreamInterface* pB
         bSyncVehicle = true;
         vehicle.data.bSyncRotation = true;
         pVehicle->m_LastSyncedData->vecRotation = vehicle.data.vecRotation;
-    }
-
-    if ( pVehicle->m_LastSyncedData->vecMoveSpeed != vehicle.data.vecVelocity )
-    {
-        bSyncVehicle = true;
-        vehicle.data.bSyncVelocity = true;
-        pVehicle->m_LastSyncedData->vecMoveSpeed = vehicle.data.vecVelocity;
     }
 
     if ( pVehicle->m_LastSyncedData->vecTurnSpeed != vehicle.data.vecTurnVelocity )
