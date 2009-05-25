@@ -695,7 +695,7 @@ struct SWeaponAimSync : public ISyncStructure
         short sArmY;
         if ( bStatus = bitStream.Read ( sArmY ) )
         {
-            data.fArm = static_cast < float > ( sArmY ) * 3.14159265f / 180;
+            data.fArm = ( static_cast < float > ( sArmY ) * 3.14159265f / 180 ) / 90.0f;
         }
 
         if ( m_bFull && bStatus )
@@ -717,7 +717,7 @@ struct SWeaponAimSync : public ISyncStructure
     void Write ( NetBitStreamInterface& bitStream ) const
     {
         // Write arm direction (We only sync one arm, Y axis for on foot sync and X axis for driveby)
-        short sArm = static_cast < short > ( data.fArm * 180.0f / 3.14159265f );
+        short sArm = static_cast < short > ( data.fArm * 90.0f * 180.0f / 3.14159265f );
 	    bitStream.Write ( sArm );
 
         if ( m_bFull )
