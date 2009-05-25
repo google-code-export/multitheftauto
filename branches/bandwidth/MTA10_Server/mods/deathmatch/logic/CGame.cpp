@@ -937,9 +937,6 @@ void CGame::JoinPlayer ( CPlayer& Player )
     // Tell the map manager
     m_pMapManager->OnPlayerJoin ( Player );	// This sends the elements that are needed before the resources start
 
-	// Tell the resource manager
-    m_pResourceManager->OnPlayerJoin ( Player );
-
     // Write all players connected right now to a playerlist packet except the one we got the ingame notice from
     CPlayerListPacket PlayerList;
     PlayerList.SetShowInChat ( false );
@@ -1001,6 +998,9 @@ void CGame::JoinPlayer ( CPlayer& Player )
                 Player.Send ( PlayerClothes );            
 		}
 	}
+
+    // Tell the resource manager
+    m_pResourceManager->OnPlayerJoin ( Player );
 
     // Tell our scripts the player has joined
     CLuaArguments Arguments;
