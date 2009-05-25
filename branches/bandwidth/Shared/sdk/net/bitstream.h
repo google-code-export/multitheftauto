@@ -35,7 +35,7 @@ public:
     virtual void        Write                       ( const float& input ) = 0;
     virtual void        Write                       ( const double& input ) = 0;
     virtual void        Write                       ( const char* input, int numberOfBytes ) = 0;
-    virtual void        Write                       ( ISyncStructure* syncStruct ) = 0;
+    virtual void        Write                       ( const ISyncStructure* syncStruct ) = 0;
 
     virtual void        WriteCompressed             ( const unsigned char& input ) = 0;
     virtual void        WriteCompressed             ( const char& input ) = 0;
@@ -129,5 +129,5 @@ struct ISyncStructure
 {
     virtual         ~ISyncStructure () {}
     virtual bool    Read            ( NetBitStreamInterface& bitStream ) = 0;
-    virtual void    Write           ( NetBitStreamInterface& bitStream ) = 0;
+    virtual void    Write           ( NetBitStreamInterface& bitStream ) const = 0;
 };
