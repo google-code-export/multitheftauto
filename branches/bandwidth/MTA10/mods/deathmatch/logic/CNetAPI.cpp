@@ -479,10 +479,14 @@ void CNetAPI::ReadKeysync ( CClientPlayer* pPlayer, NetBitStreamInterface& BitSt
         SWeaponSlotSync slot;
         BitStream.Read ( &slot );
         unsigned int uiSlot = slot.data.uiSlot;
+        CWeapon* pWeapon = pPlayer->GetWeapon ( static_cast < eWeaponSlot > ( uiSlot ) );
+
+        // Is the current weapon a goggle (44 or 45) or a camera (43), detonator (40), don't apply the fire key
+        if ( uiSlot == 11 || uiSlot == 12 || ( pWeapon && pWeapon->GetType () == 43 ) )
+            ControllerState.ButtonCircle = 0;
 
         if ( CWeaponNames::DoesSlotHaveAmmo ( uiSlot ) )
         {
-            CWeapon* pWeapon = pPlayer->GetWeapon ( static_cast < eWeaponSlot > ( uiSlot ) );
             unsigned char ucCurrentWeaponType = 0;
             float fWeaponRange = 1.6f;
 
@@ -490,12 +494,6 @@ void CNetAPI::ReadKeysync ( CClientPlayer* pPlayer, NetBitStreamInterface& BitSt
             {
                 ucCurrentWeaponType = pWeapon->GetType ();
                 fWeaponRange = pWeapon->GetInfo ()->GetWeaponRange ();
-            }
-
-            // Is the current weapon a goggle (44 or 45) or a camera (43), detonator (40), don't apply the fire key
-            if ( ucCurrentWeaponType == 44 || ucCurrentWeaponType == 45 || ucCurrentWeaponType == 43 || ucCurrentWeaponType == 40 )
-            {
-                ControllerState.ButtonCircle = 0;
             }
 
             // Read out the weapon ammo
@@ -771,22 +769,22 @@ void CNetAPI::ReadPlayerPuresync ( CClientPlayer* pPlayer, NetBitStreamInterface
         BitStream.Read ( &slot );
 
         unsigned int uiSlot = slot.data.uiSlot;
+        CWeapon* pWeapon = pPlayer->GetWeapon ( static_cast < eWeaponSlot > ( uiSlot ) );
+
+        // Is the current weapon a goggle (44 or 45) or a camera (43), or a detonator (40), don't apply the fire key
+        if ( uiSlot == 11 || uiSlot == 12 || ( pWeapon && pWeapon->GetType () == 43 ) )
+            ControllerState.ButtonCircle = 0;
+
 
         if ( CWeaponNames::DoesSlotHaveAmmo ( uiSlot ) )
         {
-            CWeapon* pWeapon = pPlayer->GetWeapon ( static_cast < eWeaponSlot > ( uiSlot ) );
+            
             unsigned char ucCurrentWeapon = 0;
             float fWeaponRange = 0.01f;
             if ( pWeapon )
             {
                 ucCurrentWeapon = pWeapon->GetType ();
                 fWeaponRange = pWeapon->GetInfo ()->GetWeaponRange ();
-            }
-
-            // Is the current weapon a goggle (44 or 45) or a camera (43), or a detonator (40), don't apply the fire key
-            if ( ucCurrentWeapon == 44 || ucCurrentWeapon == 45 || ucCurrentWeapon == 43 || ucCurrentWeapon == 40 )
-            {
-                ControllerState.ButtonCircle = 0;
             }
 
             // Read out the weapon ammo
