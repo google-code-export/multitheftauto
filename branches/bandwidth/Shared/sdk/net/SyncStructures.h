@@ -228,6 +228,35 @@ struct SPlayerPuresyncFlags : public ISyncStructure
 };
 
 
+struct SPedRotationSync : public ISyncStructure
+{
+    bool Read ( NetBitStreamInterface& bitStream )
+    {
+        unsigned short usValue;
+        if ( bitStream.Read ( usValue ) )
+        {
+            data.fRotation = static_cast < float > ( usValue ) * 3.14159265f / 32400.0f;
+            return true;
+        }
+        return false;
+    }
+    void Write ( NetBitStreamInterface& bitStream ) const
+    {
+        float fRotation = data.fRotation;
+        if ( fRotation < 0.0f )
+            fRotation = 3.14159265f + fRotation;
+
+        unsigned short usValue = static_cast < unsigned short > ( fRotation * 32400.0f / 3.14159265f );
+        bitStream.Write ( usValue );
+    }
+
+    struct
+    {
+        float fRotation;
+    } data;
+};
+
+
 
 //////////////////////////////////////////
 //                                      //

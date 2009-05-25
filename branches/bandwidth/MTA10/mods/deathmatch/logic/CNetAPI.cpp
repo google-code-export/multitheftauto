@@ -735,8 +735,8 @@ void CNetAPI::ReadPlayerPuresync ( CClientPlayer* pPlayer, NetBitStreamInterface
     }
 
     // Player rotation
-    float fRotation = 0.0f;
-    BitStream.Read ( fRotation );
+    SPedRotationSync rotation;
+    BitStream.Read ( &rotation );
 
     // Move speed vector
     if ( flags.data.bSyncingVelocity )
@@ -815,7 +815,7 @@ void CNetAPI::ReadPlayerPuresync ( CClientPlayer* pPlayer, NetBitStreamInterface
             BitStream.Read ( &aim );
 
             // Interpolate the aiming
-            pPlayer->SetAimInterpolated ( TICK_RATE, fRotation, aim.data.fArm, flags.data.bAkimboTargetUp, 0 );
+            pPlayer->SetAimInterpolated ( TICK_RATE, rotation.data.fRotation, aim.data.fArm, flags.data.bAkimboTargetUp, 0 );
 
             // Read the aim data only if he's shooting or aiming
             if ( aim.isFull() )
@@ -852,7 +852,7 @@ void CNetAPI::ReadPlayerPuresync ( CClientPlayer* pPlayer, NetBitStreamInterface
          pPlayer->GetVehicleInOutState () == VEHICLE_INOUT_JACKING )
     {
         pPlayer->SetTargetPosition ( position.data.vecPosition, pContactEntity );
-        pPlayer->SetTargetRotation ( fRotation );
+        pPlayer->SetTargetRotation ( rotation.data.fRotation );
     }
 
     // Set move speed, controller state and camera rotation + duck state
@@ -925,8 +925,9 @@ void CNetAPI::WritePlayerPuresync ( CClientPlayer* pPlayerModel, NetBitStreamInt
     BitStream.Write ( &position );
 
     // Player rotation
-    float fCurrentRotation = pPlayerModel->GetCurrentRotation ();
-    BitStream.Write ( fCurrentRotation );
+    SPedRotationSync rotation;
+    rotation.data.fRotation = pPlayerModel->GetCurrentRotation ();
+    BitStream.Write ( &rotation );
 
     // Move speed vector
     if ( flags.data.bSyncingVelocity )

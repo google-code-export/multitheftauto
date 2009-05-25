@@ -96,9 +96,9 @@ bool CPlayerPuresyncPacket::Read ( NetBitStreamInterface& BitStream )
         pSourcePlayer->SetPosition ( position.data.vecPosition );
 
         // Player rotation
-        float fRotation = 0.0f;
-        BitStream.Read ( fRotation );
-        pSourcePlayer->SetRotation ( fRotation );
+        SPedRotationSync rotation;
+        BitStream.Read ( &rotation );
+        pSourcePlayer->SetRotation ( rotation.data.fRotation );
 
         // Move speed vector
         if ( flags.data.bSyncingVelocity )
@@ -265,7 +265,6 @@ bool CPlayerPuresyncPacket::Write ( NetBitStreamInterface& BitStream ) const
         CVector vecPosition = pSourcePlayer->GetPosition ();
         if ( pContactElement )
             pSourcePlayer->GetContactPosition ( vecPosition );
-        float fRotation = pSourcePlayer->GetRotation ();
         unsigned char ucHealth = static_cast < unsigned char > ( pSourcePlayer->GetHealth () * 1.25f );
         unsigned char ucArmor = static_cast < unsigned char > ( pSourcePlayer->GetArmor () * 1.25f );
         float fCameraRotation = pSourcePlayer->GetCameraRotation ();
@@ -311,7 +310,9 @@ bool CPlayerPuresyncPacket::Write ( NetBitStreamInterface& BitStream ) const
         position.data.vecPosition = vecPosition;
         BitStream.Write ( &position );
 
-        BitStream.Write ( fRotation );       
+        SPedRotationSync rotation;
+        rotation.data.fRotation = pSourcePlayer->GetRotation ();
+        BitStream.Write ( &rotation );       
 
         if ( flags.data.bSyncingVelocity )
         {
