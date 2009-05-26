@@ -586,6 +586,11 @@ struct SWeaponTypeSync : public ISyncStructure
 
 struct IAmmoInClipSync : public virtual ISyncStructure
 {
+#ifndef WIN32
+    void* operator new ( size_t size, void* ptr ) { return ptr; }
+    void operator delete ( void* ) { }
+#endif
+
     virtual unsigned short GetAmmoInClip () const = 0;
 };
 
@@ -661,7 +666,8 @@ struct SWeaponAmmoSync : public ISyncStructure
 
         if ( m_bSyncAmmoInClip && bStatus == true )
         {
-            IAmmoInClipSync* pAmmoInClipSync = GetBestAmmoInClipSyncForWeapon ();
+            char tmp [ 32 ];
+            IAmmoInClipSync* pAmmoInClipSync = GetBestAmmoInClipSyncForWeapon ( &tmp );
             if ( pAmmoInClipSync )
             {
                 bStatus = bitStream.Read ( pAmmoInClipSync );
@@ -669,7 +675,6 @@ struct SWeaponAmmoSync : public ISyncStructure
                     data.usAmmoInClip = pAmmoInClipSync->GetAmmoInClip ();
                 else
                     data.usAmmoInClip = 0;
-                delete pAmmoInClipSync;
             }
             else
                 bStatus = false;
@@ -684,11 +689,11 @@ struct SWeaponAmmoSync : public ISyncStructure
             bitStream.WriteCompressed ( data.usTotalAmmo );
         if ( m_bSyncAmmoInClip )
         {
-            IAmmoInClipSync* pAmmoInClipSync = GetBestAmmoInClipSyncForWeapon ();
+            char tmp [ 32 ];
+            IAmmoInClipSync* pAmmoInClipSync = GetBestAmmoInClipSyncForWeapon ( &tmp );
             if ( pAmmoInClipSync )
             {
                 bitStream.Write ( pAmmoInClipSync );
-                delete pAmmoInClipSync;
             }
         }
     }
@@ -704,35 +709,35 @@ private:
     bool            m_bSyncTotalAmmo;
     bool            m_bSyncAmmoInClip;
 
-    IAmmoInClipSync* GetBestAmmoInClipSyncForWeapon ( ) const
+    IAmmoInClipSync* GetBestAmmoInClipSyncForWeapon ( void* ptr ) const
     {
         switch ( m_ucWeaponType )
         {
 
-            case 22: return new SPistolAmmoInClipSync ( data.usAmmoInClip );
-            case 23: return new SSilencedAmmoInClipSync ( data.usAmmoInClip );
-            case 24: return new SDeagleAmmoInClipSync ( data.usAmmoInClip );
-            case 25: return new SShotgunAmmoInClipSync ( data.usAmmoInClip );
-            case 26: return new SSawnoffAmmoInClipSync ( data.usAmmoInClip );
-            case 27: return new SSpas12AmmoInClipSync ( data.usAmmoInClip );
-            case 28: return new SUziAmmoInClipSync ( data.usAmmoInClip );
-            case 29: return new SMp5AmmoInClipSync ( data.usAmmoInClip );
-            case 32: return new STec9AmmoInClipSync ( data.usAmmoInClip );
-            case 30: return new SAk47AmmoInClipSync ( data.usAmmoInClip );
-            case 31: return new SM4AmmoInClipSync ( data.usAmmoInClip );
-            case 33: return new SRifleAmmoInClipSync ( data.usAmmoInClip );
-            case 34: return new SSniperAmmoInClipSync ( data.usAmmoInClip );
-            case 35: return new SRLauncherAmmoInClipSync ( data.usAmmoInClip );
-            case 36: return new SRPGAmmoInClipSync ( data.usAmmoInClip );
-            case 37: return new SFThrowerAmmoInClipSync ( data.usAmmoInClip );
-            case 38: return new SMinigunAmmoInClipSync ( data.usAmmoInClip );
-            case 16: return new SGrenadeAmmoInClipSync ( data.usAmmoInClip );
-            case 17: return new STearGasAmmoInClipSync ( data.usAmmoInClip );
-            case 18: return new SMolotovAmmoInClipSync ( data.usAmmoInClip );
-            case 39: return new SSatchelAmmoInClipSync ( data.usAmmoInClip );
-            case 41: return new SSpraycanAmmoInClipSync ( data.usAmmoInClip );
-            case 42: return new SFireExtAmmoInClipSync ( data.usAmmoInClip );
-            case 43: return new SCameraAmmoInClipSync ( data.usAmmoInClip );
+            case 22: return new(ptr) SPistolAmmoInClipSync ( data.usAmmoInClip );
+            case 23: return new(ptr) SSilencedAmmoInClipSync ( data.usAmmoInClip );
+            case 24: return new(ptr) SDeagleAmmoInClipSync ( data.usAmmoInClip );
+            case 25: return new(ptr) SShotgunAmmoInClipSync ( data.usAmmoInClip );
+            case 26: return new(ptr) SSawnoffAmmoInClipSync ( data.usAmmoInClip );
+            case 27: return new(ptr) SSpas12AmmoInClipSync ( data.usAmmoInClip );
+            case 28: return new(ptr) SUziAmmoInClipSync ( data.usAmmoInClip );
+            case 29: return new(ptr) SMp5AmmoInClipSync ( data.usAmmoInClip );
+            case 32: return new(ptr) STec9AmmoInClipSync ( data.usAmmoInClip );
+            case 30: return new(ptr) SAk47AmmoInClipSync ( data.usAmmoInClip );
+            case 31: return new(ptr) SM4AmmoInClipSync ( data.usAmmoInClip );
+            case 33: return new(ptr) SRifleAmmoInClipSync ( data.usAmmoInClip );
+            case 34: return new(ptr) SSniperAmmoInClipSync ( data.usAmmoInClip );
+            case 35: return new(ptr) SRLauncherAmmoInClipSync ( data.usAmmoInClip );
+            case 36: return new(ptr) SRPGAmmoInClipSync ( data.usAmmoInClip );
+            case 37: return new(ptr) SFThrowerAmmoInClipSync ( data.usAmmoInClip );
+            case 38: return new(ptr) SMinigunAmmoInClipSync ( data.usAmmoInClip );
+            case 16: return new(ptr) SGrenadeAmmoInClipSync ( data.usAmmoInClip );
+            case 17: return new(ptr) STearGasAmmoInClipSync ( data.usAmmoInClip );
+            case 18: return new(ptr) SMolotovAmmoInClipSync ( data.usAmmoInClip );
+            case 39: return new(ptr) SSatchelAmmoInClipSync ( data.usAmmoInClip );
+            case 41: return new(ptr) SSpraycanAmmoInClipSync ( data.usAmmoInClip );
+            case 42: return new(ptr) SFireExtAmmoInClipSync ( data.usAmmoInClip );
+            case 43: return new(ptr) SCameraAmmoInClipSync ( data.usAmmoInClip );
             default:
                 // Melee
                 return NULL;
