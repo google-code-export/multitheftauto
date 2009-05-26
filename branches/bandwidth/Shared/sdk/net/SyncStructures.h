@@ -667,7 +667,7 @@ struct SWeaponAmmoSync : public ISyncStructure
         if ( m_bSyncAmmoInClip && bStatus == true )
         {
             char tmp [ 32 ];
-            IAmmoInClipSync* pAmmoInClipSync = GetBestAmmoInClipSyncForWeapon ( &tmp );
+            IAmmoInClipSync* pAmmoInClipSync = GetBestAmmoInClipSyncForWeapon ( tmp );
             if ( pAmmoInClipSync )
             {
                 bStatus = bitStream.Read ( pAmmoInClipSync );
@@ -690,7 +690,7 @@ struct SWeaponAmmoSync : public ISyncStructure
         if ( m_bSyncAmmoInClip )
         {
             char tmp [ 32 ];
-            IAmmoInClipSync* pAmmoInClipSync = GetBestAmmoInClipSyncForWeapon ( &tmp );
+            IAmmoInClipSync* pAmmoInClipSync = GetBestAmmoInClipSyncForWeapon ( tmp );
             if ( pAmmoInClipSync )
             {
                 bitStream.Write ( pAmmoInClipSync );
