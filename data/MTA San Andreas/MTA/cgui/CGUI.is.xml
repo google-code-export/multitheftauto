@@ -87,8 +87,10 @@
 	<Image Name="CheckboxNormal" XPos="89" YPos="1" Width="16" Height="16" />
 	<Image Name="CheckboxHover" XPos="89" YPos="19" Width="16" Height="16" />
 	<Image Name="CheckboxMark" XPos="89" YPos="37" Width="16" Height="16" />
+	<Image Name="CheckboxMarkHover" XPos="107" YPos="55" Width="16" Height="16" />
 	<Image Name="RadioButtonMark" XPos="107" YPos="1" Width="16" Height="16" />
 	<Image Name="RadioButtonHover" XPos="107" YPos="19" Width="16" Height="16" />
 	<Image Name="RadioButtonNormal" XPos="107" YPos="37" Width="16" Height="16" />
+	<Image Name="RadioButtonMarkHover" XPos="107" YPos="73" Width="16" Height="16" />
 	
 </Imageset>
