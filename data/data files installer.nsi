@@ -17,7 +17,7 @@ Var Install_Dir
 ; Don't forget to update the BUILD_NUMBER
 ; ###########################################################################################################
 !define FILES_ROOT "."
-!define BUILD_NUMBER "1104"
+!define BUILD_NUMBER "1105"
 !define PRODUCT_VERSION "Data-r${BUILD_NUMBER}"
 !define INSTALL_OUTPUT "multitheftauto_data-r${BUILD_NUMBER}.exe"
 ; ###########################################################################################################
@@ -140,6 +140,7 @@ Section "Data files" SEC01
 	File "${FILES_ROOT}\MTA San Andreas\mta\vorbis.ax"
 	File "${FILES_ROOT}\MTA San Andreas\mta\xv.ax"
 	File "${FILES_ROOT}\MTA San Andreas\mta\xvidcore.dll"
+	File "${FILES_ROOT}\MTA San Andreas\mta\chatboxpresets.xml"
 	
 	SetOutPath "$INSTDIR\MTA\cgui"
 	File "${FILES_ROOT}\MTA San Andreas\mta\cgui\CGUI.is.xml"
