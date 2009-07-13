@@ -17,7 +17,7 @@ Var Install_Dir
 ; Don't forget to update the BUILD_NUMBER
 ; ###########################################################################################################
 !define FILES_ROOT "."
-!define BUILD_NUMBER "1105"
+!define BUILD_NUMBER "1290"
 !define PRODUCT_VERSION "Data-r${BUILD_NUMBER}"
 !define INSTALL_OUTPUT "multitheftauto_data-r${BUILD_NUMBER}.exe"
 ; ###########################################################################################################
