@@ -1,0 +1,67 @@
+#summary Instructions on how to compile the Linux server.
+
+= Debian 5.02 instructions =
+
+=== Install dependencies ===
+(skip sudo if you are root)
+<br>Your setup may require more items.
+<code>
+sudo apt-get install subversion
+sudo apt-get install dpkg-dev
+sudo apt-get install libcurl4-gnutls-dev
+sudo apt-get install libsqlite3-dev
+sudo apt-get install libpcre3-dev
+sudo apt-get install liblua5.1-0-dev</code>
+
+
+=== Get source ===
+<code>
+svn checkout http://multitheftauto.googlecode.com/svn/trunk mtasvn/trunk
+cd mtasvn/trunk</code>
+
+
+=== Install sparsehash ===
+<code>
+cd vendor/sparsehash/current
+autoreconf -fi
+./configure
+make install
+cd ../../..</code>
+
+
+=== Make lua ===
+<code>
+cd vendor/lua/src
+make linux
+mkdir -p ../../../libs/lua
+cp `*` ../../../libs/lua
+cd ../../..</code>
+
+
+=== Make MTA ===
+<code>
+autoreconf -fi
+rm MTA10_Server/mods/deathmatch/Makefile.files
+./configure
+make</code>
+
+
+=== Fill MTA output directory ===
+<code>
+strip -g MTA10_Server/launcher/mta-server -o MTA10_Server/output/mta-server
+strip -g MTA10_Server/core/.libs/libcore.so -o MTA10_Server/output/core.so
+strip -g Shared/XML/.libs/libxml.so -o MTA10_Server/output/xmll.so
+strip -g MTA10_Server/mods/deathmatch/.libs/libdeathmatch.so -o MTA10_Server/output/mods/deathmatch/deathmatch.so</code>
+
+
+=== Run MTA ===
+<code>
+cd ouput
+mta-server</code>
+
+
+=== P.S. ===
+You'll also need to add:
+ * net.so into output
+ * the .conf and .xml files into output/mods/deathmatch
+ * the resources into output/mods/deathmatch/resources
