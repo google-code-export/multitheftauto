@@ -1,11 +1,6 @@
 #summary Instructions on how to compile the Linux server.
 
-----
-=  Gentoo Instructions =
 
-Use Debian instructions, except install dependencies with 'emerge' instead of 'apt-get install'. The name of the dependencies required may also be different.
-<br><br>
-----
 = Debian Instructions =
 _Including derivatives such as Ubuntu_
 
@@ -20,7 +15,8 @@ sudo apt-get install libsqlite3-dev
 sudo apt-get install libpcre3-dev
 sudo apt-get install liblua5.1-0-dev</code>
 
-=== Get source ===
+
+=== Get the MTA source ===
 <code>
 svn checkout http://multitheftauto.googlecode.com/svn/trunk mtasvn/trunk
 cd mtasvn/trunk</code>
@@ -33,7 +29,7 @@ autoreconf -fi
 make install
 cd ../../..</code>
 
-=== Make lua ===
+=== Make Lua ===
 <code>
 cd vendor/lua/src
 make linux
@@ -57,7 +53,7 @@ strip -g MTA10_Server/mods/deathmatch/.libs/libdeathmatch.so -o MTA10_Server/out
 
 === Run MTA ===
 <code>
-cd ouput
+cd MTA10_Server/ouput
 ./mta-server</code>
 
 === P.S. ===
@@ -67,4 +63,9 @@ You'll also need to add:
  * the resources into output/mods/deathmatch/resources
 <br><br>
 
+----
+=  Gentoo Instructions =
 
+Use Debian instructions, except install dependencies with 'emerge' instead of 'apt-get install'. The name of the dependencies required may also be different.
+<br><br>
+----
