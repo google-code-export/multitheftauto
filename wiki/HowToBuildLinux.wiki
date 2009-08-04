@@ -1,28 +1,41 @@
 #summary Instructions on how to compile the Linux server.
 #labels Featured
 
+= Preparing your system =
+In order to build the Multi Theft Auto dedicated server, you will have to set up your system with the correct libraries and tools. How these are installed depends on your distribution.
 
-= Debian Instructions =
-_Including derivatives such as Ubuntu_
+=== Debian Linux ===
+_Includes derivative distributions such as Ubuntu_.
+<br>
 
-=== Install dependencies ===
-(skip sudo if you are root)
-<br>Your setup may require more items.
+You will need the necessary build tools such as GCC (see the build-essentials package for more information) and use apt to get at least the following packages:
 <code>
-sudo apt-get install subversion
-sudo apt-get install dpkg-dev
-sudo apt-get install libcurl4-gnutls-dev
-sudo apt-get install libsqlite3-dev
-sudo apt-get install libpcre3-dev
-sudo apt-get install liblua5.1-0-dev</code>
+apt-get install subversion
+apt-get install dpkg-dev
+apt-get install libcurl4-gnutls-dev
+apt-get install libsqlite3-dev
+apt-get install libpcre3-dev
+</code>
+If you are not running as the root user, use sudo in front of the above commands.
 
+=== Gentoo Linux ===
 
-=== Get the MTA source ===
+You will have to use 'emerge' and the necessary USE flags to get the necessary packages from Gentoo-Portage (see the [http://www.gentoo.org/doc/en/handbook/handbook-x86.xml?part=2&chap=1 Gentoo Handbook] for more information):
+<code>
+emerge subversion
+emerge sqlite
+USE="net-misc/curl ssl" emerge curl
+</code>
+
+----
+
+= General instructions =
+=== Get the latest source code ===
 <code>
 svn checkout http://multitheftauto.googlecode.com/svn/trunk mtasvn/trunk
 cd mtasvn/trunk</code>
 
-=== Install sparsehash ===
+=== Prepare the sparsehash library ===
 <code>
 cd vendor/sparsehash/current
 autoreconf -fi
@@ -30,7 +43,7 @@ autoreconf -fi
 make install
 cd ../../..</code>
 
-=== Make Lua ===
+=== Prepare the lua library ===
 <code>
 cd vendor/lua/src
 make linux
@@ -38,35 +51,28 @@ mkdir -p ../../../libs/lua
 cp `*` ../../../libs/lua
 cd ../../..</code>
 
-=== Make MTA ===
+=== Compile the server ===
 <code>
 autoreconf -fi
-rm MTA10_Server/mods/deathmatch/Makefile.files
 ./configure
 make</code>
 
-=== Fill MTA output directory ===
+=== Create the output directory ===
+_This step will be ommitted in the near future_.
 <code>
 strip -g MTA10_Server/launcher/mta-server -o MTA10_Server/output/mta-server
 strip -g MTA10_Server/core/.libs/libcore.so -o MTA10_Server/output/core.so
 strip -g Shared/XML/.libs/libxml.so -o MTA10_Server/output/xmll.so
 strip -g MTA10_Server/mods/deathmatch/.libs/libdeathmatch.so -o MTA10_Server/output/mods/deathmatch/deathmatch.so</code>
 
-=== Run MTA ===
+=== Run the server ===
 <code>
 cd MTA10_Server/ouput
 ./mta-server</code>
 
-=== P.S. ===
-You'll also need to add:
- * net.so into output
- * the .conf and .xml files into output/mods/deathmatch
- * the resources into output/mods/deathmatch/resources
+=== Important stuff ===
+You will also have to:
+ * download the latest net.so binary (from the [http://code.google.com/p/multitheftauto/downloads/list Downloads] page) and place it in the above output/ directory
+ * copy the .conf and .xml files into output/mods/deathmatch
+ * copy the necessary resources into output/mods/deathmatch/resources
 <br><br>
-
-----
-=  Gentoo Instructions =
-
-Use Debian instructions, except install dependencies with 'emerge' instead of 'apt-get install'. The name of the dependencies required may also be different.
-<br><br>
-----
