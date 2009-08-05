@@ -39,7 +39,7 @@ cd mtasvn/trunk</code>
 <code>
 cd vendor/sparsehash/current
 autoreconf -fi
-./configure
+sh ./configure
 make install
 cd ../../..</code>
 
