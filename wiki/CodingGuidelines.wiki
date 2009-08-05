@@ -19,7 +19,7 @@ Keep in mind that your commits should initially be fixing or implementing existi
 Please follow these guidelines for all your contributions:
   * always include a log message (so other contributors can see what's going on)
   * include the issue number in your log message and keep your log messages consistent, e.g. _Fixed #1234: description and notes here_
-  * check your own revisions on this project's [Changes] page from time to time: other contributors will likely review and comment on your code, and you're expected to do so in return (you could turn on e-mail notifications as well)
+  * check your own revisions on this project's [http://code.google.com/p/multitheftauto/source/list Changes] page from time to time: other contributors will likely review and comment on your code, and you're expected to do so in return (you could turn on e-mail notifications as well)
 
 == High priority: issues for version 1.0 ==
 
@@ -28,7 +28,7 @@ You are encouraged to fix any issues that are open on our roadmap and targetted 
 In order to have your commits accepted into the 1.0 version (and nightly builds), the process is as follows:
   # commit your changes to the trunk and prepend your log message with the _(1.0)_ tag, e.g. _(1.0) Fixed #1234: description and notes here_
   # mark the issue on the bug tracker as _assigned_ (and not as _fixed_)
-  # get at least 4 contributors to review and comment positively on your code through the [Changes] page
+  # get at least 4 contributors to review and comment positively on your code through the [http://code.google.com/p/multitheftauto/source/list Changes] page
   # if any contributor has a problem with your commit, resolve by committing more changes and repeat until there are no problems left
   # after your latest revision is reviewed and at least 4 positive comments have been submitted, you (or any other contributor) may proceed and merge your changes into the 1.0 branch
   # mark the issue as _fixed_
