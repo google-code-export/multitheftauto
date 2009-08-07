@@ -33,7 +33,7 @@ In order to have your commits accepted into the 1.0 version (and nightly builds)
   # contributors are given the opportunity to express any concerns by submitting negative reviews within 48 hours after your latest revision
   # your commit is approved by at least 4 positive and 0 negative reviews
   # a contributor (you or someone else) merges _each_ of your changes into the 1.0 branch by using the message _merged rXXXX: commit message_ where rXXXX represents the revision that is merged from trunk to 1.0
-  # you leave a message behind in the above final revision on the [http://code.google.com/p/multitheftauto/source/list Changes] page noting the revision rYYYY in which the contributions were merged into the 1.0 branch
+  # you leave a message behind in the final revision on the [http://code.google.com/p/multitheftauto/source/list Changes] page noting the revision rYYYY in which the contributions were merged into the 1.0 branch
   # mark the issue as _fixed_
 
 Commits can be veto'ed by any contributors within the aforementioned review period of 48 hours. If no negative reviews have been submitted, the commit(s) is/are ready to be merged.
