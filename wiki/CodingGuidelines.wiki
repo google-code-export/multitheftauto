@@ -19,7 +19,7 @@ Keep in mind that your commits should initially be fixing or implementing existi
 Please follow these guidelines for all your contributions:
   * always include a log message (so other contributors can see what's going on)
   * include the issue number in your log message and keep your log messages consistent, e.g. _Fixed #1234: description and notes here_
-  * check your own revisions on this project's [http://code.google.com/p/multitheftauto/source/list Changes] page from time to time: other contributors will likely review and comment on your code, and you're expected to do so in return (you could turn on e-mail notifications as well)
+  * check your own revisions on this project's [http://code.google.com/p/multitheftauto/source/list Changes] page from time to time: other contributors will likely review and comment on your code, and you're expected to do so in return (_please do not review any commits that are outside your area of expertise_)
 
 == High priority: issues for version 1.0 ==
 
