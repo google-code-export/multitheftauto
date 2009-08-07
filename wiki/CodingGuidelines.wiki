@@ -30,7 +30,7 @@ In order to have your commits accepted into the 1.0 version (and nightly builds)
   # mark the issue on the bug tracker as _assigned_ (and not as _fixed_)
   # get at least 4 contributors to review and comment positively on your code through the [http://code.google.com/p/multitheftauto/source/list Changes] page
   # if any contributor has a problem with your commit, resolve by committing more changes and repeat until there are no problems left: all subsequent commits shall be prepended as follows: _(1.0) (rXXXX version N)_ with rXXXX being the first commit revision and N being the n'th change you're making on behalf of that commit revision
-  # after your latest revision is reviewed and at least 4 positive comments have been submitted, you (or any other contributor) may proceed and merge your changes into the 1.0 branch by using the following message: _(1.0) merged rXXXX_ where rXXXX is the final revision (including all the changes that you may have made)
+  # after your latest revision is reviewed and at least 4 positive comments have been submitted, you (or any other contributor) may proceed and merge your changes into the 1.0 branch using the message _merged rXXXX_ where rXXXX is the final revision (including all the changes that you may have made) and by leaving a message behind in the final revision on the [http://code.google.com/p/multitheftauto/source/list Changes] page noting the merged revision
   # mark the issue as _fixed_
 
 == Low priority: issues for later versions ==
