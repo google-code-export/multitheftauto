@@ -1,4 +1,0 @@
-<group name="Everyone">
-	<object name="user.*" />
-	<object name="resource.*" />
-</group>
