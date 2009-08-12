@@ -20,6 +20,7 @@ Please follow these guidelines for all your contributions:
   * always include a log message (so other contributors can see what's going on)
   * include the issue number in your log message and keep your log messages consistent, e.g. _Fixed #1234: description and notes here_
   * check your own revisions on this project's [http://code.google.com/p/multitheftauto/source/list Changes] page from time to time: other contributors will likely review and comment on your code, and you're expected to do so in return (_please do not review any commits that are outside your area of expertise_)
+  * please do not rate your own commits
 
 == High priority: issues for version 1.0 ==
 
@@ -31,8 +32,11 @@ In order to have your commits accepted into the 1.0 version (and nightly builds)
   # get at least 4 contributors to review and comment positively on your code through the [http://code.google.com/p/multitheftauto/source/list Changes] page
   # if any contributor has a problem with your commit, resolve by committing more changes and repeat until there are no problems left: all subsequent commits shall be prepended as follows: _(1.0) (rXXXX version N)_ with rXXXX being the first commit revision and N being the n'th change you're making on behalf of that commit revision
   # contributors are given the opportunity to express any concerns by submitting negative reviews within 48 hours after your latest revision
-  # your commit is approved by at least 4 positive and 0 negative reviews
-  # a contributor (you or someone else) merges _each_ of your changes into the 1.0 branch by using the message _merged rXXXX: commit message_ where rXXXX represents the revision that is merged from trunk to 1.0
+  # your commit is approved by at least 4 positive and 0 negative reviews (do _not_ review and rate your own code)
+  # a contributor (you or someone else) merges _all_ of your changes with a single commit into the 1.0 branch with a log message containing a line for each of the affected revisions, formatted as follows:
+    _merged rXXXX: (original commit message for rXXXX_)<br />
+    _merged rYYYY: (original commit message for rYYYY_)<br />
+    etc.
   # you leave a message behind in the final revision on the [http://code.google.com/p/multitheftauto/source/list Changes] page noting the revision rYYYY in which the contributions were merged into the 1.0 branch
   # mark the issue as _fixed_
 
