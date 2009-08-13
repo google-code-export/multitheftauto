@@ -4,7 +4,7 @@
 = Preparing your system =
 In order to build the Multi Theft Auto dedicated server, you will have to set up your system with the correct libraries and tools. How these are installed depends on your distribution.
 
-Distributing precompiled binary versions of software for GNU/Linux is not very common as software is often only installed through the distribution's own package manager or compiled on the spot. Because of this, we provide different versions of our binaries to ensure that it will run on a variety of systems. Each version has been compiled using a different configuration:
+Our network module is distributed as precompiled binary. Distributing precompiled binary versions of software for GNU/Linux is not very common as software is often only installed through the distribution's own package manager or compiled on the spot. Because of this, we provide different versions of our binaries to ensure that it will run on a variety of systems. Each version has been compiled using a different configuration:
   * compiled with glibc 2.9, SSL support (libcurl)
   * compiled with glibc 2.3, no SSL support (libcurl)
 
@@ -14,15 +14,19 @@ We strongly recommend you to pick the bottom version, since it is built using so
 _Includes derivative distributions such as Ubuntu_.
 <br>
 
-You will need the necessary build tools such as GCC (see the build-essentials package for more information) and use apt to get at least the following packages:
+You will need the necessary build tools, headers and libraries, which are distributed through the following Debian packages (e.g. Debian Etch):
+  * {{{build-essential}}}: contains the necessary tools, headers and libraries to build applications
+  * {{{automake}}}: contains the automake tools
+  * {{{libtool}}}: contains the libtool software required to build libraries
+  * {{{subversion}}}: contains the [http://subversion.tigris.org/ Subversion] client used to check out our code repository
+  * {{{libcurl3-dev}}}: contains the cURL library (version 3 without SSL support)
+  * {{{libpcre3-dev}}}: contains the PCRE library (version 3)
+  * {{{libsqlite3-dev}}}: contains the SQLite library (version 3)
+
+To install these packages through {{{apt}}}, use the {{{apt-get install <package list>}}} command as in the following example (executed as root):
 <code>
-apt-get install subversion
-apt-get install dpkg-dev
-apt-get install libcurl4-gnutls-dev
-apt-get install libsqlite3-dev
-apt-get install libpcre3-dev
+apt-get install build-essential automake libtool subversion libcurl3-dev libpcre3-dev libsqlite3-dev
 </code>
-If you are not running as the root user, use sudo in front of the above commands.
 
 === Gentoo Linux ===
 
