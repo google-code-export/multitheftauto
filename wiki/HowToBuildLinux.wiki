@@ -6,7 +6,7 @@ In order to build the Multi Theft Auto dedicated server, you will have to set up
 
 Our network module is distributed as precompiled binary. Distributing precompiled binary versions of software for GNU/Linux is not very common as software is often only installed through the distribution's own package manager or compiled on the spot. Because of this, we provide different versions of our binaries to ensure that it will run on a variety of systems. Each version has been compiled using a different configuration:
   * {{{glibc 2.9, dynamic libcurl, SSL support}}}
-  * {{{glibc 2.3, static libcurl, SSL support}}}
+  * {{{glibc 2.3, static libcurl, no SSL support}}}
 
 We strongly recommend you to pick the bottom version, since it is built using somewhat older libraries (instead of the state-of-the-art versions) and uses less dependencies, so it's very likely it will run on your system. All versions can be found on our [http://code.google.com/p/multitheftauto/downloads/list Download] page.
 
