@@ -30,11 +30,17 @@ apt-get install build-essential automake libtool subversion libcurl3-dev libpcre
 
 === Gentoo Linux ===
 
-You will have to use 'emerge' and the necessary USE flags to get the necessary packages from Gentoo-Portage (see the [http://www.gentoo.org/doc/en/handbook/handbook-x86.xml?part=2&chap=1 Gentoo Handbook] for more information):
+You will need the necessary build tools, headers and libraries. Because Gentoo's {{{portage}}} system is designed to compile any packages on your own system, the necessary build tools will have already been installed. This only leaves you to install the necessary libraries:
+  * {{{sqlite}}}: contains the SQLite library
+  * {{{subversion}}}: contains the [http://subversion.tigris.org/ Subversion] client used to check out our code repository
+  * {{{curl}}}: contains the cURL library; to compile with SSL support, apply the {{{net-misc/curl ssl}}} USE flag
+
+To compile and install these packages through {{{emerge}}}, use the {{{emerge -v <package list>}}} command. The {{{-v}}} option shows additional information and can be omitted. (If you want to use any USE flags, prepend emerge with {{{USE="use flags here"}}}. You can also use the {{{-pv}}} option to verify that you're using the correct flags.) Refer to the [http://www.gentoo.org/doc/en/handbook/handbook-x86.xml?part=2&chap=1 Gentoo Handbook] or manual for more information on {{{emerge}}}.
+
+Example:
 <code>
-emerge subversion
-emerge sqlite
-USE="net-misc/curl ssl" emerge curl
+emerge -v subversion sqlite
+USE="net-misc/curl ssl" emerge -v curl
 </code>
 
 ----
