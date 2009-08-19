@@ -22,10 +22,11 @@ You will need the necessary build tools, headers and libraries, which are distri
   * {{{libcurl3-dev}}}: contains the cURL library (version 3 without SSL support)
   * {{{libpcre3-dev}}}: contains the PCRE library (version 3)
   * {{{libsqlite3-dev}}}: contains the SQLite library (version 3)
+  * {{{libreadline5-dev}}}: contains the readline library (version 5)
 
 To install these packages through {{{apt}}}, use the {{{apt-get install <package list>}}} command as in the following example (executed as root):
 <code>
-apt-get install build-essential automake libtool subversion libcurl3-dev libpcre3-dev libsqlite3-dev
+apt-get install build-essential automake libtool subversion libcurl3-dev libpcre3-dev libsqlite3-dev libreadline5-dev
 </code>
 
 === Gentoo Linux ===
