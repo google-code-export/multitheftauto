@@ -47,7 +47,14 @@ USE="net-misc/curl ssl" emerge -v curl
 ----
 
 = General instructions =
-=== Get the latest source code ===
+=== For 1.0 servers: Get the 1.0 code! ===
+Do this if you want the public to be able to play on your server using binaries from multitheftauto.com.
+<code>
+svn checkout http://multitheftauto.googlecode.com/svn/branches/1.0 mtasvn/1.0
+cd mtasvn/1.0</code>
+
+=== OR - Get the latest source code===
+Do this to check out cutting edge features or to contribute new features or changes.
 <code>
 svn checkout http://multitheftauto.googlecode.com/svn/trunk mtasvn/trunk
 cd mtasvn/trunk</code>
