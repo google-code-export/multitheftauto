@@ -91,7 +91,7 @@ strip -g MTA10_Server/mods/deathmatch/.libs/libdeathmatch.so -o MTA10_Server/out
 
 === Run the server ===
 <code>
-cd MTA10_Server/ouput
+cd MTA10_Server/output
 ./mta-server</code>
 
 === Important stuff ===
