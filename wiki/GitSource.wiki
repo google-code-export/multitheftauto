@@ -1,7 +1,7 @@
 #summary Source code repository instructions
 #labels Featured
 
-We have migrated our SVN source code repository on Google Code over to Git on [http://github.com/multitheftauto/multitheftauto/tree GitHub.com].
+We have migrated our SVN source code repository on Google Code over to Git on [http://github.com/multitheftauto/multitheftauto/tree GitHub].
 
 One of the advantages of using GitHub is that you, as a developer, can [http://en.wikipedia.org/wiki/Fork_(software_development) fork] our repository in an instant and apply any changes you want. If your changes are good enough, we can easily pull them into our own repository so they'll end up in our automated builds. No need to submit patches anywhere.. so go and register already!
 
