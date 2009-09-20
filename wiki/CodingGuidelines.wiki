@@ -1,5 +1,5 @@
 #summary Coding guidelines for the Multi Theft Auto project
-#labels Featured
+#labels Deprecated
 
 = Introduction =
 
