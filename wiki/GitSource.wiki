@@ -5,6 +5,4 @@ _*Important: We have migrated this project from Google Code over to [http://gith
 
 One of the advantages of using GitHub is that you, as a developer, can [http://en.wikipedia.org/wiki/Fork_(software_development) fork] our repository in an instant and apply any changes you want. If your changes are good enough, we can easily pull them into our own repository so they'll end up in our automated builds. No need to submit patches anywhere.. so go and register already!
 
-All our forks can be tracked at GitHub's [http://github.com/multitheftauto/multitheftauto/network/members Network members] page.
-
 P.S. Our [http://code.google.com/p/multitheftauto/source/checkout SVN source code repository] is currently still available if you need it for whatever reason.
