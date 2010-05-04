@@ -8,4 +8,4 @@ This project features the main source code for the MTASA client and the server.
 
 = Multi Theft Auto San Andreas: Resources =
 The Resources project features Lua scripts which are required for the server to function.
- * http://code.google.com/p/multitheftauto-resources/
+ * http://code.google.com/p/mtasa-resources/
