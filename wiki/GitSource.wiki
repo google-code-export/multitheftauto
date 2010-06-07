@@ -1,5 +1,4 @@
 #summary Source code repository instructions
-#labels Featured
 
 _*Important: We have migrated this project from Google Code over to [http://github.com/multitheftauto/multitheftauto/tree multitheftauto/multitheftauto on GitHub].*_
 
