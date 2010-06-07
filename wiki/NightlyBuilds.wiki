@@ -1,5 +1,4 @@
 #summary Instructions on how to run the latest nightly developer build
-#labels Featured
 <table>
 <tr>
 <td width="48%" valign="top" cellspacing=10>
