@@ -41,7 +41,7 @@ First off you should download the latest available nightly build.
 
 === Step 2: Download the run dependencies ===
 You must also download and install run dependencies.  These are files which are required by MTA to run, but usually do not change and therefore are not included in the nightly build.
-  * You can find the latest available data archive *[http://code.google.com/p/multitheftauto/downloads/list?q=label:Data here.]*
+  * You can find the latest available data archive *[http://code.google.com/p/mtasa-blue/downloads/list?q=label:Data here.]*
   * Run the installer, ensuring it correctly points to your MTA: San Andreas installation directory.
 
 _Run dependencies rarely need to be updated.  If your build starts malfunctioning for any reason it may be because you need to update your dependencies.  They are updated whenever needed._
@@ -64,7 +64,7 @@ Bugs, suggestions or feedback can go in either our forums or the bugtracker
   * http://forum.multitheftauto.com
   * http://bugs.multitheftauto.com
 
-For general scripting or server setup help, please refer to our [http://development.mtasa.com wiki]:
-  * [http://development.mtasa.com/index.php?title=Deathmatch_Client_Manual Client Manual]
-  * [http://development.mtasa.com/index.php?title=Deathmatch_Server_Manual Server Manual]
-  * [http://development.mtasa.com/index.php?title=Admin Setting up admin on your server]
+For general scripting or server setup help, please refer to our [http://wiki.multitheftauto.com wiki]:
+  * [http://wiki.multitheftauto.com/index.php?title=Deathmatch_Client_Manual Client Manual]
+  * [http://wiki.multitheftauto.com/index.php?title=Deathmatch_Server_Manual Server Manual]
+  * [http://wiki.multitheftauto.com/index.php?title=Admin Setting up admin on your server]
